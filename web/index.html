@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIDWAY · Economy Control</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">MID<span>W</span>AY</div>
+    <div class="brand-sub">CONFIGURATOR · TRADERS:</div>
+    <div class="byline">by Lemann</div>
+  </div>
+  <nav class="profiles">
+    <button class="profile active"><i class="p-ico">TC</i><span>SCUM TRADER CONFIG EDITOR<small>EconomyOverride.json</small></span></button>
+    <button class="profile soon" disabled><i class="p-ico">Q</i><span>SCUM QUEST CONFIGURATOR<small>Quest.json · скоро</small></span></button>
+    <button class="profile soon" disabled><i class="p-ico">L</i><span>SCUM LOOT CONFIGURATOR<small>Loot.json · скоро</small></span></button>
+    <button class="profile soon" disabled><i class="p-ico">S</i><span>SCUM SKILL EDITOR<small>Character.sqlite · скоро</small></span></button>
+  </nav>
+  <div class="top-right">
+    <span id="changes-flag" class="flag" hidden>● Есть изменения</span>
+    <button class="ghost" id="import">← ИМПОРТ ФАЙЛА</button>
+    <input id="file" type="file" accept=".json" hidden>
+  </div>
+</div>
+
+<div class="tabbar">
+  <div class="tabs-main">
+    <button class="tab" data-view="settings">НАСТРОЙКИ</button>
+    <button class="tab active" data-view="items">ПРЕДМЕТЫ</button>
+    <button class="tab" data-view="export">ВЫГРУЗКА</button>
+  </div>
+  <div class="tabs-side">
+    <button class="tab side" data-view="catalog">КАТАЛОГ</button>
+    <button class="tab side" data-view="ftp">FTP / ФАЙЛЫ</button>
+    <button class="tab side" data-view="rcon">RCON</button>
+    <button class="tab side" data-view="history">ИСТОРИЯ</button>
+  </div>
+</div>
+
+<main>
+
+<section class="view active" id="items">
+  <div class="items-layout">
+    <aside class="tools">
+      <h4>ИНСТРУМЕНТЫ</h4>
+      <small class="sec-cap">МАССОВЫЕ ЗНАЧЕНИЯ</small>
+      <label>ПОКУПКА<input id="mass-buy" placeholder="-1"></label>
+      <label>ПРОДАЖА<input id="mass-sell" placeholder="-1"></label>
+      <label>ДЕЛЬТА<input id="mass-delta" placeholder="-1"></label>
+      <label>ОЧКИ СЛАВЫ<input id="mass-fame" placeholder="-1"></label>
+      <label>ПОСЛЕ ПРОДАЖИ<select id="mass-avail"><option value="">— не менять</option><option value="default">По умолчанию</option><option value="true">Только после продажи</option><option value="false">Доступно всегда</option></select></label>
+      <label>ВИДИМОСТЬ<select id="mass-vis"><option value="">— не менять</option><option value="default">Открыт</option><option value="false">Скрыт</option></select></label>
+      <button class="btn-red big" id="mass-apply-current">ПРИМЕНИТЬ ТЕКУЩЕМУ ТРЕЙДЕРУ</button>
+      <button class="btn-dark big" id="mass-apply-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
+      <button class="btn-dark big" id="mass-apply-all">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ</button>
+      <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
+      <small class="sec-cap">СПИСОК ТРЕЙДЕРА</small>
+      <button class="btn-dark" id="copy-list">СКОПИРОВАТЬ В…</button>
+      <button class="btn-red" id="clear-list">ОЧИСТИТЬ СПИСОК</button>
+      <p class="note">Пустые поля пропускаются. Значения применяются ко всем строкам выбранных торговцев.</p>
+    </aside>
+    <div class="center-col">
+      <div class="toolbar row1">
+        <input id="goods-search" class="grow" placeholder="Поиск: ID или название">
+        <span class="f-label">КАТЕГОРИЯ</span>
+        <select id="goods-cat"><option value="all">Все категории</option></select>
+        <button class="btn-green" id="add-row">ДОБАВИТЬ</button>
+        <button class="btn-dark" id="add-trader">ДОБАВИТЬ ТРЕЙДЕРА</button>
+        <button class="btn-dark" id="add-all-traders">ДОБАВИТЬ ВСЕХ ТРЕЙДЕРОВ</button>
+      </div>
+      <div class="toolbar row2">
+        <button class="btn-dark" id="add-by-cats">ДОБАВИТЬ ТОВАРЫ ПО КАТЕГОРИЯМ</button>
+        <button class="btn-red" id="del-trader">УДАЛИТЬ ТРЕЙДЕРА</button>
+      </div>
+      <article class="panel trader-head">
+        <div class="th-left"><h2 id="selected-name">—</h2><span id="selected-class" class="badge class-badge" hidden>СТАНДАРТНЫЙ ТОРГОВЕЦ</span></div>
+        <div class="head-stats">
+          <span>Всего предметов: <b id="st-items">0</b></span>
+          <span>Каталог: <b id="st-catalog">0</b></span>
+          <span>UNVERIFIED: <b id="st-unv">0</b></span>
+          <span id="lg-chg" class="lg" hidden>● изменено: <b>0</b></span>
+          <span id="lg-add" class="lg" hidden>● добавлено: <b>0</b></span>
+          <span>Изменений: <b id="change-total">0</b></span>
+        </div>
+      </article>
+      <article class="panel table-wrap">
+        <table>
+          <thead><tr><th>ПРЕДМЕТ</th><th>КАТЕГОРИЯ</th><th>ПОКУПКА</th><th>ПРОДАЖА</th><th>ДЕЛЬТА</th><th>ОЧКИ СЛАВЫ</th><th>ПОСЛЕ ПРОДАЖИ</th><th>ВИДИМОСТЬ</th><th>СТАТУС</th><th></th></tr></thead>
+          <tbody id="goods"><tr><td colspan="10" class="empty">Импортируйте EconomyOverride.json — кнопка «← ИМПОРТ ФАЙЛА» сверху</td></tr></tbody>
+        </table>
+      </article>
+    </div>
+    <aside class="side-col">
+      <h4>ВЫБОР СЕКТОРА</h4>
+      <div id="sector-list" class="sector-grid"><p class="empty">Нет данных</p></div>
+      <h4 id="sector-title">ТРЕЙДЕРЫ</h4>
+      <div id="trader-list" class="trader-list"><p class="empty">Нет торговцев</p></div>
+    </aside>
+  </div>
+</section>
+
+<section class="view" id="settings">
+  <div class="toolbar"><div><h2>Настройки экономики</h2><p>Глобальные параметры импортированного JSON. Флаги включаются переключателями, значения — полями.</p></div>
+  <button class="btn-red" id="save-rules">ПРИМЕНИТЬ В ДОКУМЕНТ</button></div>
+  <article class="panel"><div id="rule-fields" class="rule-grid">Импортируйте конфигурацию экономики.</div></article>
+</section>
+
+<section class="view" id="catalog">
+  <div class="toolbar"><div><h2>Каталог предметов</h2><p>База ID по категориям + ваши собственные записи (UNVERIFIED) — сохраняются в data\custom-items.json.</p></div>
+  <span>
+    <button class="btn-dark" id="db-import-btn">ИМПОРТ СВОЕЙ БАЗЫ</button>
+    <button class="btn-green" id="new-item">ДОБАВИТЬ ЗАПИСЬ</button>
+  </span>
+  <input id="db-import" type="file" accept=".json,.csv" hidden>
+</div>
+<article class="panel">
+  <p class="note" id="db-status">Загрузка базы…</p>
+  <div class="filters">
+    <input id="search" placeholder="Поиск по названию или ID">
+    <select id="category"><option value="all">Все категории</option></select>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>НАЗВАНИЕ</th><th>ITEM ID</th><th>КАТЕГОРИЯ</th><th>СТАТУС</th><th></th></tr></thead>
+      <tbody id="catalog-rows"><tr><td colspan="5" class="empty">Каталог пуст</td></tr></tbody>
+    </table>
+  </div>
+</article>
+</section>
+
+<section class="view" id="export">
+  <article class="panel srv-panel"><h3>СЕРВЕР · АВТОЗАГРУЗКА ECONOMY OVERRIDE</h3>
+    <div class="srv-row">
+      <button class="btn-green" id="srv-download">СКАЧАТЬ С СЕРВЕРА → РЕДАКТОР</button>
+      <button class="btn-red" id="srv-upload">ВЫГРУЗИТЬ ДОКУМЕНТ НА СЕРВЕР</button>
+    </div>
+    <div id="srv-status" class="hint">Операций с сервером ещё не было</div>
+    <p class="hint">Используется FTP-профиль из вкладки «FTP / ФАЙЛЫ». Скачивание сохраняет локальную копию в data\server-files и сразу открывает документ в редакторе; выгрузка создаёт резервную копию .backup-метка на сервере. При включённом VPN хостинг может блокировать соединение.</p>
+  </article>
+  <div class="toolbar"><div><h2>Выгрузка</h2><p>Дифф изменений, пресеты, скачивание конфигурации и ручной импорт технического JSON.</p></div>
+  <button class="btn-red" id="export-download">СКАЧАТЬ JSON</button></div>
+  <div class="columns">
+    <article class="panel"><h3>ДИФФ · ОРИГИНАЛ → ТЕКУЩИЙ</h3>
+      <div id="diff-summary" class="diff-summary">Нет загруженного документа.</div>
+      <div id="diff-list" class="diff-list"></div>
+      <p class="hint">Базой считается последний импорт, применённый JSON или скачанный файл. Скачивание сбрасывает дифф.</p>
+    </article>
+    <article class="panel"><h3>ПРЕСЕТЫ ЭКОНОМИКИ</h3>
+      <div class="preset-row"><input id="preset-name" placeholder="Имя пресета"><button class="btn-dark" id="preset-save">СОХРАНИТЬ</button></div>
+      <div class="preset-row"><button class="btn-dark" id="preset-import-btn">ИМПОРТ ПРЕСЕТА ФАЙЛОМ</button><input id="preset-import" type="file" accept=".json" hidden></div>
+      <div id="preset-list" class="preset-list"><p class="empty">Пресетов пока нет</p></div>
+      <p class="hint">Пресеты хранятся локально в data\presets рядом с приложением. ЭКСПОРТ сохраняет файл .json — передайте его другому пользователю, ИМПОРТ добавляет такой файл в список.</p>
+    </article>
+  </div>
+  <div class="columns">
+    <article class="panel"><h3>Технический JSON · текущий документ</h3>
+      <textarea id="json-preview" class="json" readonly spellcheck="false" placeholder="Импортируйте файл, чтобы увидеть документ"></textarea>
+      <p class="hint">Обновляется автоматически при каждом изменении. Заливка на сервер — кнопка «ВЫГРУЗИТЬ ДОКУМЕНТ НА СЕРВЕР» выше или вкладка FTP / ФАЙЛЫ.</p>
+    </article>
+    <article class="panel"><h3>ПРИМЕНИТЬ ТЕХНИЧЕСКИЙ JSON</h3>
+      <textarea id="json-import" class="json" spellcheck="false" placeholder='{"traders": { ... }}'></textarea>
+      <button class="btn-red" id="export-apply">ЗАГРУЗИТЬ ИЗ ТЕКСТА</button>
+      <p class="hint">JSON проходит валидацию на сервере приложения перед загрузкой. Поддерживаются обёртки вида {"economy-override": …} и список торговцев.</p>
+    </article>
+  </div>
+</section>
+
+<section class="view" id="ftp">
+  <div class="toolbar"><div><h2>FTP / файловый доступ</h2><p>Удалённая файловая система и контроль конфигураций.</p></div><span class="tag">FTPS EXPLICIT</span></div>
+  <div class="columns">
+    <article class="panel"><h3>Профиль подключения</h3>
+      <div class="form-grid">
+        <label>Хост<input id="ftp-host" placeholder="server.example.net"></label>
+        <label>Порт<input id="ftp-port" type="number" value="21"></label>
+        <label>Пользователь<input id="ftp-user" placeholder="FTP username"></label>
+        <label>Пароль<input id="ftp-pass" type="password" placeholder="Только на время запроса"></label>
+        <label class="wide">Удалённая папка<input id="ftp-path" value="/SCUM/Saved/Config/WindowsServer/"></label>
+        <label class="wide check-row"><input type="checkbox" id="ftp-save"> Сохранить подключение локально (пароль в data\connections.json без шифрования)</label>
+      </div>
+      <button class="btn-red" id="ftp-list">ПОДКЛЮЧИТЬСЯ И ПРОЧИТАТЬ СПИСОК</button>
+      <button class="btn-dark" id="ftp-watch">Начать мониторинг · 30 сек</button>
+      <div id="ftp-watch-status" class="hint">Мониторинг выключен</div>
+      <div class="file-list" id="ftp-files"></div>
+    </article>
+    <article class="panel"><h3>Передача конфигурации</h3>
+      <p>Скачать выбранный файл можно из списка слева.</p>
+      <button id="ftp-push-doc" class="btn-red">ВЫГРУЗИТЬ ДОКУМЕНТ НА СЕРВЕР</button>
+      <button id="ftp-icon-scan" class="btn-dark">ИСКАТЬ МИНИАТЮРЫ ПРЕДМЕТОВ НА СЕРВЕРЕ</button>
+      <label class="file-upload">Файл для отправки<input id="ftp-upload-file" type="file"></label>
+      <button id="ftp-upload" class="btn-red">ЗАГРУЗИТЬ ФАЙЛ С РЕЗЕРВНОЙ КОПИЕЙ</button>
+      <p class="note">«Выгрузить документ» отправляет текущий документ как EconomyOverride.json в выбранную папку (существующий файл копируется в .backup). «Искать миниатюры» сканирует сервер до 4 уровней, находит файлы, названные по ItemID (например Weapon_AK47.png), и сохраняет их в data\icons. Загрузка файла: существующий файл сначала копируется в .backup-<метка времени>, новый файл создаётся без копии.</p>
+    </article>
+  </div>
+</section>
+
+<section class="view" id="rcon">
+  <div class="toolbar"><div><h2>RCON</h2><p>Состояние административного подключения к SCUM.</p></div><span class="tag">ПРОТОКОЛ НЕ ПОДТВЕРЖДЁН</span></div>
+  <div class="columns">
+    <article class="panel"><h3>Параметры сервера</h3>
+      <div class="form-grid">
+        <label>Хост<input id="rcon-host" placeholder="server.example.net"></label>
+        <label>Порт<input id="rcon-port" type="number" placeholder="RCON port"></label>
+        <label class="wide">Пароль<input id="rcon-pass" type="password" placeholder="Не сохраняется, если галочка снята"></label>
+        <label class="wide">Протокол<select><option>Определить после проверки</option><option>Battleye RCon (UDP)</option><option>TCP RCON</option></select></label>
+        <label class="wide check-row"><input type="checkbox" id="rcon-save"> Сохранить данные подключения локально (пароль в data\connections.json без шифрования)</label>
+      </div>
+      <button id="rcon-save-btn" class="btn-dark" type="button">СОХРАНИТЬ ПОДКЛЮЧЕНИЕ</button>
+      <button disabled>Проверить соединение</button>
+    </article>
+    <article class="panel"><h3>План интеграции</h3>
+      <p>✓ Диагностика доступности</p><p>✓ Проверка протокола и авторизации</p><p>✓ Статус сервера</p><p>✓ Только разрешённые операции</p>
+      <p class="note">Источники по SCUM описывают варианты TCP и BattlEye UDP. До проверки конкретного билда команды не отправляются.</p>
+    </article>
+  </div>
+</section>
+
+<section class="view" id="history">
+  <div class="toolbar"><div><h2>История изменений</h2><p>Журнал действий текущей сессии.</p></div><button class="btn-dark" id="clear-history">ОЧИСТИТЬ ЖУРНАЛ</button></div>
+  <article class="panel" id="history-list"><p class="empty">Изменений пока нет.</p></article>
+</section>
+
+<footer>MIDWAY ECONOMY CONTROL · BY LEMANN <span>TRADER CONFIG · ECONOMYOVERRIDE.JSON · LOCAL TOOL</span></footer>
+</main>
+
+<dialog id="add-dialog">
+  <div class="dlg-head"><h3>Добавить предмет торговцу</h3><span id="add-target" class="hint-inline"></span></div>
+  <div class="add-grid">
+    <div class="cat-list" id="add-cats"></div>
+    <div>
+      <input id="add-search" class="full" placeholder="Поиск по базе: название или ID">
+      <div class="add-results" id="add-results"></div>
+    </div>
+  </div>
+  <form id="add-manual" class="manual-row">
+    <label>Своё название<input id="add-name" placeholder="Например: Мой кастомный предмет"></label>
+    <label>Item ID вручную<input id="add-id" placeholder="Weapon_MyCustomItem" required></label>
+    <button class="btn-green" type="submit">ДОБАВИТЬ</button>
+  </form>
+  <p class="note">ID, которого нет в базе, добавляется со статусом UNVERIFIED — приложение не подтверждает его существование в игре. Окно остаётся открытым для добавления нескольких позиций.</p>
+  <div class="dlg-foot"><span id="add-status" class="hint-inline"></span><button type="button" class="btn-dark" id="add-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="cats-dialog">
+  <div class="dlg-head"><h3>Добавить товары по категориям</h3><span id="cats-target" class="hint-inline"></span></div>
+  <div id="cats-box" class="cats-box"></div>
+  <p class="note">Будут добавлены все записи выбранных категорий; уже существующие у торговца ID пропускаются.</p>
+  <div class="dlg-foot"><span id="cats-status" class="hint-inline"></span><button type="button" class="btn-green" id="cats-apply">ДОБАВИТЬ ВЫБРАННЫЕ</button><button type="button" class="btn-dark" id="cats-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="copy-dialog">
+  <div class="dlg-head"><h3>Скопировать список трейдера</h3><span id="copy-source" class="hint-inline"></span></div>
+  <div id="copy-box" class="cats-box"></div>
+  <p class="note">Дубликаты по ID в целевых списках пропускаются.</p>
+  <div class="dlg-foot"><span id="copy-status" class="hint-inline"></span><button type="button" class="btn-green" id="copy-apply">СКОПИРОВАТЬ</button><button type="button" class="btn-dark" id="copy-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="ask-dialog">
+  <form id="ask-form">
+    <h3 id="ask-title">Название</h3>
+    <input id="ask-input" class="full" required>
+    <div class="dlg-foot"><button type="submit" class="btn-green">ОК</button><button type="button" class="btn-dark" id="ask-cancel">ОТМЕНА</button></div>
+  </form>
+</dialog>
+
+<dialog id="confirm-dialog">
+  <form id="confirm-form">
+    <h3 id="confirm-title">Подтверждение</h3>
+    <p class="note" id="confirm-text"></p>
+    <div class="dlg-foot"><button type="submit" class="btn-red">ПОДТВЕРДИТЬ</button><button type="button" class="btn-dark" id="confirm-cancel">ОТМЕНА</button></div>
+  </form>
+</dialog>
+
+<dialog id="icon-dialog">
+  <div class="dlg-head"><h3>Иконка предмета</h3><span id="icon-target" class="hint-inline"></span></div>
+  <div class="icon-current"><img id="icon-current-img" class="thumb big" alt="" hidden><span id="icon-current-none" class="hint-inline">Иконки пока нет — в таблице будет показана первая буква названия</span></div>
+  <label class="dlg-label">Файл с ПК<input id="icon-file" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.bmp"></label>
+  <label class="dlg-label">Или URL изображения<input id="icon-url" placeholder="https://static.wikia.nocookie.net/.../Weapon_MyItem.png"></label>
+  <p class="note">Иконка сохраняется локально в data\icons и показывается в таблице товаров и каталоге. Поддерживаются png, jpg, webp, gif, bmp до 2 МБ.</p>
+  <div class="dlg-foot"><span id="icon-status" class="hint-inline"></span><button type="button" class="btn-green" id="icon-apply">ПРИМЕНИТЬ</button><button type="button" class="btn-red" id="icon-remove">УДАЛИТЬ ИКОНКУ</button><button type="button" class="btn-dark" id="icon-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="dialog">
+  <form id="item-form">
+    <h3>Новая запись каталога</h3>
+    <label>Название<input id="item-name" required></label>
+    <label>Item ID<input id="item-id" required></label>
+    <label>Категория<select id="item-category"></select></label>
+    <div class="icon-row">
+      <img id="item-icon-preview" class="thumb big" alt="" hidden>
+      <div class="icon-inputs">
+        <label>Иконка — файл с ПК<input id="item-icon" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.bmp"></label>
+        <label>Иконка — URL изображения<input id="item-icon-url" placeholder="https://static.wikia.nocookie.net/..."></label>
+      </div>
+    </div>
+    <p class="note">Запись получит статус Unverified: приложение не подтверждает существование ID в игре. Иконка сохраняется в data\icons по Item ID.</p>
+    <button class="btn-green" type="submit">ДОБАВИТЬ</button>
+    <button type="button" class="btn-dark" id="cancel">Отмена</button>
+  </form>
+</dialog>
+
+<div id="toast"></div>
+<div class="watermark">MIDWAY</div>
+<script src="app.js"></script>
+</body>
+</html>
