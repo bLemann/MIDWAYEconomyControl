@@ -17,7 +17,7 @@
 ## Запуск
 
 ### Вариант 1: готовое приложение (exe)
-Запустить `dist\MIDWAYEconomyControl.exe` — автономное оконное приложение, Python на машине не требуется.
+Скачать `MIDWAYEconomyControl.exe` из раздела [Releases](https://github.com/bLemann/MIDWAYEconomyControl/releases/latest) (после локальной сборки готовый файл также лежит в `dist\`) — автономное оконное приложение, Python на машине не требуется.
 
 - Требуется Edge WebView2 Runtime (предустановлен на Windows 10 20H2+ и Windows 11; при отсутствии — установить с сайта Microsoft).
 - Отдельные антивирусы могут помечать PyInstaller onefile-сборку как подозрительную (false positive). Файл собран локально из этого проекта; при блокировке добавьте исключение или используйте вариант 2/3.
