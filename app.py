@@ -21,7 +21,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -33,6 +33,12 @@ def presets_dir():
 def updates_dir():
     base = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else ROOT
     d = base / "updates"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+def exports_dir():
+    base = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else ROOT
+    d = base / "exports"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -145,6 +151,10 @@ def write_icon_file(item_id, ext, raw):
     out.write_bytes(raw)
     return out
 
+SSL_CTX = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+SSL_CTX.check_hostname = False
+SSL_CTX.verify_mode = ssl.CERT_NONE
+
 class _EPSVMixin:
     def makepasv(self, *args):
         try:
@@ -161,17 +171,36 @@ class _EPSVMixin:
             raise
 
 class FTP_TLS_E(_EPSVMixin, ftplib.FTP_TLS):
-    pass
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("context", SSL_CTX)
+        super().__init__(*args, **kwargs)
 
 class FTP_E(_EPSVMixin, ftplib.FTP):
     pass
 
+def ftp_err_text(exc):
+    if isinstance(exc, EOFError):
+        return "Сервер закрыл соединение до FTP-приветствия — проверьте доступность сервера и включён ли VPN"
+    s = str(exc)
+    if isinstance(exc, ssl.SSLEOFError) or "UNEXPECTED_EOF" in s or "SHUTDOWN_WHILE_IN_INIT" in s:
+        return "TLS-соединение оборвано сервером во время рукопожатия (частые причины: VPN выключен, порт фильтруется, сервер не отвечает)"
+    if isinstance(exc, ssl.SSLError):
+        return "Ошибка TLS: " + s[:160]
+    if isinstance(exc, ConnectionRefusedError):
+        return "Отказ в соединении — порт закрыт или сервер недоступен"
+    if isinstance(exc, TimeoutError) or "timed out" in s:
+        return "Таймаут: сервер не отвечает"
+    if isinstance(exc, (ConnectionError, OSError)):
+        return "Сетевая ошибка: " + s[:160]
+    return type(exc).__name__ + ": " + s[:160]
+
 def connect_ftp(data):
     errors = []
+    host, port = data["host"], int(data.get("port", 21))
     for attempt in range(2):
         try:
             ftp = FTP_TLS_E(timeout=12)
-            ftp.connect(data["host"], int(data.get("port", 21)))
+            ftp.connect(host, port)
             ftp.login(data["username"], data["password"])
             ftp.prot_p()
             return ftp, True
@@ -181,19 +210,19 @@ def connect_ftp(data):
                 errors.append("TLS отклонён сервером: " + str(exc)[:160])
                 break
             raise
-        except (ssl.SSLError, ConnectionError, TimeoutError, OSError) as exc:
-            errors.append("TLS-рукопожатие прервано: " + str(exc)[:160])
+        except (ssl.SSLError, ConnectionError, TimeoutError, OSError, EOFError) as exc:
+            errors.append(ftp_err_text(exc))
             if attempt == 0:
                 time.sleep(1.2)
                 continue
             break
     try:
         ftp = FTP_E(timeout=12)
-        ftp.connect(data["host"], int(data.get("port", 21)))
+        ftp.connect(host, port)
         ftp.login(data["username"], data["password"])
         return ftp, False
     except Exception as exc:
-        errors.append("Plain FTP: " + str(exc)[:160])
+        errors.append("Plain FTP: " + ftp_err_text(exc))
         raise ValueError(" | ".join(errors))
 
 class Handler(SimpleHTTPRequestHandler):
@@ -258,7 +287,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/ftp/list", "/api/ftp/download", "/api/ftp/upload", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/update/check", "/api/update/download", "/api/update/launch"):
+        if self.path not in ("/api/economy/validate", "/api/ftp/list", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/test", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -273,14 +302,22 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_update_download(doc)
         if self.path == "/api/update/launch":
             return self.handle_update_launch(doc)
+        if self.path == "/api/ftp/test":
+            return self.handle_ftp_test(doc)
         if self.path.startswith("/api/ftp/"):
             return self.handle_ftp(self.path, doc)
+        if self.path == "/api/export/save":
+            return self.handle_export_save(doc)
+        if self.path == "/api/export/open":
+            return self.handle_export_open()
         if self.path.startswith("/api/presets/"):
             return self.handle_presets(self.path, doc)
         if self.path.startswith("/api/connections/"):
             return self.handle_connections(self.path, doc)
         if self.path == "/api/icons/scan_ftp":
             return self.handle_icon_scan(doc)
+        if self.path == "/api/icons/missing":
+            return self.handle_icons_missing(doc)
         if self.path in ("/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url"):
             return self.handle_icon_ops(self.path, doc)
         if self.path == "/api/custom-items/save":
@@ -472,7 +509,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(400, {"ok": False, "error": "Host, username and password are required"})
         ids = []
         if isinstance(data.get("ids"), list):
-            for i in data["ids"][:400]:
+            for i in data["ids"][:2000]:
                 if isinstance(i, str) and i.strip():
                     ids.append(i.strip().lower())
         if not ids:
@@ -615,6 +652,125 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(400, {"ok": False, "error": "File not found in updates folder"})
         try:
             os.startfile(str(path))
+        except Exception as exc:
+            return self.send_json(500, {"ok": False, "error": str(exc)[:200]})
+        return self.send_json(200, {"ok": True})
+
+    def handle_icons_missing(self, data):
+        ids = data.get("ids") if isinstance(data, dict) else None
+        if not isinstance(ids, list):
+            return self.send_json(400, {"ok": False, "error": "ids array is required"})
+        known = set()
+        try:
+            known = {f.stem.lower() for f in icons_dir().iterdir() if f.is_file() and f.suffix.lower() in ICON_EXTS}
+        except OSError:
+            pass
+        missing = []
+        for i in ids[:2000]:
+            if isinstance(i, str) and i.strip() and i.strip().lower() not in known:
+                missing.append(i.strip())
+        return self.send_json(200, {"ok": True, "missing": missing, "missingCount": len(missing)})
+
+    def handle_ftp_test(self, data):
+        data = data if isinstance(data, dict) else {}
+        host = str(data.get("host") or "").strip()
+        if not host:
+            return self.send_json(400, {"ok": False, "error": "Host is required"})
+        try:
+            port = int(data.get("port") or 21)
+        except (TypeError, ValueError):
+            port = 21
+        steps = []
+        ok_all = True
+        try:
+            sock = socket.create_connection((host, port), timeout=10)
+            sock.close()
+            steps.append({"step": "TCP " + host + ":" + str(port), "ok": True, "detail": "соединение установлено"})
+        except Exception as exc:
+            steps.append({"step": "TCP " + host + ":" + str(port), "ok": False, "detail": ftp_err_text(exc)})
+            return self.send_json(200, {"ok": False, "steps": steps})
+        ftp = None
+        try:
+            ftp = FTP_TLS_E(timeout=12)
+            ftp.connect(host, port)
+            steps.append({"step": "Баннер FTP", "ok": True, "detail": (ftp.getwelcome() or "").strip()[:120]})
+            ftp.auth()
+            tlsver = ""
+            try:
+                tlsver = ftp.sock.version() or ""
+            except Exception:
+                pass
+            steps.append({"step": "AUTH TLS", "ok": True, "detail": "TLS установлен" + (" (" + tlsver + ")" if tlsver else "")})
+            login_err = ""
+            login_ok = True
+            try:
+                ftp.login(str(data.get("username") or ""), str(data.get("password") or ""))
+            except ftplib.error_perm as exc:
+                login_ok = False
+                login_err = str(exc)[:160]
+                ok_all = False
+            steps.append({"step": "Логин", "ok": login_ok, "detail": login_err or "успешно"})
+            if not login_ok:
+                return self.send_json(200, {"ok": False, "steps": steps})
+            try:
+                ftp.prot_p()
+                steps.append({"step": "PROT P", "ok": True, "detail": "канал данных шифруется"})
+                steps.append({"step": "PWD", "ok": True, "detail": ftp.pwd()})
+                remote_path = str(data.get("remotePath") or "").strip()
+                if remote_path:
+                    try:
+                        ftp.cwd(remote_path)
+                        steps.append({"step": "CWD " + remote_path, "ok": True, "detail": "папка существует"})
+                    except ftplib.error_perm as exc:
+                        steps.append({"step": "CWD " + remote_path, "ok": False, "detail": str(exc)[:140] + " — папка будет создана автоматически при выгрузке"})
+            except Exception as exc:
+                steps.append({"step": "PROT P / CWD", "ok": False, "detail": ftp_err_text(exc)})
+                ok_all = False
+        except ftplib.error_perm as exc:
+            steps.append({"step": "AUTH/Логин", "ok": False, "detail": str(exc)[:160]})
+            ok_all = False
+        except Exception as exc:
+            steps.append({"step": "Контрольное соединение (TLS)", "ok": False, "detail": ftp_err_text(exc)})
+            ok_all = False
+        finally:
+            if ftp:
+                try:
+                    ftp.quit()
+                except Exception:
+                    try:
+                        ftp.close()
+                    except Exception:
+                        pass
+        return self.send_json(200, {"ok": ok_all, "steps": steps})
+
+    def handle_export_save(self, data):
+        content = str((data or {}).get("content") or "")
+        if not content.strip():
+            return self.send_json(400, {"ok": False, "error": "content is required"})
+        if len(content) > 5 * 1024 * 1024:
+            return self.send_json(413, {"ok": False, "error": "File exceeds 5 MB limit"})
+        try:
+            json.loads(content)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return self.send_json(400, {"ok": False, "error": "content is not valid JSON"})
+        name = str((data or {}).get("fileName") or "").strip()
+        if not name:
+            name = "EconomyOverride-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S") + ".json"
+        if not name.lower().endswith(".json"):
+            name += ".json"
+        safe = re.sub(r"[^A-Za-z0-9_\- .()]", "", name)
+        if not safe or safe in (".", ".."):
+            return self.send_json(400, {"ok": False, "error": "Invalid file name"})
+        target = exports_dir() / safe
+        try:
+            target.write_text(content, encoding="utf-8")
+        except OSError as exc:
+            return self.send_json(500, {"ok": False, "error": str(exc)[:300]})
+        return self.send_json(200, {"ok": True, "path": str(target)})
+
+    def handle_export_open(self):
+        try:
+            os.startfile(str(exports_dir()))
         except Exception as exc:
             return self.send_json(500, {"ok": False, "error": str(exc)[:200]})
         return self.send_json(200, {"ok": True})

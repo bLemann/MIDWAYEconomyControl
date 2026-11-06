@@ -21,6 +21,7 @@
   </nav>
   <div class="top-right">
     <span id="changes-flag" class="flag" hidden>● Есть изменения</span>
+    <button class="ghost" id="undo-btn" title="Отменить последнее действие (до 50 шагов)" disabled>↩ ОТМЕНИТЬ</button>
     <button class="ghost" id="upd-check" title="Проверить обновления на GitHub">↻ ОБН</button>
     <button class="ghost" id="import">← ИМПОРТ ФАЙЛА</button>
     <input id="file" type="file" accept=".json" hidden>
@@ -150,12 +151,13 @@
     <div class="srv-row">
       <button class="btn-green" id="srv-download">СКАЧАТЬ С СЕРВЕРА → РЕДАКТОР</button>
       <button class="btn-red" id="srv-upload">ВЫГРУЗИТЬ ДОКУМЕНТ НА СЕРВЕР</button>
+      <button class="btn-dark" id="srv-sync">СИНХРОНИЗИРОВАТЬ ЦЕНЫ С СЕРВЕРА</button>
     </div>
     <div id="srv-status" class="hint">Операций с сервером ещё не было</div>
-    <p class="hint">Используется FTP-профиль из вкладки «FTP / ФАЙЛЫ». Скачивание сохраняет локальную копию в data\server-files и сразу открывает документ в редакторе; выгрузка создаёт резервную копию .backup-метка на сервере. При включённом VPN хостинг может блокировать соединение.</p>
+    <p class="hint">Используется FTP-профиль из вкладки «FTP / ФАЙЛЫ». Скачивание сохраняет локальную копию в data\server-files и сразу открывает документ в редакторе; выгрузка создаёт резервную копию .backup-метка на сервере и нехватающие папки. «Синхронизировать цены» скачивает текущий файл сервера и показывает его цены в таблице рядом с вашими (подчёркнуто «сервер: …»); рабочие правки не заменяются. В файле — базовые цены: живые цены после рандомизации SCUM наружу не отдаёт.</p>
   </article>
   <div class="toolbar"><div><h2>Выгрузка</h2><p>Дифф изменений, пресеты, скачивание конфигурации и ручной импорт технического JSON.</p></div>
-  <button class="btn-red" id="export-download">СКАЧАТЬ JSON</button></div>
+  <button class="btn-red" id="export-download">СКАЧАТЬ JSON</button><button class="btn-dark" id="export-open">ОТКРЫТЬ ПАПКУ</button></div>
   <div class="columns">
     <article class="panel"><h3>ДИФФ · ОРИГИНАЛ → ТЕКУЩИЙ</h3>
       <div id="diff-summary" class="diff-summary">Нет загруженного документа.</div>
@@ -194,6 +196,7 @@
         <label class="wide">Удалённая папка<input id="ftp-path" value="/SCUM/Saved/Config/WindowsServer/"></label>
         <label class="wide check-row"><input type="checkbox" id="ftp-save"> Сохранить подключение локально (пароль в data\connections.json без шифрования)</label>
       </div>
+      <button class="btn-red" id="ftp-test">ТЕСТ ПОДКЛЮЧЕНИЯ</button>
       <button class="btn-red" id="ftp-list">ПОДКЛЮЧИТЬСЯ И ПРОЧИТАТЬ СПИСОК</button>
       <button class="btn-dark" id="ftp-watch">Начать мониторинг · 30 сек</button>
       <div id="ftp-watch-status" class="hint">Мониторинг выключен</div>
@@ -205,7 +208,7 @@
       <button id="ftp-icon-scan" class="btn-dark">ИСКАТЬ МИНИАТЮРЫ ПРЕДМЕТОВ НА СЕРВЕРЕ</button>
       <label class="file-upload">Файл для отправки<input id="ftp-upload-file" type="file"></label>
       <button id="ftp-upload" class="btn-red">ЗАГРУЗИТЬ ФАЙЛ С РЕЗЕРВНОЙ КОПИЕЙ</button>
-      <p class="note">«Выгрузить документ» отправляет текущий документ как EconomyOverride.json в выбранную папку (существующий файл копируется в .backup). «Искать миниатюры» сканирует сервер до 4 уровней, находит файлы, названные по ItemID (например Weapon_AK47.png), и сохраняет их в data\icons. Загрузка файла: существующий файл сначала копируется в .backup-<метка времени>, новый файл создаётся без копии.</p>
+      <p class="note">«Выгрузить документ» отправляет текущий документ как EconomyOverride.json в выбранную папку (существующий файл копируется в .backup, нехватающие папки создаются автоматически, после выгрузки показывается путь). «ТЕСТ ПОДКЛЮЧЕНИЯ» пошагово проверяет TCP, баннер, TLS, логин и папку. «Искать миниатюры» сканирует сервер до 4 уровней, находит файлы, названные по ItemID (например Weapon_AK47.png), и сохраняет их в data\icons — то же самое программа делает автоматически при запуске и импорте, если иконки отсутствуют и FTP-профиль сохранён. Загрузка файла: существующий файл сначала копируется в .backup-<метка времени>, новый файл создаётся без копии.</p>
     </article>
   </div>
 </section>

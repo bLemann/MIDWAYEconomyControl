@@ -247,6 +247,10 @@ dialog form label{display:flex;flex-direction:column;gap:5px;font-size:10px;lett
 .upd-primary:hover{background:rgba(255,180,40,.12)}
 .upd-link{display:inline-flex;align-items:center;justify-content:center;min-height:26px;text-decoration:none}
 
+/* ===== SERVER PRICE OVERLAY (FTP SYNC) ===== */
+td .srv-val{display:block;font-size:10px;color:var(--muted);border-bottom:1px dashed var(--amber);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+select.sel.srv-diff{border-color:var(--amber);box-shadow:0 0 0 1px rgba(255,180,40,.35)}
+
 /* ===== FOOTER ===== */
 footer{margin-top:18px;padding:14px 0 4px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:1.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 

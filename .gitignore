@@ -2,6 +2,8 @@ __pycache__/
 build/
 dist/
 data/
+updates/
+exports/
 *.log
 pyinstaller_log*.txt
 /image*.png
