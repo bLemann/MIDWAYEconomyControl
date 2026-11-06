@@ -21,8 +21,22 @@
   </nav>
   <div class="top-right">
     <span id="changes-flag" class="flag" hidden>● Есть изменения</span>
+    <button class="ghost" id="upd-check" title="Проверить обновления на GitHub">↻ ОБН</button>
     <button class="ghost" id="import">← ИМПОРТ ФАЙЛА</button>
     <input id="file" type="file" accept=".json" hidden>
+  </div>
+</div>
+
+<div class="update-banner" id="update-banner" hidden>
+  <div class="upd-text">
+    <b>ДОСТУПНО ОБНОВЛЕНИЕ · <span id="upd-version">—</span></b>
+    <span id="upd-info" class="upd-info"></span>
+  </div>
+  <div class="upd-actions">
+    <button class="ghost upd-primary" id="upd-download">СКАЧАТЬ</button>
+    <button class="ghost" id="upd-launch" hidden>ЗАПУСТИТЬ НОВУЮ ВЕРСИЮ</button>
+    <a id="upd-notes" class="ghost upd-link" href="#" target="_blank" rel="noopener" hidden>ЧТО НОВОГО</a>
+    <button class="ghost" id="upd-close" title="Скрыть до следующего запуска">×</button>
   </div>
 </div>
 

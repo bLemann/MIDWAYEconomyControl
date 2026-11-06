@@ -236,6 +236,17 @@ dialog form label{display:flex;flex-direction:column;gap:5px;font-size:10px;lett
 #toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);background:#1d222b;border:1px solid var(--red);color:#fff;padding:11px 18px;border-radius:4px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:70vw}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 
+/* ===== UPDATE BANNER ===== */
+.update-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:10px 12px 0;padding:10px 16px;border:1px solid var(--amber);border-radius:8px;background:rgba(255,180,40,.07)}
+.update-banner[hidden]{display:none}
+.upd-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.upd-text b{font-size:12px;letter-spacing:1.5px;color:var(--amber)}
+.upd-info{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+.upd-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.upd-primary{border-color:var(--amber);color:var(--amber)}
+.upd-primary:hover{background:rgba(255,180,40,.12)}
+.upd-link{display:inline-flex;align-items:center;justify-content:center;min-height:26px;text-decoration:none}
+
 /* ===== FOOTER ===== */
 footer{margin-top:18px;padding:14px 0 4px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:1.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 

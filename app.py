@@ -7,7 +7,9 @@ import time
 import ftplib
 import base64
 import io
+import hashlib
 import mimetypes
+import os
 import urllib.parse
 import urllib.request
 import sys
@@ -19,13 +21,49 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.4.2"
+VERSION = "0.5.0"
+REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
     base = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else ROOT
     d = base / "data" / "presets"
     d.mkdir(parents=True, exist_ok=True)
     return d
+
+def updates_dir():
+    base = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else ROOT
+    d = base / "updates"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+def version_newer(candidate, current):
+    pa = tuple(int(x) for x in re.findall(r"\d+", candidate)[:4])
+    pb = tuple(int(x) for x in re.findall(r"\d+", current)[:4])
+    return bool(pa) and bool(pb) and pa > pb
+
+def ftp_ensure_dir(ftp, path):
+    parts = [p for p in path.replace("\\", "/").split("/") if p not in ("", ".")]
+    if path.startswith("/"):
+        try:
+            ftp.cwd("/")
+        except ftplib.error_perm:
+            pass
+    created = []
+    for part in parts:
+        try:
+            ftp.cwd(part)
+            continue
+        except ftplib.error_perm:
+            pass
+        try:
+            ftp.mkd(part)
+            created.append(part)
+        except ftplib.error_perm as exc:
+            s = str(exc).lower()
+            if not ("exist" in s or "550" in s or "521" in s):
+                raise
+        ftp.cwd(part)
+    return created
 
 def preset_path(name):
     safe = re.sub(r"[^\w\-. ]", "", str(name)).strip().rstrip(".")
@@ -220,7 +258,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/ftp/list", "/api/ftp/download", "/api/ftp/upload", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save"):
+        if self.path not in ("/api/economy/validate", "/api/ftp/list", "/api/ftp/download", "/api/ftp/upload", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/update/check", "/api/update/download", "/api/update/launch"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -229,6 +267,12 @@ class Handler(SimpleHTTPRequestHandler):
             doc = json.loads(self.rfile.read(size) or b"{}")
         except (json.JSONDecodeError, UnicodeDecodeError):
             return self.send_json(400, {"ok": False, "error": "Invalid JSON"})
+        if self.path == "/api/update/check":
+            return self.handle_update_check()
+        if self.path == "/api/update/download":
+            return self.handle_update_download(doc)
+        if self.path == "/api/update/launch":
+            return self.handle_update_launch(doc)
         if self.path.startswith("/api/ftp/"):
             return self.handle_ftp(self.path, doc)
         if self.path.startswith("/api/presets/"):
@@ -492,6 +536,89 @@ class Handler(SimpleHTTPRequestHandler):
                 ftp.close()
         return self.send_json(200, {"ok": True, "tls": tls, "found": found, "downloaded": downloaded, "stats": stats})
 
+    def _github_release(self, ref="latest"):
+        url = "https://api.github.com/repos/" + REPO + "/releases/" + ref
+        req = urllib.request.Request(url, headers={"User-Agent": "MIDWAYEconomyControl/" + VERSION, "Accept": "application/vnd.github+json"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            return json.loads(r.read().decode("utf-8"))
+
+    @staticmethod
+    def _release_exe_asset(rel):
+        for a in rel.get("assets") or []:
+            if str(a.get("name", "")).lower().endswith(".exe"):
+                return a
+        return None
+
+    def handle_update_check(self):
+        try:
+            rel = self._github_release()
+        except Exception as exc:
+            return self.send_json(200, {"ok": False, "current": VERSION, "error": str(exc)[:200]})
+        tag = str(rel.get("tag_name") or "")
+        m = re.search(r"\d+(?:\.\d+)+", tag)
+        latest = m.group(0) if m else ""
+        asset = self._release_exe_asset(rel)
+        return self.send_json(200, {
+            "ok": True,
+            "current": VERSION,
+            "latest": latest,
+            "update": version_newer(latest, VERSION),
+            "url": str(rel.get("html_url") or ""),
+            "downloadUrl": (asset or {}).get("browser_download_url"),
+            "size": (asset or {}).get("size"),
+            "notes": str(rel.get("body") or "")[:1200],
+        })
+
+    def handle_update_download(self, data):
+        tag = str((data or {}).get("tag") or "").strip()
+        if tag and not re.fullmatch(r"v\d+(\.\d+)*", tag):
+            return self.send_json(400, {"ok": False, "error": "Invalid tag format"})
+        try:
+            rel = self._github_release(("tags/" + tag) if tag else "latest")
+        except Exception as exc:
+            return self.send_json(502, {"ok": False, "error": "GitHub: " + str(exc)[:200]})
+        asset = self._release_exe_asset(rel)
+        if not asset:
+            return self.send_json(404, {"ok": False, "error": "Release has no .exe asset"})
+        latest = str(rel.get("tag_name") or "update")
+        safe = re.sub(r"[^A-Za-z0-9._\-]", "", latest) or "update"
+        target = updates_dir() / ("MIDWAYEconomyControl-" + safe + ".exe")
+        expected = int(asset.get("size") or 0)
+        try:
+            req = urllib.request.Request(str(asset.get("browser_download_url")), headers={"User-Agent": "MIDWAYEconomyControl/" + VERSION})
+            total, sha = 0, hashlib.sha256()
+            with urllib.request.urlopen(req, timeout=30) as r, open(target, "wb") as out:
+                while True:
+                    chunk = r.read(1 << 16)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+                    total += len(chunk)
+                    sha.update(chunk)
+        except Exception as exc:
+            return self.send_json(502, {"ok": False, "error": "Download: " + str(exc)[:200]})
+        if expected and total != expected:
+            return self.send_json(502, {"ok": False, "error": "Size mismatch: got %d bytes, expected %d" % (total, expected)})
+        return self.send_json(200, {"ok": True, "version": latest, "path": str(target), "size": total, "sha256": sha.hexdigest().upper()})
+
+    def handle_update_launch(self, data):
+        p = str((data or {}).get("path") or "")
+        if not p:
+            return self.send_json(400, {"ok": False, "error": "path is required"})
+        path = Path(p)
+        try:
+            if path.parent.resolve() != updates_dir().resolve():
+                return self.send_json(400, {"ok": False, "error": "Only files in the updates folder can be launched"})
+        except OSError:
+            return self.send_json(400, {"ok": False, "error": "Invalid path"})
+        if not path.name.lower().endswith(".exe") or not path.is_file():
+            return self.send_json(400, {"ok": False, "error": "File not found in updates folder"})
+        try:
+            os.startfile(str(path))
+        except Exception as exc:
+            return self.send_json(500, {"ok": False, "error": str(exc)[:200]})
+        return self.send_json(200, {"ok": True})
+
     def handle_ftp(self, route, data):
         required = ("host", "username", "password", "remotePath")
         if not isinstance(data, dict) or any(not isinstance(data.get(k), str) or not data[k] for k in required):
@@ -542,6 +669,7 @@ class Handler(SimpleHTTPRequestHandler):
                 raw = base64.b64decode(data.get("content", ""), validate=True)
                 if len(raw) > 5 * 1024 * 1024:
                     return self.send_json(413, {"ok": False, "error": "File exceeds 5 MB limit"})
+                dirs_created = ftp_ensure_dir(ftp, data["remotePath"])
                 backup_created = False
                 backup = io.BytesIO()
                 try:
@@ -552,7 +680,7 @@ class Handler(SimpleHTTPRequestHandler):
                 except ftplib.error_perm:
                     pass
                 ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-                return self.send_json(200, {"ok": True, "backupCreated": backup_created, "fileName": remote})
+                return self.send_json(200, {"ok": True, "backupCreated": backup_created, "dirsCreated": dirs_created, "fileName": remote})
         except (OSError, ValueError) + ftplib.all_errors as exc:
             return self.send_json(502, {"ok": False, "error": str(exc)[:300]})
         finally:
