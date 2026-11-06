@@ -178,7 +178,8 @@ r.append(nm,val);list.append(r)})}
 
 async function applyDoc(parsed,label,note){let check=await fetch('/api/economy/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(parsed)}).then(r=>r.json()).catch(()=>null);if(check&&!check.ok)return toast(check.issues[0]);
 doc=JSON.parse(JSON.stringify(parsed));normalizeRows(doc);originalDoc=JSON.parse(JSON.stringify(doc));selected=Object.keys(doc.traders||{})[0]||null;selectedSector=null;changes=0;updateFlag();renderAll();
-log(label+(note?' ('+note+')':''));toast(label+(note?' · '+note:''))}
+let warn=(check&&Array.isArray(check.warnings)&&check.warnings.length)?' · предупреждение: '+check.warnings[0]+(check.warnings.length>1?' (+'+(check.warnings.length-1)+')':''):'';
+log(label+(note?' ('+note+')':'')+warn);toast(label+(note?' · '+note:'')+warn)}
 
 $('#export-download').onclick=()=>{if(!doc)return toast('Сначала импортируйте JSON');let blob=new Blob([JSON.stringify(doc,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='EconomyOverride.json';a.click();URL.revokeObjectURL(url);originalDoc=JSON.parse(JSON.stringify(doc));changes=0;updateFlag();log('Экспортирован EconomyOverride.json — дифф сброшен');toast('Файл сохранён, дифф сброшен')};
 $('#export-apply').onclick=()=>{let txt=$('#json-import').value.trim();if(!txt)return toast('Вставьте технический JSON');let parsed;try{parsed=JSON.parse(txt)}catch(e){return toast('Ошибка JSON: '+e.message)}let norm=normalizeImport(parsed);if(!norm.doc)return toast(norm.note);applyDoc(norm.doc,'Применён технический JSON',norm.note)};

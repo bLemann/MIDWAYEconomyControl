@@ -19,7 +19,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.4.1"
+VERSION = "0.4.2"
 
 def presets_dir():
     base = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else ROOT
@@ -244,6 +244,7 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == "/api/snapshots/save":
             return self.handle_snapshot_save(doc)
         issues = []
+        warnings = []
         if not isinstance(doc, dict):
             issues.append("Root must be an object")
         else:
@@ -255,7 +256,7 @@ class Handler(SimpleHTTPRequestHandler):
                     if not isinstance(rows, list):
                         issues.append(f"{name}: goods must be an array")
                         continue
-                    seen = set()
+                    seen = {}
                     for i, row in enumerate(rows):
                         if not isinstance(row, dict):
                             issues.append(f"{name} row {i + 1}: expected object")
@@ -263,9 +264,10 @@ class Handler(SimpleHTTPRequestHandler):
                         code = row.get("tradeable-code")
                         if not isinstance(code, str) or not code.strip():
                             issues.append(f"{name} row {i + 1}: missing tradeable-code")
-                        elif code in seen:
-                            issues.append(f"{name}: duplicate code {code}")
-                        seen.add(code)
+                        else:
+                            seen[code] = seen.get(code, 0) + 1
+                            if seen[code] == 2:
+                                warnings.append(f"{name}: duplicate code {code}")
                         for key, value in row.items():
                             if not isinstance(value, str):
                                 issues.append(f"{name} row {i + 1}: {key} should be a string")
@@ -273,7 +275,7 @@ class Handler(SimpleHTTPRequestHandler):
                             value = row.get(key)
                             if isinstance(value, str) and value not in ("default", "true", "false"):
                                 issues.append(f"{name} row {i + 1}: {key} must be default, true or false")
-        return self.send_json(200, {"ok": not issues, "issues": issues})
+        return self.send_json(200, {"ok": not issues, "issues": issues, "warnings": warnings})
 
     def handle_custom_items_save(self, data):
         items = data.get("items") if isinstance(data, dict) else None

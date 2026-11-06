@@ -1,6 +1,6 @@
 # MIDWAY Economy Control
 
-Локальный редактор экономики SCUM: правка `EconomyOverride.json` в графическом интерфейсе. Backend — Python standard library (HTTP-сервер + API), фронтенд — vanilla JS в `web/`, оконный режим — pywebview. Текущая версия: **0.4.1**.
+Локальный редактор экономики SCUM: правка `EconomyOverride.json` в графическом интерфейсе. Backend — Python standard library (HTTP-сервер + API), фронтенд — vanilla JS в `web/`, оконный режим — pywebview. Текущая версия: **0.4.2**.
 
 ## Возможности
 
@@ -43,7 +43,7 @@
 ## Сборка exe (для разработки)
 1. Установить Python 3.10+.
 2. Запустить `BUILD.bat` (эквивалент: `pyinstaller --noconsole --onefile --clean --name MIDWAYEconomyControl --add-data "web;web" --collect-all webview --collect-all pythonnet --collect-all clr_loader --icon "assets\icon.ico" --version-file "assets\version.txt" desktop.py`).
-3. Результат: `dist\MIDWAYEconomyControl.exe` (~43 МБ), версия файла 0.4.1.
+3. Результат: `dist\MIDWAYEconomyControl.exe` (~43 МБ), версия файла 0.4.2.
 
 Зависимости разработки: `requirements.txt` (pywebview, pythonnet, pyinstaller).
 
