@@ -251,6 +251,16 @@ dialog form label{display:flex;flex-direction:column;gap:5px;font-size:10px;lett
 td .srv-val{display:block;font-size:10px;color:var(--muted);border-bottom:1px dashed var(--amber);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
 select.sel.srv-diff{border-color:var(--amber);box-shadow:0 0 0 1px rgba(255,180,40,.35)}
 
+/* ===== STICKY DELETE COLUMN (GOODS TABLE) ===== */
+.table-wrap tbody tr{background:var(--panel)}
+.table-wrap th:last-child,.table-wrap td:last-child{position:sticky;right:0}
+.table-wrap th:last-child{background:var(--panel2);z-index:3}
+.table-wrap td:last-child{background:var(--panel);z-index:1;box-shadow:inset 1px 0 0 var(--line2),-8px 0 10px -8px rgba(0,0,0,.85)}
+tr.row-added td:last-child{background:#172321}
+tr.row-added:hover td:last-child{background:#192b24}
+tr.row-changed td:last-child{background:#1f1f1f}
+tr.row-changed:hover td:last-child{background:#282622}
+
 /* ===== FOOTER ===== */
 footer{margin-top:18px;padding:14px 0 4px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:1.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 

@@ -21,7 +21,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.6.0"
+VERSION = "0.6.1"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -722,7 +722,7 @@ class Handler(SimpleHTTPRequestHandler):
                         ftp.cwd(remote_path)
                         steps.append({"step": "CWD " + remote_path, "ok": True, "detail": "папка существует"})
                     except ftplib.error_perm as exc:
-                        steps.append({"step": "CWD " + remote_path, "ok": False, "detail": str(exc)[:140] + " — папка будет создана автоматически при выгрузке"})
+                        steps.append({"step": "CWD " + remote_path, "ok": False, "detail": str(exc)[:140] + " — папка не найдена. Стандартный путь SCUM: /Server/SCUM/Saved/Config/WindowsServer — проверьте поле «Удалённая папка»"})
             except Exception as exc:
                 steps.append({"step": "PROT P / CWD", "ok": False, "detail": ftp_err_text(exc)})
                 ok_all = False

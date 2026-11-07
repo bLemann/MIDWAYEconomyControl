@@ -193,7 +193,7 @@
         <label>Порт<input id="ftp-port" type="number" value="21"></label>
         <label>Пользователь<input id="ftp-user" placeholder="FTP username"></label>
         <label>Пароль<input id="ftp-pass" type="password" placeholder="Только на время запроса"></label>
-        <label class="wide">Удалённая папка<input id="ftp-path" value="/SCUM/Saved/Config/WindowsServer/"></label>
+        <label class="wide">Удалённая папка<input id="ftp-path" value="/Server/SCUM/Saved/Config/WindowsServer"></label>
         <label class="wide check-row"><input type="checkbox" id="ftp-save"> Сохранить подключение локально (пароль в data\connections.json без шифрования)</label>
       </div>
       <button class="btn-red" id="ftp-test">ТЕСТ ПОДКЛЮЧЕНИЯ</button>
@@ -256,7 +256,7 @@
     <label>Item ID вручную<input id="add-id" placeholder="Weapon_MyCustomItem" required></label>
     <button class="btn-green" type="submit">ДОБАВИТЬ</button>
   </form>
-  <p class="note">ID, которого нет в базе, добавляется со статусом UNVERIFIED — приложение не подтверждает его существование в игре. Окно остаётся открытым для добавления нескольких позиций.</p>
+  <p class="note">Показываются только предметы, которых ещё нет в списке этого торговца — только что добавленные исчезают из списка. ID, которого нет в базе, добавляется со статусом UNVERIFIED — приложение не подтверждает его существование в игре. Окно остаётся открытым для добавления нескольких позиций.</p>
   <div class="dlg-foot"><span id="add-status" class="hint-inline"></span><button type="button" class="btn-dark" id="add-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
