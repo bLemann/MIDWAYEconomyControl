@@ -14,6 +14,11 @@ import urllib.parse
 import urllib.request
 import sys
 import socket
+import threading
+import zipfile
+import shutil
+import subprocess
+import html
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent
@@ -21,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.6.1"
+VERSION = "0.6.2"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -151,9 +156,115 @@ def write_icon_file(item_id, ext, raw):
     out.write_bytes(raw)
     return out
 
+def icon_zip_file():
+    base = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) else ROOT
+    return base / "assets" / "icons.zip"
+
+_ICON_ZIP_CACHE = None
+
+def bundled_icon_index():
+    global _ICON_ZIP_CACHE
+    if _ICON_ZIP_CACHE is not None:
+        return _ICON_ZIP_CACHE
+    idx = {}
+    zf = icon_zip_file()
+    if zf.is_file():
+        for attempt in range(5):
+            try:
+                with zipfile.ZipFile(zf) as z:
+                    for n in z.namelist():
+                        p = Path(n)
+                        if not n.endswith("/") and p.suffix.lower() in ICON_EXTS:
+                            idx.setdefault(p.stem.lower(), n)
+                _ICON_ZIP_CACHE = idx
+                break
+            except (OSError, zipfile.BadZipFile):
+                idx = {}
+                if attempt == 4:
+                    break
+                time.sleep(0.3)
+    return idx
+
+def removed_icons_file():
+    return data_dir() / "icons" / "__removed.json"
+
+def load_removed_icons():
+    try:
+        raw = json.loads(removed_icons_file().read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    return {str(x).strip().lower() for x in raw} if isinstance(raw, list) else set()
+
+def save_removed_icons(ids):
+    try:
+        removed_icons_file().write_text(json.dumps(sorted(ids)), encoding="utf-8")
+    except OSError:
+        pass
+
+def read_icon_bytes(item_id):
+    safe = str(item_id).lower()
+    f = find_icon_file(safe)
+    if f:
+        try:
+            return f.read_bytes(), f.suffix.lower()
+        except OSError:
+            pass
+    if safe in load_removed_icons():
+        return None, ""
+    zn = bundled_icon_index().get(safe)
+    if zn:
+        for attempt in range(5):
+            try:
+                with zipfile.ZipFile(icon_zip_file()) as z:
+                    return z.read(zn), Path(zn).suffix.lower()
+            except (OSError, KeyError, zipfile.BadZipFile):
+                if attempt == 4:
+                    break
+                time.sleep(0.3)
+    return None, ""
+
+def release_notes_html(body):
+    text = str(body or "")
+    def inline(s):
+        s = html.escape(s, quote=False)
+        s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
+        s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
+        return s
+    lines, in_list = [], False
+    for raw_line in text.splitlines()[:400]:
+        line = raw_line.strip()
+        if not line:
+            if in_list:
+                lines.append("</ul>")
+                in_list = False
+            continue
+        if line.startswith(("- ", "* ")):
+            if not in_list:
+                lines.append("<ul>")
+                in_list = True
+            lines.append("<li>" + inline(line[2:]) + "</li>")
+            continue
+        if in_list:
+            lines.append("</ul>")
+            in_list = False
+        m = re.match(r"^#{1,4}\s+(.*)$", line)
+        if m:
+            lines.append("<h3>" + inline(m.group(1)) + "</h3>")
+            continue
+        lines.append("<p>" + inline(line) + "</p>")
+    if in_list:
+        lines.append("</ul>")
+    out = "".join(lines)
+    return out[:8000]
+
 SSL_CTX = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
+
+SSL_CTX_TLS12 = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+SSL_CTX_TLS12.check_hostname = False
+SSL_CTX_TLS12.verify_mode = ssl.CERT_NONE
+SSL_CTX_TLS12.maximum_version = ssl.TLSVersion.TLSv1_2
 
 class _EPSVMixin:
     def makepasv(self, *args):
@@ -175,6 +286,13 @@ class FTP_TLS_E(_EPSVMixin, ftplib.FTP_TLS):
         kwargs.setdefault("context", SSL_CTX)
         super().__init__(*args, **kwargs)
 
+    def ntransfercmd(self, cmd, rest=None):
+        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)
+        if self._prot_p:
+            session = getattr(self.sock, "session", None)
+            conn = self.context.wrap_socket(conn, server_hostname=self.host, session=session)
+        return conn, size
+
 class FTP_E(_EPSVMixin, ftplib.FTP):
     pass
 
@@ -182,7 +300,9 @@ def ftp_err_text(exc):
     if isinstance(exc, EOFError):
         return "Сервер закрыл соединение до FTP-приветствия — проверьте доступность сервера и включён ли VPN"
     s = str(exc)
-    if isinstance(exc, ssl.SSLEOFError) or "UNEXPECTED_EOF" in s or "SHUTDOWN_WHILE_IN_INIT" in s:
+    if "SHUTDOWN_WHILE_IN_INIT" in s:
+        return "Сервер отклонил TLS-сессию канала данных: FileZilla Server 1.x требует возобновления TLS-сессии на data-канале — проверьте настройки TLS вашего FTP-сервера (должен быть разрешён TLS 1.2)"
+    if isinstance(exc, ssl.SSLEOFError) or "UNEXPECTED_EOF" in s:
         return "TLS-соединение оборвано сервером во время рукопожатия (частые причины: VPN выключен, порт фильтруется, сервер не отвечает)"
     if isinstance(exc, ssl.SSLError):
         return "Ошибка TLS: " + s[:160]
@@ -199,7 +319,7 @@ def connect_ftp(data):
     host, port = data["host"], int(data.get("port", 21))
     for attempt in range(2):
         try:
-            ftp = FTP_TLS_E(timeout=12)
+            ftp = FTP_TLS_E(timeout=12, context=SSL_CTX_TLS12 if attempt == 0 else SSL_CTX)
             ftp.connect(host, port)
             ftp.login(data["username"], data["password"])
             ftp.prot_p()
@@ -266,14 +386,10 @@ class Handler(SimpleHTTPRequestHandler):
             safe = re.sub(r"[^A-Za-z0-9_\-]", "", name)
             if not safe:
                 return self.send_json(400, {"ok": False, "error": "Invalid icon id"})
-            f = find_icon_file(safe)
-            if not f:
+            body, ext = read_icon_bytes(safe)
+            if not body:
                 return self.send_json(404, {"ok": False, "error": "Icon not found"})
-            try:
-                body = f.read_bytes()
-            except OSError:
-                return self.send_json(404, {"ok": False, "error": "Icon not found"})
-            ctype = mimetypes.types_map.get(f.suffix.lower(), "application/octet-stream")
+            ctype = mimetypes.types_map.get(ext, "application/octet-stream")
             self.send_response(200)
             self.send_header("Content-Type", ctype)
             self.send_header("Content-Length", str(len(body)))
@@ -287,7 +403,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/ftp/list", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/test", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/test", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -388,6 +504,10 @@ class Handler(SimpleHTTPRequestHandler):
             if route == "/api/icons/upload":
                 raw = base64.b64decode(str(data.get("dataB64", "")), validate=True)
                 out = write_icon_file(data.get("id", ""), data.get("ext", ".png"), raw)
+                rid = out.stem.lower()
+                rem = load_removed_icons()
+                if rid in rem:
+                    save_removed_icons(rem - {rid})
                 return self.send_json(200, {"ok": True, "icon": out.stem})
             if route == "/api/icons/delete":
                 safe = re.sub(r"[^A-Za-z0-9_\-]", "", str(data.get("id", "")))
@@ -399,6 +519,8 @@ class Handler(SimpleHTTPRequestHandler):
                             removed += 1
                         except OSError:
                             pass
+                if safe and (removed or safe.lower() in bundled_icon_index()):
+                    save_removed_icons(load_removed_icons() | {safe.lower()})
                 return self.send_json(200, {"ok": True, "removed": removed})
             if route == "/api/icons/fetch_url":
                 url = str(data.get("url", "")).strip()
@@ -412,6 +534,10 @@ class Handler(SimpleHTTPRequestHandler):
                 if not ext:
                     return self.send_json(400, {"ok": False, "error": "URL is not a supported image (png, jpeg, webp, gif, bmp)"})
                 out = write_icon_file(data.get("id", ""), ext, raw)
+                rid = out.stem.lower()
+                rem = load_removed_icons()
+                if rid in rem:
+                    save_removed_icons(rem - {rid})
                 return self.send_json(200, {"ok": True, "icon": out.stem})
         except ValueError as exc:
             return self.send_json(400, {"ok": False, "error": str(exc)[:300]})
@@ -604,6 +730,7 @@ class Handler(SimpleHTTPRequestHandler):
             "downloadUrl": (asset or {}).get("browser_download_url"),
             "size": (asset or {}).get("size"),
             "notes": str(rel.get("body") or "")[:1200],
+            "notesHtml": release_notes_html(rel.get("body")),
         })
 
     def handle_update_download(self, data):
@@ -650,11 +777,48 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(400, {"ok": False, "error": "Invalid path"})
         if not path.name.lower().endswith(".exe") or not path.is_file():
             return self.send_json(400, {"ok": False, "error": "File not found in updates folder"})
+        if not getattr(sys, "frozen", False):
+            return self.send_json(400, {"ok": False, "error": "Замена exe доступна только в собранной версии — запустите скачанный файл вручную"})
+        cur = Path(sys.executable).resolve()
+        if not cur.name.lower().endswith(".exe"):
+            return self.send_json(400, {"ok": False, "error": "Invalid executable"})
         try:
-            os.startfile(str(path))
-        except Exception as exc:
-            return self.send_json(500, {"ok": False, "error": str(exc)[:200]})
-        return self.send_json(200, {"ok": True})
+            if path.resolve() == cur:
+                return self.send_json(400, {"ok": False, "error": "Update file is the running executable"})
+        except OSError:
+            return self.send_json(400, {"ok": False, "error": "Invalid path"})
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        old_name = cur.stem + ".old-" + stamp + ".exe"
+        old_path = cur.with_name(old_name)
+        try:
+            os.rename(cur, old_path)
+        except OSError as exc:
+            return self.send_json(500, {"ok": False, "error": "Не удалось переименовать работающий exe: " + str(exc)[:180]})
+        try:
+            shutil.move(str(path), str(cur))
+        except OSError as exc:
+            try:
+                os.rename(old_path, cur)
+            except OSError:
+                pass
+            return self.send_json(500, {"ok": False, "error": "Не удалось заменить exe (оригинал восстановлен): " + str(exc)[:180]})
+        flags = getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        env = dict(os.environ)
+        for k in [k for k in env if k.upper().startswith(("_MEI", "_PYI"))]:
+            del env[k]
+        try:
+            subprocess.Popen([str(cur), "--cleanup=" + old_name], cwd=str(cur.parent), creationflags=flags, close_fds=True, env=env)
+        except OSError as exc:
+            try:
+                shutil.move(str(cur), str(path))
+                os.rename(old_path, cur)
+            except OSError:
+                pass
+            return self.send_json(500, {"ok": False, "error": "Новая версия не запустилась (оригинал восстановлен): " + str(exc)[:180]})
+        timer = threading.Timer(0.6, os._exit, args=(0,))
+        timer.daemon = True
+        timer.start()
+        return self.send_json(200, {"ok": True, "cleanup": old_name})
 
     def handle_icons_missing(self, data):
         ids = data.get("ids") if isinstance(data, dict) else None
@@ -665,6 +829,8 @@ class Handler(SimpleHTTPRequestHandler):
             known = {f.stem.lower() for f in icons_dir().iterdir() if f.is_file() and f.suffix.lower() in ICON_EXTS}
         except OSError:
             pass
+        known |= set(bundled_icon_index())
+        known -= load_removed_icons()
         missing = []
         for i in ids[:2000]:
             if isinstance(i, str) and i.strip() and i.strip().lower() not in known:
@@ -781,36 +947,103 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(400, {"ok": False, "error": "Host, username, password and remote path are required"})
         if any(c in data["remotePath"] for c in "\r\n"):
             return self.send_json(400, {"ok": False, "error": "Invalid remote path"})
+        if route == "/api/ftp/find" and not str(data.get("query") or "").strip():
+            return self.send_json(400, {"ok": False, "error": "A search query is required"})
         try:
             ftp, tls = connect_ftp(data)
         except (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
             return self.send_json(502, {"ok": False, "error": str(exc)[:400]})
         try:
-            if route == "/api/ftp/list":
-                note = None
-                target = data["remotePath"]
-                try:
-                    ftp.cwd(target)
-                    path = target
-                except ftplib.error_perm as exc:
-                    path = None
-                    for alt in ("/", "."):
+            if route == "/api/ftp/find":
+                query = str(data.get("query") or "").strip().lower()
+                deadline = time.monotonic() + 25
+                results, stats = [], {"dirs": 0, "errors": 0}
+                truncated = [False]
+                def walk(conn, path, depth):
+                    if depth > 5 or stats["dirs"] > 400 or time.monotonic() > deadline:
+                        truncated[0] = True
+                        return
+                    stats["dirs"] += 1
+                    entries = []
+                    try:
+                        for name, facts in conn.mlsd(path):
+                            if name in (".", ".."):
+                                continue
+                            entries.append((name, facts.get("type", "file") == "dir", facts.get("size", "")))
+                    except (ftplib.error_perm, ftplib.error_proto, AttributeError):
                         try:
-                            ftp.cwd(alt)
-                            path = alt
-                            note = "Папка " + target + " не найдена (" + str(exc)[:120] + "); показан " + ("корень" if path == "/" else "текущая папка") + ". Выберите нужную папку в списке."
-                            break
-                        except ftplib.error_perm:
-                            continue
-                    if path is None:
-                        raise
-                rows = []
+                            for name in conn.nlst(path):
+                                base = name.rstrip("/").rsplit("/", 1)[-1]
+                                if base and base not in (".", ".."):
+                                    entries.append((name, False, ""))
+                        except (ftplib.error_perm, ftplib.error_proto, OSError):
+                            stats["errors"] += 1
+                            return
+                    except OSError:
+                        stats["errors"] += 1
+                        return
+                    for name, is_dir, size in entries:
+                        if time.monotonic() > deadline:
+                            truncated[0] = True
+                            return
+                        base = name.rstrip("/").rsplit("/", 1)[-1]
+                        full = (path.rstrip("/") or "") + "/" + base
+                        if query in base.lower():
+                            results.append({"name": base, "path": full, "dir": path.rstrip("/") or "/", "size": size})
+                            if len(results) >= 60:
+                                truncated[0] = True
+                                return
+                        if is_dir:
+                            walk(conn, full, depth + 1)
+                def do_walk(conn):
+                    walk(conn, data["remotePath"] or "/", 0)
                 try:
-                    for name, facts in ftp.mlsd():
-                        rows.append({"name": name, "type": facts.get("type", "file"), "size": facts.get("size", ""), "modified": facts.get("modify", "")})
-                except (ftplib.error_perm, AttributeError):
-                    rows = [{"name": n, "type": "unknown", "size": ""} for n in ftp.nlst()]
-                return self.send_json(200, {"ok": True, "tls": tls, "path": path, "note": note, "files": rows})
+                    do_walk(ftp)
+                except (ssl.SSLError, ConnectionError, TimeoutError, EOFError):
+                    try:
+                        ftp.close()
+                    except Exception:
+                        pass
+                    ftp, tls = connect_ftp(data)
+                    deadline = time.monotonic() + 25
+                    stats["dirs"] = 0
+                    do_walk(ftp)
+                return self.send_json(200, {"ok": True, "tls": tls, "query": query, "results": results, "truncated": truncated[0], "stats": stats})
+            if route == "/api/ftp/list":
+                def do_list(ftp, tls):
+                    note = None
+                    target = data["remotePath"]
+                    try:
+                        ftp.cwd(target)
+                        path = target
+                    except ftplib.error_perm as exc:
+                        path = None
+                        for alt in ("/", "."):
+                            try:
+                                ftp.cwd(alt)
+                                path = alt
+                                note = "Папка " + target + " не найдена (" + str(exc)[:120] + "); показан " + ("корень" if path == "/" else "текущая папка") + ". Выберите нужную папку в списке."
+                                break
+                            except ftplib.error_perm:
+                                continue
+                        if path is None:
+                            raise
+                    rows = []
+                    try:
+                        for name, facts in ftp.mlsd():
+                            rows.append({"name": name, "type": facts.get("type", "file"), "size": facts.get("size", ""), "modified": facts.get("modify", "")})
+                    except (ftplib.error_perm, AttributeError):
+                        rows = [{"name": n, "type": "unknown", "size": ""} for n in ftp.nlst()]
+                    return {"ok": True, "tls": tls, "path": path, "note": note, "files": rows}
+                try:
+                    return self.send_json(200, do_list(ftp, tls))
+                except (ssl.SSLError, ConnectionError, TimeoutError, EOFError):
+                    try:
+                        ftp.close()
+                    except Exception:
+                        pass
+                    ftp, tls = connect_ftp(data)
+                    return self.send_json(200, do_list(ftp, tls))
             remote = data.get("fileName", "")
             if not remote or any(c in remote for c in "\r\n/\\") or remote in (".", ".."):
                 return self.send_json(400, {"ok": False, "error": "A file name (not a path) is required"})
@@ -838,7 +1071,8 @@ class Handler(SimpleHTTPRequestHandler):
                 ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
                 return self.send_json(200, {"ok": True, "backupCreated": backup_created, "dirsCreated": dirs_created, "fileName": remote})
         except (OSError, ValueError) + ftplib.all_errors as exc:
-            return self.send_json(502, {"ok": False, "error": str(exc)[:300]})
+            err = ftp_err_text(exc) if isinstance(exc, (ssl.SSLError, ConnectionError, TimeoutError, EOFError)) else str(exc)[:300]
+            return self.send_json(502, {"ok": False, "error": err[:300]})
         finally:
             try:
                 ftp.quit()

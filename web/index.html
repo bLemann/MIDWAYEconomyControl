@@ -22,7 +22,7 @@
   <div class="top-right">
     <span id="changes-flag" class="flag" hidden>● Есть изменения</span>
     <button class="ghost" id="undo-btn" title="Отменить последнее действие (до 50 шагов)" disabled>↩ ОТМЕНИТЬ</button>
-    <button class="ghost" id="upd-check" title="Проверить обновления на GitHub">↻ ОБН</button>
+    <button class="ghost" id="upd-check">↻ ОБН</button>
     <button class="ghost" id="import">← ИМПОРТ ФАЙЛА</button>
     <input id="file" type="file" accept=".json" hidden>
   </div>
@@ -36,7 +36,6 @@
   <div class="upd-actions">
     <button class="ghost upd-primary" id="upd-download">СКАЧАТЬ</button>
     <button class="ghost" id="upd-launch" hidden>ЗАПУСТИТЬ НОВУЮ ВЕРСИЮ</button>
-    <a id="upd-notes" class="ghost upd-link" href="#" target="_blank" rel="noopener" hidden>ЧТО НОВОГО</a>
     <button class="ghost" id="upd-close" title="Скрыть до следующего запуска">×</button>
   </div>
 </div>
@@ -200,6 +199,11 @@
       <button class="btn-red" id="ftp-list">ПОДКЛЮЧИТЬСЯ И ПРОЧИТАТЬ СПИСОК</button>
       <button class="btn-dark" id="ftp-watch">Начать мониторинг · 30 сек</button>
       <div id="ftp-watch-status" class="hint">Мониторинг выключен</div>
+      <div class="ftp-find-row">
+        <input id="ftp-find-q" placeholder="Поиск файла по имени на сервере">
+        <button class="btn-dark" id="ftp-find">НАЙТИ ФАЙЛ</button>
+      </div>
+      <div class="file-list" id="ftp-find-results" hidden></div>
       <div class="file-list" id="ftp-files"></div>
     </article>
     <article class="panel"><h3>Передача конфигурации</h3>
@@ -288,6 +292,12 @@
     <p class="note" id="confirm-text"></p>
     <div class="dlg-foot"><button type="submit" class="btn-red">ПОДТВЕРДИТЬ</button><button type="button" class="btn-dark" id="confirm-cancel">ОТМЕНА</button></div>
   </form>
+</dialog>
+
+<dialog id="notes-dialog">
+  <div class="dlg-head"><h3>ЧТО НОВОГО · <span id="notes-version">—</span></h3></div>
+  <div id="notes-body" class="notes-body"></div>
+  <div class="dlg-foot"><span id="notes-status" class="hint-inline"></span><button type="button" class="btn-green" id="notes-launch" hidden>ЗАПУСТИТЬ НОВУЮ ВЕРСИЮ</button><button type="button" class="btn-dark" id="notes-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <dialog id="icon-dialog">
