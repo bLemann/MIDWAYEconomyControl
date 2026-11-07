@@ -260,14 +260,14 @@
     <label>Item ID вручную<input id="add-id" placeholder="Weapon_MyCustomItem" required></label>
     <button class="btn-green" type="submit">ДОБАВИТЬ</button>
   </form>
-  <p class="note">Показываются только предметы, которых ещё нет в списке этого торговца — только что добавленные исчезают из списка. ID, которого нет в базе, добавляется со статусом UNVERIFIED — приложение не подтверждает его существование в игре. Окно остаётся открытым для добавления нескольких позиций.</p>
+  <p class="note">Товары, уже присутствующие у торговца — по ID или по названию, — не показываются в списке; только что добавленные исчезают сразу. Одноимённые варианты с другим ID можно раскрыть кнопкой под списком. Для стандартных торговцев список ограничен ассортиментом их роли в SCUM (Оружейник — оружие и патроны, Охотник — луки и ловушки, Рыболов — рыбалка и т.д.); ручной ввод ID ниже работает без ограничений. ID, которого нет в базе, добавляется со статусом UNVERIFIED — приложение не подтверждает его существование в игре. Окно остаётся открытым для добавления нескольких позиций.</p>
   <div class="dlg-foot"><span id="add-status" class="hint-inline"></span><button type="button" class="btn-dark" id="add-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <dialog id="cats-dialog">
   <div class="dlg-head"><h3>Добавить товары по категориям</h3><span id="cats-target" class="hint-inline"></span></div>
   <div id="cats-box" class="cats-box"></div>
-  <p class="note">Будут добавлены все записи выбранных категорий; уже существующие у торговца ID пропускаются.</p>
+  <p class="note">Для стандартных торговцев показаны только категории их ассортимента в SCUM (для нестандартных — все категории). Счётчики учитывают уже имеющиеся у торговца ID: будут добавлены только новые записи.</p>
   <div class="dlg-foot"><span id="cats-status" class="hint-inline"></span><button type="button" class="btn-green" id="cats-apply">ДОБАВИТЬ ВЫБРАННЫЕ</button><button type="button" class="btn-dark" id="cats-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
