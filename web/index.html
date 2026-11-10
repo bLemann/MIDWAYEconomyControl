@@ -33,6 +33,10 @@
     <b>ДОСТУПНО ОБНОВЛЕНИЕ · <span id="upd-version">—</span></b>
     <span id="upd-info" class="upd-info"></span>
   </div>
+  <div class="upd-progress" id="upd-progress" hidden>
+    <div class="upd-bar"><div class="upd-bar-fill" id="upd-bar-fill"></div></div>
+    <span id="upd-pct">0%</span>
+  </div>
   <div class="upd-actions">
     <button class="ghost upd-primary" id="upd-download">СКАЧАТЬ</button>
     <button class="ghost" id="upd-launch" hidden>ЗАПУСТИТЬ НОВУЮ ВЕРСИЮ</button>
@@ -60,21 +64,52 @@
   <div class="items-layout">
     <aside class="tools">
       <h4>ИНСТРУМЕНТЫ</h4>
-      <small class="sec-cap">МАССОВЫЕ ЗНАЧЕНИЯ</small>
-      <label>ПОКУПКА<input id="mass-buy" placeholder="-1"></label>
-      <label>ПРОДАЖА<input id="mass-sell" placeholder="-1"></label>
-      <label>ДЕЛЬТА<input id="mass-delta" placeholder="-1"></label>
-      <label>ОЧКИ СЛАВЫ<input id="mass-fame" placeholder="-1"></label>
-      <label>ПОСЛЕ ПРОДАЖИ<select id="mass-avail"><option value="">— не менять</option><option value="default">По умолчанию</option><option value="true">Только после продажи</option><option value="false">Доступно всегда</option></select></label>
-      <label>ВИДИМОСТЬ<select id="mass-vis"><option value="">— не менять</option><option value="default">Открыт</option><option value="false">Скрыт</option></select></label>
-      <button class="btn-red big" id="mass-apply-current">ПРИМЕНИТЬ ТЕКУЩЕМУ ТРЕЙДЕРУ</button>
-      <button class="btn-dark big" id="mass-apply-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
-      <button class="btn-dark big" id="mass-apply-all">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ</button>
-      <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
+      <div class="tool-tabs">
+        <button type="button" class="tool-tab active" data-tool="buy">ПОКУПКА</button>
+        <button type="button" class="tool-tab" data-tool="sell">ПРОДАЖА</button>
+        <button type="button" class="tool-tab" data-tool="fame">СЛАВА</button>
+      </div>
+      <div class="tool-pane active" data-tool="buy">
+        <small class="sec-cap">НАЦЕНКА НА ПОКУПКУ</small>
+        <label>ПРОЦЕНТ, %<input id="pct-buy" placeholder="20 или -10"></label>
+        <label>ТОЧНОЕ ЗНАЧЕНИЕ<input id="abs-buy" placeholder="точно: 9999 / -1"></label>
+        <button class="btn-red big" id="tool-buy-current">ПРИМЕНИТЬ ТЕКУЩЕМУ ТРЕЙДЕРУ</button>
+        <button class="btn-dark big" id="tool-buy-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
+        <button class="btn-dark big" id="tool-buy-all">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ</button>
+      </div>
+      <div class="tool-pane" data-tool="sell">
+        <small class="sec-cap">ЦЕНА ПРОДАЖИ</small>
+        <label>ПРОЦЕНТ, %<input id="pct-sell" placeholder="20 или -10"></label>
+        <label>ТОЧНОЕ ЗНАЧЕНИЕ<input id="abs-sell" placeholder="точно: 500 / -1"></label>
+        <button class="btn-red big" id="tool-sell-current">ПРИМЕНИТЬ ТЕКУЩЕМУ ТРЕЙДЕРУ</button>
+        <button class="btn-dark big" id="tool-sell-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
+        <button class="btn-dark big" id="tool-sell-all">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ</button>
+      </div>
+      <div class="tool-pane" data-tool="fame">
+        <small class="sec-cap">ОЧКИ СЛАВЫ</small>
+        <label>ПРОЦЕНТ, %<input id="pct-fame" placeholder="20 или -50"></label>
+        <label>ТОЧНОЕ ЗНАЧЕНИЕ<input id="abs-fame" placeholder="точно: 100 / -1"></label>
+        <button class="btn-red big" id="tool-fame-current">ПРИМЕНИТЬ ТЕКУЩЕМУ ТРЕЙДЕРУ</button>
+        <button class="btn-dark big" id="tool-fame-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
+        <button class="btn-dark big" id="tool-fame-all">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ</button>
+      </div>
+      <small class="sec-cap">СТАТУС СПИСКА (ВИДИМОСТЬ)</small>
+      <label>СТАТУС<select id="vis-status"><option value="">— не менять</option><option value="default">Открыт (по умолчанию)</option><option value="true">Открыт (true)</option><option value="false">Скрыт</option></select></label>
+      <button class="btn-dark big" id="vis-apply-list">ПРИМЕНИТЬ КО ВСЕМ СПИСКУ</button>
+      <small class="sec-cap">СТАТУС КАТЕГОРИЙ / ПОДКАТЕГОРИЙ</small>
+      <label>КАТЕГОРИЯ<select id="vis-cat"><option value="all">Все категории</option></select></label>
+      <label>СТАТУС<select id="vis-cat-status"><option value="">— не менять</option><option value="default">Открыт (по умолчанию)</option><option value="true">Открыт (true)</option><option value="false">Скрыт</option></select></label>
+      <button class="btn-dark big" id="vis-apply-cat">ПРИМЕНИТЬ К КАТЕГОРИИ</button>
+      <small class="sec-cap">МНОЖИТЕЛЬ СПИСКА</small>
+      <label>МНОЖИТЕЛЬ<input id="mass-delta" placeholder="-1.0"></label>
+      <p class="hint">Итог в игре = база × (1 + множитель): −1 — по умолчанию, 0 — без наценки, 2.0 → цена ×3.</p>
+      <button class="btn-red big" id="delta-current">ПРИМЕНИТЬ ТЕКУЩЕМУ ТРЕЙДЕРУ</button>
+      <button class="btn-dark big" id="delta-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
       <small class="sec-cap">СПИСОК ТРЕЙДЕРА</small>
       <button class="btn-dark" id="copy-list">СКОПИРОВАТЬ В…</button>
       <button class="btn-red" id="clear-list">ОЧИСТИТЬ СПИСОК</button>
-      <p class="note">Пустые поля пропускаются. Значения применяются ко всем строкам выбранных торговцев.</p>
+      <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
+      <p class="note">Процент меняет текущие числа строк (строки с −1 «по умолчанию» пропускаются), точное значение перезаписывает все строки. «Скрыт» убирает товар у торговца — строка в таблице подсвечивается серым.</p>
     </aside>
     <div class="center-col">
       <div class="toolbar row1">
@@ -102,7 +137,7 @@
       </article>
       <article class="panel table-wrap">
         <table>
-          <thead><tr><th>ПРЕДМЕТ</th><th>КАТЕГОРИЯ</th><th>ПОКУПКА</th><th>ПРОДАЖА</th><th>ДЕЛЬТА</th><th>ОЧКИ СЛАВЫ</th><th>ПОСЛЕ ПРОДАЖИ</th><th>ВИДИМОСТЬ</th><th>СТАТУС</th><th></th></tr></thead>
+          <thead><tr><th>ПРЕДМЕТ</th><th>КАТЕГОРИЯ</th><th>ПОКУПКА</th><th>ПРОДАЖА</th><th title="Множитель (delta-price): итог в игре = базовая цена × (1 + множитель). −1 — по умолчанию, 0 — без наценки, 2.0 → ×3">МНОЖИТЕЛЬ</th><th>ОЧКИ СЛАВЫ</th><th>ПОСЛЕ ПРОДАЖИ</th><th>ВИДИМОСТЬ</th><th>СТАТУС</th><th></th></tr></thead>
           <tbody id="goods"><tr><td colspan="10" class="empty">Импортируйте EconomyOverride.json — кнопка «← ИМПОРТ ФАЙЛА» сверху</td></tr></tbody>
         </table>
       </article>

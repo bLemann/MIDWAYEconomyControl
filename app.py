@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.6.6"
+VERSION = "0.6.7"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -40,6 +40,9 @@ def updates_dir():
     d = base / "updates"
     d.mkdir(parents=True, exist_ok=True)
     return d
+
+UPDATE_DL = {"running": False, "done": False, "dl_ok": False, "error": None,
+             "downloaded": 0, "total": 0, "percent": 0, "version": "", "path": "", "sha256": ""}
 
 def exports_dir():
     base = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else ROOT
@@ -397,6 +400,8 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if self.path == "/api/update/progress":
+            return self.handle_update_progress()
         return super().do_GET()
 
     def do_POST(self):
@@ -737,6 +742,8 @@ class Handler(SimpleHTTPRequestHandler):
         tag = str((data or {}).get("tag") or "").strip()
         if tag and not re.fullmatch(r"v\d+(\.\d+)*", tag):
             return self.send_json(400, {"ok": False, "error": "Invalid tag format"})
+        if UPDATE_DL.get("running"):
+            return self.send_json(409, {"ok": False, "error": "Загрузка уже выполняется"})
         try:
             rel = self._github_release(("tags/" + tag) if tag else "latest")
         except Exception as exc:
@@ -748,10 +755,28 @@ class Handler(SimpleHTTPRequestHandler):
         safe = re.sub(r"[^A-Za-z0-9._\-]", "", latest) or "update"
         target = updates_dir() / ("MIDWAYEconomyControl-" + safe + ".exe")
         expected = int(asset.get("size") or 0)
+        UPDATE_DL.update({"running": True, "done": False, "ok": False, "error": None,
+                          "downloaded": 0, "total": expected, "percent": 0,
+                          "version": latest, "path": str(target), "sha256": ""})
+        threading.Thread(target=self._dl_worker,
+                         args=(str(asset.get("browser_download_url")), target, expected, latest),
+                         daemon=True).start()
+        return self.send_json(200, {"ok": True, "started": True, "version": latest,
+                                    "path": str(target), "size": expected})
+
+    @staticmethod
+    def _dl_worker(url, target, expected, latest):
+        part = target.with_suffix(target.suffix + ".part")
         try:
-            req = urllib.request.Request(str(asset.get("browser_download_url")), headers={"User-Agent": "MIDWAYEconomyControl/" + VERSION})
+            req = urllib.request.Request(url, headers={"User-Agent": "MIDWAYEconomyControl/" + VERSION})
             total, sha = 0, hashlib.sha256()
-            with urllib.request.urlopen(req, timeout=30) as r, open(target, "wb") as out:
+            with urllib.request.urlopen(req, timeout=30) as r, open(part, "wb") as out:
+                cl = r.headers.get("Content-Length")
+                if cl:
+                    try:
+                        UPDATE_DL["total"] = int(cl)
+                    except ValueError:
+                        pass
                 while True:
                     chunk = r.read(1 << 16)
                     if not chunk:
@@ -759,11 +784,28 @@ class Handler(SimpleHTTPRequestHandler):
                     out.write(chunk)
                     total += len(chunk)
                     sha.update(chunk)
+                    UPDATE_DL["downloaded"] = total
+                    if UPDATE_DL["total"]:
+                        UPDATE_DL["percent"] = min(100, int(total * 100 / UPDATE_DL["total"]))
+            if expected and total != expected:
+                raise IOError("Size mismatch: got %d bytes, expected %d" % (total, expected))
+            os.replace(part, target)
+            UPDATE_DL.update({"running": False, "done": True, "dl_ok": True, "downloaded": total,
+                              "total": total or expected, "percent": 100, "path": str(target),
+                              "sha256": sha.hexdigest().upper(), "error": None})
         except Exception as exc:
-            return self.send_json(502, {"ok": False, "error": "Download: " + str(exc)[:200]})
-        if expected and total != expected:
-            return self.send_json(502, {"ok": False, "error": "Size mismatch: got %d bytes, expected %d" % (total, expected)})
-        return self.send_json(200, {"ok": True, "version": latest, "path": str(target), "size": total, "sha256": sha.hexdigest().upper()})
+            try:
+                part.unlink()
+            except OSError:
+                pass
+            UPDATE_DL.update({"running": False, "done": True, "dl_ok": False, "error": str(exc)[:200]})
+
+    def handle_update_progress(self):
+        s = dict(UPDATE_DL)
+        if s.get("total") and not s.get("done"):
+            s["percent"] = min(100, int(s["downloaded"] * 100 / s["total"]))
+        s["ok"] = True
+        return self.send_json(200, s)
 
     def handle_update_launch(self, data):
         p = str((data or {}).get("path") or "")

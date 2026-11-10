@@ -88,6 +88,12 @@ main{padding:14px 18px 26px;max-width:1700px;margin:0 auto}
 .tools label input,.tools label select{width:100%}
 .tools button{white-space:normal;overflow-wrap:anywhere;text-align:center}
 .tools .note{font-size:10px;margin-top:4px}
+.tool-tabs{display:flex;gap:4px}
+.tool-tab{flex:1;padding:9px 4px;font-size:10px;font-weight:900;letter-spacing:1px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px;color:var(--muted)}
+.tool-tab:hover{color:#fff}
+.tool-tab.active{background:var(--red);border-color:var(--red);color:#fff}
+.tool-pane{display:none;flex-direction:column;gap:8px}
+.tool-pane.active{display:flex}
 .center-col{min-width:0}
 .toolbar.row1{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:9px;margin-bottom:8px}
 .toolbar.row2{margin-bottom:12px;gap:8px}
@@ -257,6 +263,11 @@ dialog form label{display:flex;flex-direction:column;gap:5px;font-size:10px;lett
 .upd-primary{border-color:var(--amber);color:var(--amber)}
 .upd-primary:hover{background:rgba(255,180,40,.12)}
 .upd-link{display:inline-flex;align-items:center;justify-content:center;min-height:26px;text-decoration:none}
+.upd-progress{display:flex;align-items:center;gap:8px;width:100%;max-width:520px}
+.upd-progress[hidden]{display:none}
+.upd-bar{flex:1;height:8px;border:1px solid rgba(255,180,40,.5);border-radius:4px;background:#101318;overflow:hidden}
+.upd-bar-fill{height:100%;width:0;background:var(--amber);transition:width .25s}
+#upd-pct{font-size:11px;color:var(--amber);min-width:36px;text-align:right}
 
 /* ===== SERVER PRICE OVERLAY (FTP SYNC) ===== */
 td .srv-val{display:block;font-size:10px;color:var(--muted);border-bottom:1px dashed var(--amber);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
@@ -272,6 +283,14 @@ tr.row-added td:last-child{background:#172321}
 tr.row-added:hover td:last-child{background:#192b24}
 tr.row-changed td:last-child{background:#1f1f1f}
 tr.row-changed:hover td:last-child{background:#282622}
+
+/* ===== HIDDEN ROWS (can-be-purchased=false · Скрыт) ===== */
+tr.row-hidden td{background:#101318;color:#7c8595}
+tr.row-hidden:hover td{background:#161a21}
+tr.row-hidden td:first-child{box-shadow:inset 3px 0 0 #4a5160}
+tr.row-hidden td:last-child{background:#101318}
+tr.row-hidden:hover td:last-child{background:#161a21}
+tr.row-hidden td input,tr.row-hidden td select{opacity:.55}
 
 /* ===== FOOTER ===== */
 footer{margin-top:18px;padding:14px 0 4px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:1.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}

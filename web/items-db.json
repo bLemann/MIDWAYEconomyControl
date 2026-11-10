@@ -1,8 +1,8 @@
 {
  "meta": {
   "name": "SCUM полный каталог предметов",
-  "version": "1.2.0",
-  "note": "Источники: scum.wiki.gg Item IDs (базовые 1256), SCUM Admin Helper — встроенный каталог 2342 ID (UNVERIFIED, иконки из его ресурсов). Проверяйте на своём билде игры.",
+  "version": "1.3.1",
+  "note": "Источники: scum.wiki.gg Item IDs (базовые 1256), SCUM Admin Helper — встроенный каталог 2342 ID (UNVERIFIED, иконки из его ресурсов). Проверяйте на своём билде игры. | +535 ID из живого файла сервера (услуг механика ServiceBP_*: 367, транспортных средств BPC_*: 9, прочего: 159)",
   "sources": [
    "https://scum.wiki.gg/wiki/Item_IDs",
    "https://scum.wiki.gg/wiki/Item_IDs/Full_List",
@@ -349,6 +349,58 @@
     {
      "id": "Sledgehammer",
      "name": "Sledge Hammer"
+    },
+    {
+     "id": "1H_Brass_knuckles",
+     "name": "Кастет"
+    },
+    {
+     "id": "1H_Empossible_Knife",
+     "name": "Нож \"Empossible\""
+    },
+    {
+     "id": "1H_Improvised_metal_knife",
+     "name": "Самодельный металлический нож"
+    },
+    {
+     "id": "1H_RaymondCruz_Knife",
+     "name": "Нож Рэймонда Круса"
+    },
+    {
+     "id": "1H_SkinningKnife",
+     "name": "Разделочный нож (скиннер)"
+    },
+    {
+     "id": "1H_Wooden_club",
+     "name": "Деревянная дубина"
+    },
+    {
+     "id": "1H_Wooden_club_with_spikes",
+     "name": "Дубина с шипами"
+    },
+    {
+     "id": "1H_Wooden_club_with_wire",
+     "name": "Дубина с проволокой"
+    },
+    {
+     "id": "2H_Baseball_Bat_with_spikes",
+     "name": "Бейсбольная бита с шипами"
+    },
+    {
+     "id": "2H_Baseball_Bat_with_wire",
+     "name": "Бейсбольная бита с проволокой"
+    },
+    {
+     "id": "2H_Improvised_metal_shovel",
+     "name": "Самодельная металлическая лопата"
+    },
+    {
+     "id": "2H_Improvised_shovel",
+     "name": "Самодельная лопата"
+    },
+    {
+     "id": "2H_La_Hacha_Axe",
+     "name": "Топор \"La Hacha\""
     }
    ]
   },
@@ -590,6 +642,10 @@
     {
      "id": "Weapon_Improvised_Crossbow",
      "name": "Improvised Crossbow"
+    },
+    {
+     "id": "Penobscot_Bow_40",
+     "name": "Лук Penobscot 40"
     }
    ]
   },
@@ -1681,6 +1737,14 @@
     {
      "id": "FlareCartridge",
      "name": "FlareCartridge"
+    },
+    {
+     "id": "12_Gauge_BirdShot",
+     "name": "Патрон 12x70 (мелкая дробь)"
+    },
+    {
+     "id": "12_Gauge_BirdShot_Ammobox",
+     "name": "Коробка патронов 12x70 (мелкая дробь)"
     }
    ]
   },
@@ -2278,6 +2342,14 @@
     {
      "id": "WeaponSuppressor_SVD",
      "name": "SVD Suppressor"
+    },
+    {
+     "id": "WeaponScope_M82A1",
+     "name": "Оптический прицел M82A1"
+    },
+    {
+     "id": "WeaponSights_Deagle_RedDot",
+     "name": "Коллиматор \"красная точка\" для Deagle"
     }
    ]
   },
@@ -3077,6 +3149,10 @@
     {
      "id": "Fish_Tuna",
      "name": "Tuna (Fish)"
+    },
+    {
+     "id": "Pike_Fillet",
+     "name": "Филе щуки"
     }
    ]
   },
@@ -3262,6 +3338,14 @@
     {
      "id": "WW2_German_Helmet_01",
      "name": "WW2 German Helmet"
+    },
+    {
+     "id": "TwD_Daredevil_Helmet_01",
+     "name": "Шлем \"Daredevil\" 01"
+    },
+    {
+     "id": "TwD_Punk_Helmet_01",
+     "name": "Шлем \"Punk\" 01"
     }
    ]
   },
@@ -3879,6 +3963,42 @@
     {
      "id": "Wolf_Hat_01",
      "name": "Wolf Head Hat"
+    },
+    {
+     "id": "Raymond_Cruz_Hat",
+     "name": "Шляпа Рэймонда Круса"
+    },
+    {
+     "id": "Redneck_Hat_07",
+     "name": "Шляпа Redneck 07"
+    },
+    {
+     "id": "TwD_EnlistedMilitary_Cap_01",
+     "name": "Кепка \"EnlistedMilitary\" 01"
+    },
+    {
+     "id": "TwD_Outback_Hat_01",
+     "name": "Шляпа \"Outback\" 01"
+    },
+    {
+     "id": "TwD_PinUp_Hat_01",
+     "name": "Шляпа \"PinUp\" 01"
+    },
+    {
+     "id": "TwD_Rastaman_Hat_01",
+     "name": "Шляпа \"Rastaman\" 01"
+    },
+    {
+     "id": "TwD_ThMetal_Cap_01",
+     "name": "Кепка \"ThMetal\" 01"
+    },
+    {
+     "id": "TwD_TheBirdCamo_Hat_01",
+     "name": "Шляпа \"TheBirdCamo\" 01"
+    },
+    {
+     "id": "WoodlandHunter_Hat_01",
+     "name": "Шляпа \"WoodlandHunter\" 01"
     }
    ]
   },
@@ -4092,6 +4212,10 @@
     {
      "id": "Tyrone_Shoelacez_Mask",
      "name": "Tyrone Shoelacez Mask"
+    },
+    {
+     "id": "TwD_Stellar_Santa_Balaclava_01",
+     "name": "Балаклава \"Stellar Santa\" 01"
     }
    ]
   },
@@ -4157,6 +4281,10 @@
     {
      "id": "Safety_Goggles",
      "name": "Safety Glasses"
+    },
+    {
+     "id": "Round_Sunglasses",
+     "name": "Круглые солнцезащитные очки"
     }
    ]
   },
@@ -4218,6 +4346,18 @@
     {
      "id": "15_Teeth_Necklace",
      "name": "Tooth Necklace"
+    },
+    {
+     "id": "2_pieces_Ear_Necklace",
+     "name": "Ожерелье из ушей (2 шт.)"
+    },
+    {
+     "id": "4_pieces_Ear_Necklace",
+     "name": "Ожерелье из ушей (4 шт.)"
+    },
+    {
+     "id": "6_pieces_Ear_Necklace",
+     "name": "Ожерелье из ушей (6 шт.)"
     }
    ]
   },
@@ -4391,6 +4531,18 @@
     {
      "id": "Tactical_Vest_01",
      "name": "Tactical Vest Vest Black"
+    },
+    {
+     "id": "Bulletproof_Vest_01",
+     "name": "Бронежилет 01"
+    },
+    {
+     "id": "Improvised_Stabproof",
+     "name": "Самодельный противоножевой жилет"
+    },
+    {
+     "id": "Leather_Improvised_Stabproof_Vest",
+     "name": "Кожаный самодельный противоножевой жилет"
     }
    ]
   },
@@ -4760,6 +4912,18 @@
     {
      "id": "School_Backpack_Girl_06",
      "name": "School Backpack Pink/Yellow"
+    },
+    {
+     "id": "TwD_Rastaman_Backpack_01",
+     "name": "Рюкзак \"Rastaman\" 01"
+    },
+    {
+     "id": "TwD_TheBirdCamo_Backpack_01",
+     "name": "Рюкзак \"TheBirdCamo\" 01"
+    },
+    {
+     "id": "WoodlandHunter_AntlerBackpack_01",
+     "name": "Рюкзак из рогов \"WoodlandHunter\" 01"
     }
    ]
   },
@@ -4809,6 +4973,10 @@
     {
      "id": "Military_Quiver_08",
      "name": "Military Quiver Urban"
+    },
+    {
+     "id": "WoodlandHunter_Quiver_01",
+     "name": "Колчан \"WoodlandHunter\" 01"
     }
    ]
   },
@@ -5666,6 +5834,58 @@
     {
      "id": "Woodcuters_Shirt_03",
      "name": "Woodcutter's ShirtTan"
+    },
+    {
+     "id": "Raymond_Cruz_Shirt",
+     "name": "Рубашка Рэймонда Круса"
+    },
+    {
+     "id": "TwD_Daredevil_Jacket_01",
+     "name": "Куртка \"Daredevil\" 01"
+    },
+    {
+     "id": "TwD_EnlistedMilitary_Jacket_01",
+     "name": "Куртка \"EnlistedMilitary\" 01"
+    },
+    {
+     "id": "TwD_Outback_Shirt_01",
+     "name": "Рубашка \"Outback\" 01"
+    },
+    {
+     "id": "TwD_PinUp_Jacket_01",
+     "name": "Куртка \"PinUp\" 01"
+    },
+    {
+     "id": "TwD_Punk_Jacket_01",
+     "name": "Куртка \"Punk\" 01"
+    },
+    {
+     "id": "TwD_Rastaman_Shirt_01",
+     "name": "Рубашка \"Rastaman\" 01"
+    },
+    {
+     "id": "TwD_Stellar_Santa__Sweater_01",
+     "name": "Свитер \"Stellar Santa\" 01"
+    },
+    {
+     "id": "TwD_ThMetal_Jacket_01",
+     "name": "Куртка \"ThMetal\" 01"
+    },
+    {
+     "id": "TwD_TheBirdCamo_Jacket_01",
+     "name": "Куртка \"TheBirdCamo\" 01"
+    },
+    {
+     "id": "TwD_YellowSuit_Jacket_01",
+     "name": "Куртка \"YellowSuit\" 01"
+    },
+    {
+     "id": "WoodlandHunter_Poncho_01",
+     "name": "Понча \"WoodlandHunter\" 01"
+    },
+    {
+     "id": "pOLICE_Sweater_01",
+     "name": "Свитер полиции 01"
     }
    ]
   },
@@ -5968,6 +6188,18 @@
     {
      "id": "Wool_Gloves_01_07",
      "name": "Wool Gloves Red"
+    },
+    {
+     "id": "TwD_Daredevil_Gloves_01",
+     "name": "Перчатки \"Daredevil\" 01"
+    },
+    {
+     "id": "TwD_Stellar_Santa_Gloves_01",
+     "name": "Перчатки \"Stellar Santa\" 01"
+    },
+    {
+     "id": "TwD_YellowSuit_Glove_01",
+     "name": "Перчатка \"YellowSuit\" 01"
     }
    ]
   },
@@ -6713,6 +6945,54 @@
     {
      "id": "Working_pants_01_03",
      "name": "Work Pants Blue"
+    },
+    {
+     "id": "Inmate_pants",
+     "name": "Штаны заключённого"
+    },
+    {
+     "id": "Raymond_Cruz_Pants",
+     "name": "Штаны Рэймонда Круса"
+    },
+    {
+     "id": "TwD_Daredevil_Pants_01",
+     "name": "Штаны \"Daredevil\" 01"
+    },
+    {
+     "id": "TwD_EnlistedMilitary_Pants_01",
+     "name": "Штаны \"EnlistedMilitary\" 01"
+    },
+    {
+     "id": "TwD_Outback_Pants_01",
+     "name": "Штаны \"Outback\" 01"
+    },
+    {
+     "id": "TwD_PinUp_Pants_01",
+     "name": "Штаны \"PinUp\" 01"
+    },
+    {
+     "id": "TwD_Punk_Pants_01",
+     "name": "Штаны \"Punk\" 01"
+    },
+    {
+     "id": "TwD_Rastaman_Pants_01",
+     "name": "Штаны \"Rastaman\" 01"
+    },
+    {
+     "id": "TwD_Stellar_Santa__Pants_01",
+     "name": "Штаны \"Stellar Santa\" 01"
+    },
+    {
+     "id": "TwD_ThMetal_Pants_01",
+     "name": "Штаны \"ThMetal\" 01"
+    },
+    {
+     "id": "TwD_TheBirdCamo_Pants_01",
+     "name": "Штаны \"TheBirdCamo\" 01"
+    },
+    {
+     "id": "TwD_YellowSuit_Pants_01",
+     "name": "Штаны \"YellowSuit\" 01"
     }
    ]
   },
@@ -7006,6 +7286,54 @@
     {
      "id": "Slippers_03",
      "name": "Slippers"
+    },
+    {
+     "id": "Kilt_Brogue_Shoe_02",
+     "name": "Туфли Kilt Brogue 02"
+    },
+    {
+     "id": "Kilt_Brogue_Shoe_03",
+     "name": "Туфли Kilt Brogue 03"
+    },
+    {
+     "id": "Kilt_Brogue_Shoe_04",
+     "name": "Туфли Kilt Brogue 04"
+    },
+    {
+     "id": "Kilt_Brogue_Shoe_05",
+     "name": "Туфли Kilt Brogue 05"
+    },
+    {
+     "id": "Kilt_Brogue_Shoe_06",
+     "name": "Туфли Kilt Brogue 06"
+    },
+    {
+     "id": "Raymond_Cruz_Boots",
+     "name": "Ботинки Рэймонда Круса"
+    },
+    {
+     "id": "TwD_Daredevil_Boots_01",
+     "name": "Ботинки \"Daredevil\" 01"
+    },
+    {
+     "id": "TwD_Outback_Boots_01",
+     "name": "Ботинки \"Outback\" 01"
+    },
+    {
+     "id": "TwD_PinUp_Boots_01",
+     "name": "Ботинки \"PinUp\" 01"
+    },
+    {
+     "id": "TwD_Punk_Boots_01",
+     "name": "Ботинки \"Punk\" 01"
+    },
+    {
+     "id": "TwD_ThMetal_Sneakers_01",
+     "name": "Кроссовки \"ThMetal\" 01"
+    },
+    {
+     "id": "TwD_YellowSuit_Sneakers_01",
+     "name": "Кроссовки \"YellowSuit\" 01"
     }
    ]
   },
@@ -7208,6 +7536,14 @@
     {
      "id": "Tangerine",
      "name": "Tangerine"
+    },
+    {
+     "id": "GrapeFruit",
+     "name": "Грейпфрут"
+    },
+    {
+     "id": "Watermelon_slice",
+     "name": "Долька арбуза"
     }
    ]
   },
@@ -7470,6 +7806,10 @@
     {
      "id": "Zucchini_Seeds",
      "name": "Zucchini Seeds"
+    },
+    {
+     "id": "Bag_of_Almonds",
+     "name": "Мешок миндаля"
     }
    ]
   },
@@ -7487,6 +7827,10 @@
     {
      "id": "Dog_Rose",
      "name": "Rose Hip"
+    },
+    {
+     "id": "Salsify_roots",
+     "name": "Корни козлобородника"
     }
    ]
   },
@@ -7957,6 +8301,154 @@
     {
      "id": "Wolf_Steak",
      "name": "Wolf Steak"
+    },
+    {
+     "id": "Bear_Skinned",
+     "name": "Медведь (освежёванный)"
+    },
+    {
+     "id": "Big_Animal_guts",
+     "name": "Внутренности крупного животного"
+    },
+    {
+     "id": "Buck_Skinned",
+     "name": "Олень-самец (освежёванный)"
+    },
+    {
+     "id": "Doe_Head",
+     "name": "Голова оленихи"
+    },
+    {
+     "id": "Doe_Left_Back_Leg",
+     "name": "Нога оленихи, задняя левая"
+    },
+    {
+     "id": "Doe_Left_Front_Leg",
+     "name": "Нога оленихи, передняя левая"
+    },
+    {
+     "id": "Doe_Right_Back_Leg",
+     "name": "Нога оленихи, задняя правая"
+    },
+    {
+     "id": "Doe_Right_Front_Leg",
+     "name": "Нога оленихи, передняя правая"
+    },
+    {
+     "id": "Doe_Skinned",
+     "name": "Олениха (освежёванная)"
+    },
+    {
+     "id": "Doe_Torso",
+     "name": "Торс оленихи"
+    },
+    {
+     "id": "Donkey_Skinned",
+     "name": "Осёл (освежёванный)"
+    },
+    {
+     "id": "Hen_Torso",
+     "name": "Тушка курицы"
+    },
+    {
+     "id": "Horse_Skinned",
+     "name": "Лошадь (освежёванная)"
+    },
+    {
+     "id": "Rabbit_Left_Back",
+     "name": "Нога кролика, задняя левая"
+    },
+    {
+     "id": "Rabbit_Left_Front",
+     "name": "Нога кролика, передняя левая"
+    },
+    {
+     "id": "Rabbit_Right_Back",
+     "name": "Нога кролика, задняя правая"
+    },
+    {
+     "id": "Rabbit_Right_Front",
+     "name": "Нога кролика, передняя правая"
+    },
+    {
+     "id": "Rabbit_Skinned",
+     "name": "Кролик (освежёванный)"
+    },
+    {
+     "id": "Small_Animal_guts",
+     "name": "Внутренности мелкого животного"
+    },
+    {
+     "id": "Wolf_Head",
+     "name": "Голова волка"
+    },
+    {
+     "id": "Wolf_Left_Back_Leg",
+     "name": "Нога волка, задняя левая"
+    },
+    {
+     "id": "Wolf_Left_Front_Leg",
+     "name": "Нога волка, передняя левая"
+    },
+    {
+     "id": "Wolf_Right_Back_Leg",
+     "name": "Нога волка, задняя правая"
+    },
+    {
+     "id": "Wolf_Right_Front_Leg",
+     "name": "Нога волка, передняя правая"
+    },
+    {
+     "id": "Wolf_Skinned",
+     "name": "Волк (освежёванный)"
+    },
+    {
+     "id": "Wolf_Torso",
+     "name": "Торс волка"
+    },
+    {
+     "id": "ZombieMeat",
+     "name": "Мясо зомби"
+    },
+    {
+     "id": "Zombie_01_Head",
+     "name": "Голова зомби"
+    },
+    {
+     "id": "Zombie_01_Head_No_teeth",
+     "name": "Голова зомби (без зубов)"
+    },
+    {
+     "id": "Zombie_01_Left_Arm",
+     "name": "Рука зомби, левая"
+    },
+    {
+     "id": "Zombie_01_Left_Foot",
+     "name": "Стопа зомби, левая"
+    },
+    {
+     "id": "Zombie_01_Left_Leg",
+     "name": "Нога зомби, левая"
+    },
+    {
+     "id": "Zombie_01_Right_Arm",
+     "name": "Рука зомби, правая"
+    },
+    {
+     "id": "Zombie_01_Right_Foot",
+     "name": "Стопа зомби, правая"
+    },
+    {
+     "id": "Zombie_01_Right_Leg",
+     "name": "Нога зомби, правая"
+    },
+    {
+     "id": "Zombie_01_Torso",
+     "name": "Торс зомби"
+    },
+    {
+     "id": "Zombie_guts",
+     "name": "Внутренности зомби"
     }
    ]
   },
@@ -8246,6 +8738,18 @@
     {
      "id": "Tea_Pack",
      "name": "Tea Pack"
+    },
+    {
+     "id": "Corn_flakes",
+     "name": "Кукурузные хлопья"
+    },
+    {
+     "id": "Instant_OatMeal",
+     "name": "Овсянка быстрого приготовления"
+    },
+    {
+     "id": "MRE_Cheeseburger",
+     "name": "MRE «Чизбургер»"
     }
    ]
   },
@@ -8327,6 +8831,14 @@
     {
      "id": "Spon",
      "name": "Spon"
+    },
+    {
+     "id": "CannedCatfood",
+     "name": "Консервы для кошек"
+    },
+    {
+     "id": "CannedSeaFoodMix",
+     "name": "Консервы «Морской коктейль»"
     }
    ]
   },
@@ -8476,6 +8988,10 @@
     {
      "id": "Kicmovaca",
      "name": "Kicmovaca"
+    },
+    {
+     "id": "Water_05l",
+     "name": "Бутылка воды 0,5 л"
     }
    ]
   },
@@ -8737,6 +9253,26 @@
     {
      "id": "RabbitMeat_Salted",
      "name": "Salted Rabbit Meat"
+    },
+    {
+     "id": "BP_PlasticSurgeryService",
+     "name": "Пластика лица (услуга)"
+    },
+    {
+     "id": "Emergency_bandage",
+     "name": "Экстренный бинт"
+    },
+    {
+     "id": "Emergency_bandage_Big",
+     "name": "Экстренный бинт (большой)"
+    },
+    {
+     "id": "Isopropyl_alcohol",
+     "name": "Изопропиловый спирт"
+    },
+    {
+     "id": "PainKillers_03",
+     "name": "Обезболивающее III"
     }
    ]
   },
@@ -9218,6 +9754,38 @@
     {
      "id": "Wooden_Sticks_Bundle_Meduim",
      "name": "Bundle Wooden Stick Medium"
+    },
+    {
+     "id": "Animal_skin",
+     "name": "Шкура животного"
+    },
+    {
+     "id": "Bundle_Of_Bricks",
+     "name": "Пачка кирпичей"
+    },
+    {
+     "id": "Goat_Horns",
+     "name": "Рога козы"
+    },
+    {
+     "id": "Improvised_Plant_rope",
+     "name": "Самодельная верёвка из растений"
+    },
+    {
+     "id": "Improvised_rope",
+     "name": "Самодельная верёвка"
+    },
+    {
+     "id": "Long_wooden_stick",
+     "name": "Длинная деревянная палка"
+    },
+    {
+     "id": "Rubber_band",
+     "name": "Резиновый жгут"
+    },
+    {
+     "id": "Rubber_sheet",
+     "name": "Резиновый лист"
     }
    ]
   },
@@ -9575,6 +10143,38 @@
     {
      "id": "Tire_Repair_Kit",
      "name": "Tire Repair Kit"
+    },
+    {
+     "id": "AnimalBaitFeederItem",
+     "name": "Кормушка для приманки животных"
+    },
+    {
+     "id": "AnimalBaitFeederItem_HunterVariant",
+     "name": "Кормушка для приманки (охотничья)"
+    },
+    {
+     "id": "BP_WheelBarrow_Improvised",
+     "name": "Самодельная тачка"
+    },
+    {
+     "id": "BP_WheelBarrow_Metal",
+     "name": "Тачка (металл)"
+    },
+    {
+     "id": "Battery_Charger_large",
+     "name": "Зарядное устройство (большое)"
+    },
+    {
+     "id": "Battery_Charger_medium",
+     "name": "Зарядное устройство (среднее)"
+    },
+    {
+     "id": "Battery_Charger_small",
+     "name": "Зарядное устройство (малое)"
+    },
+    {
+     "id": "Fire_Hand_Drill_new",
+     "name": "Ручная дрель для добычи огня"
     }
    ]
   },
@@ -10067,7 +10667,7 @@
     },
     {
      "id": "Copper_Coins",
-     "name": "Copper Coins"
+     "name": "Медные монеты"
     },
     {
      "id": "Credit_Card_Classic",
@@ -10552,6 +11152,38 @@
     {
      "id": "Zombie_Impersonator_Suit",
      "name": "Cursed Puppet Suit"
+    },
+    {
+     "id": "BP_WeaponCharm_BoneWhistle",
+     "name": "Костяной свисток (брелок на оружие)"
+    },
+    {
+     "id": "Bobby_pin",
+     "name": "Заколка"
+    },
+    {
+     "id": "Christmas_tree",
+     "name": "Новогодняя ёлка"
+    },
+    {
+     "id": "Christmas_tree_Decorated",
+     "name": "Новогодняя ёлка (наряженная)"
+    },
+    {
+     "id": "Kitchen_Board_01",
+     "name": "Кухонная доска 01"
+    },
+    {
+     "id": "Kitchen_Board_02",
+     "name": "Кухонная доска 02"
+    },
+    {
+     "id": "Puppet_Eye",
+     "name": "Глаз куклы"
+    },
+    {
+     "id": "Scum_Sunrise",
+     "name": "Scum Sunrise"
     }
    ]
   },
@@ -10903,6 +11535,10 @@
     {
      "id": "Weapon_Parts_VSS_VZ",
      "name": "VSS VZ Weapon Parts"
+    },
+    {
+     "id": "Weapon_Parts_DEagle_50",
+     "name": "Детали Desert Eagle .50"
     }
    ]
   },
@@ -11983,6 +12619,1520 @@
     {
      "id": "WW_Wheel_ArmorLight_FrontRight_Item",
      "name": "WW Wheel Armor Front Right"
+    }
+   ]
+  },
+  {
+   "name": "Транспорт — Транспортные средства",
+   "items": [
+    {
+     "id": "BPC_Barba",
+     "name": "Барба (лодка)"
+    },
+    {
+     "id": "BPC_CityBike",
+     "name": "CityBike (велосипед)"
+    },
+    {
+     "id": "BPC_Cruiser",
+     "name": "Крузер"
+    },
+    {
+     "id": "BPC_Dirtbike",
+     "name": "Дёртбайк (мотоцикл)"
+    },
+    {
+     "id": "BPC_Laika",
+     "name": "Лаика"
+    },
+    {
+     "id": "BPC_MountainBike",
+     "name": "MountainBike (велосипед)"
+    },
+    {
+     "id": "BPC_RIS",
+     "name": "RIS"
+    },
+    {
+     "id": "BPC_Rager",
+     "name": "Рагер"
+    },
+    {
+     "id": "BPC_WolfsWagen",
+     "name": "Вольфсваген"
+    }
+   ]
+  },
+  {
+   "name": "Транспорт — Услуги механика",
+   "items": [
+    {
+     "id": "ServiceBP_Install_BP_Cruiser_Engine_ICU",
+     "name": "Установка: двигатель ICU (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Dirtbike_Engine_ICU",
+     "name": "Установка: двигатель ICU (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Door_ArmorHeavy_BackLeft_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, задняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Door_ArmorHeavy_BackRight_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, задняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Door_ArmorLight_BackLeft_Item",
+     "name": "Установка: дверь с лёгкой бронёй, задняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Door_ArmorLight_BackRight_Item",
+     "name": "Установка: дверь с лёгкой бронёй, задняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Engine_ICU",
+     "name": "Установка: двигатель ICU (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Radiator_Item",
+     "name": "Установка: радиатор (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Seat_BackLeft_Item",
+     "name": "Установка: сиденье, заднее левое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Seat_BackRight_Item",
+     "name": "Установка: сиденье, заднее правое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_TimingBelt_Item",
+     "name": "Установка: ремень ГРМ (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Wheel_ArmorLight_FrontLeft_Item",
+     "name": "Установка: колесо с лёгкой бронёй, переднее левое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Laika_Wheel_ArmorLight_FrontRight_Item",
+     "name": "Установка: колесо с лёгкой бронёй, переднее правое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_RIS_Engine_ICU",
+     "name": "Установка: двигатель ICU (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Rager_Engine_ICU",
+     "name": "Установка: двигатель ICU (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Vehicle_CattlePusher_Item",
+     "name": "Установка: толкатель для скота (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Vehicle_HoodFlag_Item",
+     "name": "Установка: флаг на капот (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Vehicle_RoofRack_Item",
+     "name": "Установка: багажник на крышу (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Vehicle_SpikedReinforcement_Item",
+     "name": "Установка: шипованный усилитель кузова (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_Vehicle_TrainBumper_Item",
+     "name": "Установка: усиленный бампер \"таран\" (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_WW_Engine_ICU",
+     "name": "Установка: двигатель ICU (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_WW_Radiator_Item",
+     "name": "Установка: радиатор (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_BP_WW_TimingBelt_Item",
+     "name": "Установка: ремень ГРМ (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_Bicycle_Wheel_54_622_Item",
+     "name": "Установка: колесо велосипедное 54-622"
+    },
+    {
+     "id": "ServiceBP_Install_Bicycle_Wheel_60_622_Item",
+     "name": "Установка: колесо велосипедное 60-622"
+    },
+    {
+     "id": "ServiceBP_Install_Big_Vehicle_StorageRack",
+     "name": "Установка: багажная стойка (большой транспорт)"
+    },
+    {
+     "id": "ServiceBP_Install_Car_Battery",
+     "name": "Установка: автомобильный аккумулятор"
+    },
+    {
+     "id": "ServiceBP_Install_Car_Radio_Item",
+     "name": "Установка: автомобильная радиостанция"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Brakelight_Item",
+     "name": "Установка: стоп-сигнал (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Fender_Front_Item",
+     "name": "Установка: крыло переднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Fender_Rear_Item",
+     "name": "Установка: крыло заднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Headlight_Item",
+     "name": "Установка: фара (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Seat_Front_Item",
+     "name": "Установка: сиденье переднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Seat_Rear_Item",
+     "name": "Установка: сиденье заднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Wheel_155_66_R17",
+     "name": "Установка: шина 155/66 R17 (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Wheel_188_53_R17",
+     "name": "Установка: шина 188/53 R17 (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Cruiser_Wind_Deflector_Item",
+     "name": "Установка: дефлектор (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Body_Hellrider_Item",
+     "name": "Установка: корпус \"Hellrider\" (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Body_Item",
+     "name": "Установка: корпус (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Brakelight_Item",
+     "name": "Установка: стоп-сигнал (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Fender_Item",
+     "name": "Установка: крыло (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Front_Shield_Item",
+     "name": "Установка: передний щиток (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Front_Wheel_Cover_Item",
+     "name": "Установка: щиток переднего колеса (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Headlight_Item",
+     "name": "Установка: фара (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Hellrider_Skull_Item",
+     "name": "Установка: череп \"Hellrider\" (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Wheel_110_80_R19_Item",
+     "name": "Установка: шина 110/80 R19 (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Dirtbike_Wheel_90_90_R21_Item",
+     "name": "Установка: шина 90/90 R21 (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_ArmorHeavy_Left",
+     "name": "Установка: броня кузова, тяжёлая, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_ArmorHeavy_Right",
+     "name": "Установка: броня кузова, тяжёлая, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_ArmorHeavy_Top_Item",
+     "name": "Установка: броня кузова, тяжёлая, верхняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_ArmorLight_Left",
+     "name": "Установка: броня кузова, лёгкая, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_ArmorLight_Right",
+     "name": "Установка: броня кузова, лёгкая, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_ArmorLight_Top",
+     "name": "Установка: броня кузова, лёгкая, верхняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_Front",
+     "name": "Установка: панель кузова, передняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_Left",
+     "name": "Установка: панель кузова, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_Right",
+     "name": "Установка: панель кузова, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Body_Top",
+     "name": "Установка: панель кузова, верхняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Bumper_Armor_Back_Item",
+     "name": "Установка: задний бампер с бронёй (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Bumper_Back_Item",
+     "name": "Установка: задний бампер (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Bumper_Front_Item",
+     "name": "Установка: передний бампер (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_DoorHood_Item",
+     "name": "Установка: капот (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_DoorTrunk_ArmorHeavy_Item",
+     "name": "Установка: крышка багажника с тяжёлой бронёй (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_DoorTrunk_ArmorLight_Item",
+     "name": "Установка: крышка багажника с лёгкой бронёй (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_DoorTrunk_Item",
+     "name": "Установка: крышка багажника (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Door_ArmorHeavy_FrontLeft_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, передняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Door_ArmorHeavy_FrontRight_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, передняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Door_ArmorLight_FrontLeft_Item",
+     "name": "Установка: дверь с лёгкой бронёй, передняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Door_ArmorLight_FrontRight_Item",
+     "name": "Установка: дверь с лёгкой бронёй, передняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Door_Left_Item",
+     "name": "Установка: дверь, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Door_Right_Item",
+     "name": "Установка: дверь, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Engine_Alternator_Item",
+     "name": "Установка: генератор (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Lights_FrontLeft",
+     "name": "Установка: фара, передняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Lights_FrontRight",
+     "name": "Установка: фара, передняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Lights_RearLeft",
+     "name": "Установка: фонарь, задняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Lights_RearRight",
+     "name": "Установка: фонарь, задняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Seat_FrontLeft_Item",
+     "name": "Установка: сиденье, переднее левое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Laika_Seat_FrontRight_Item",
+     "name": "Установка: сиденье, переднее правое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Install_Medium_Vehicle_StorageRack",
+     "name": "Установка: багажная стойка (средний транспорт)"
+    },
+    {
+     "id": "ServiceBP_Install_Motorbike_Battery",
+     "name": "Установка: аккумулятор мотоцикла"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Armor_Military_Front_Item",
+     "name": "Установка: броня военная, передняя (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Bars_Civilian_Back_Item",
+     "name": "Установка: дуги задние гражданские (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Bars_Civilian_Front_Item",
+     "name": "Установка: дуги передние гражданские (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Body_Civilian_Item",
+     "name": "Установка: кузов гражданский (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Body_Military_Item",
+     "name": "Установка: кузов военный (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_BrakeLight_Center_Item",
+     "name": "Установка: стоп-сигнал центральный (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_BrakeLight_Left_Item",
+     "name": "Установка: стоп-сигнал левый (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_BrakeLight_Right_Item",
+     "name": "Установка: стоп-сигнал правый (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Hand_Guards_Civilian_Item",
+     "name": "Установка: защита рук, гражданская (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Headlight_Left_Item",
+     "name": "Установка: фара левая (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Headlight_Right_Item",
+     "name": "Установка: фара правая (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Light_Shades_Civilian_Item",
+     "name": "Установка: накладки на фары, гражданские (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Plow_Civilian",
+     "name": "Установка: плуг, гражданский (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Spikes_Military",
+     "name": "Установка: шипы, военные (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_RIS_Wheel_Armor_Item",
+     "name": "Установка: броня колёс (RIS)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorHeavy_Back_Item",
+     "name": "Установка: броня кузова, тяжёлая, задняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorHeavy_Left_Item",
+     "name": "Установка: броня кузова, тяжёлая, левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorHeavy_Right_Item",
+     "name": "Установка: броня кузова, тяжёлая, правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorHeavy_Top_Item",
+     "name": "Установка: броня кузова, тяжёлая, верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorLight_Back_Item",
+     "name": "Установка: броня кузова, лёгкая, задняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorLight_Left_Item",
+     "name": "Установка: броня кузова, лёгкая, левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorLight_Right_Item",
+     "name": "Установка: броня кузова, лёгкая, правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_ArmorLight_Top_Item",
+     "name": "Установка: броня кузова, лёгкая, верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_Front",
+     "name": "Установка: панель кузова, передняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_Left",
+     "name": "Установка: панель кузова, левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_Right",
+     "name": "Установка: панель кузова, правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Body_Top",
+     "name": "Установка: панель кузова, верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Bumper_Back_Item",
+     "name": "Установка: задний бампер (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Bumper_Front_Item",
+     "name": "Установка: передний бампер (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_DoorHood_Item",
+     "name": "Установка: капот (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_DoorTrunk_ArmorHeavy_Item",
+     "name": "Установка: крышка багажника с тяжёлой бронёй (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_DoorTrunk_ArmorLight_Item",
+     "name": "Установка: крышка багажника с лёгкой бронёй (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_DoorTrunk_Item",
+     "name": "Установка: крышка багажника (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorHeavy_BackLeft_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorHeavy_BackRight_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorHeavy_FrontLeft_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorHeavy_FrontRight_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorLight_BackLeft_Item",
+     "name": "Установка: дверь с лёгкой бронёй, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorLight_BackRight_Item",
+     "name": "Установка: дверь с лёгкой бронёй, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorLight_FrontLeft_Item",
+     "name": "Установка: дверь с лёгкой бронёй, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_ArmorLight_FrontRight_Item",
+     "name": "Установка: дверь с лёгкой бронёй, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_BackLeft_Item",
+     "name": "Установка: дверь, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_BackRight_Item",
+     "name": "Установка: дверь, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_FrontLeft_Item",
+     "name": "Установка: дверь, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Door_FrontRight_Item",
+     "name": "Установка: дверь, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Engine_Alternator_Item",
+     "name": "Установка: генератор (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Lights_FrontLeft",
+     "name": "Установка: фара, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Lights_FrontRight",
+     "name": "Установка: фара, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Lights_RearLeft",
+     "name": "Установка: фонарь, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Lights_RearRight",
+     "name": "Установка: фонарь, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Lights_RearTop",
+     "name": "Установка: фонарь, задняя верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Seat_FrontLeft_Item",
+     "name": "Установка: сиденье, переднее левое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Seat_FrontRight_Item",
+     "name": "Установка: сиденье, переднее правое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Wheel_ArmorHeavy_FrontLeft_Item",
+     "name": "Установка: колесо с тяжёлой бронёй, переднее левое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Wheel_ArmorHeavy_FrontRight_Item",
+     "name": "Установка: колесо с тяжёлой бронёй, переднее правое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Wheel_ArmorLight_FrontLeft_Item",
+     "name": "Установка: колесо с лёгкой бронёй, переднее левое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Rager_Wheel_ArmorLight_FrontRight_Item",
+     "name": "Установка: колесо с лёгкой бронёй, переднее правое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Install_Small_Vehicle_StorageRack",
+     "name": "Установка: багажная стойка (малый транспорт)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Body_ArmorHeavy_Top_Item",
+     "name": "Установка: броня кузова, тяжёлая, верхняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Body_Back",
+     "name": "Установка: панель кузова, задняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Body_Front",
+     "name": "Установка: панель кузова, передняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Body_Left",
+     "name": "Установка: панель кузова, левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Body_Right",
+     "name": "Установка: панель кузова, правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Body_Top",
+     "name": "Установка: панель кузова, верхняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Bumper_Armor_Back_Item",
+     "name": "Установка: задний бампер с бронёй (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Bumper_Back_Item",
+     "name": "Установка: задний бампер (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Bumper_Front_Item",
+     "name": "Установка: передний бампер (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_DoorHood_Item",
+     "name": "Установка: капот (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_DoorTrunk_ArmorHeavy_Item",
+     "name": "Установка: крышка багажника с тяжёлой бронёй (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_DoorTrunk_ArmorLight_Item",
+     "name": "Установка: крышка багажника с лёгкой бронёй (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_DoorTrunk_Item",
+     "name": "Установка: крышка багажника (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorHeavy_BackLeft_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorHeavy_BackRight_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorHeavy_FrontLeft_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorHeavy_FrontRight_Item",
+     "name": "Установка: дверь с тяжёлой бронёй, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorLight_BackLeft_Item",
+     "name": "Установка: дверь с лёгкой бронёй, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorLight_BackRight_Item",
+     "name": "Установка: дверь с лёгкой бронёй, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorLight_FrontLeft_Item",
+     "name": "Установка: дверь с лёгкой бронёй, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_ArmorLight_FrontRight_Item",
+     "name": "Установка: дверь с лёгкой бронёй, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_BackLeft_Item",
+     "name": "Установка: дверь, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_BackRight_Item",
+     "name": "Установка: дверь, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_FrontLeft_Item",
+     "name": "Установка: дверь, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Door_FrontRight_Item",
+     "name": "Установка: дверь, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Engine_Alternator_Item",
+     "name": "Установка: генератор (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Lights_FrontLeft",
+     "name": "Установка: фара, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Lights_FrontRight",
+     "name": "Установка: фара, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Lights_RearLeft",
+     "name": "Установка: фонарь, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Lights_RearRight",
+     "name": "Установка: фонарь, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Seat_BackLeft_Item",
+     "name": "Установка: сиденье, заднее левое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Seat_BackRight_Item",
+     "name": "Установка: сиденье, заднее правое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Seat_FrontLeft_Item",
+     "name": "Установка: сиденье, переднее левое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Seat_FrontRight_Item",
+     "name": "Установка: сиденье, переднее правое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Wheel_ArmorLight_FrontLeft_Item",
+     "name": "Установка: колесо с лёгкой бронёй, переднее левое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_WW_Wheel_ArmorLight_FrontRight_Item",
+     "name": "Установка: колесо с лёгкой бронёй, переднее правое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Install_Wheel_155_R65_Item",
+     "name": "Установка: шина 155 R65 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Install_Wheel_205_80_R12_Item",
+     "name": "Установка: шина 205/80 R12 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Install_Wheel_255_55_R16_Item",
+     "name": "Установка: шина 255/55 R16 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Install_Wheel_265_60_R18_Item",
+     "name": "Установка: шина 265/60 R18 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Purchase_BP_Cruiser_Engine_ICU",
+     "name": "Покупка: двигатель ICU (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Purchase_BP_Dirtbike_Engine_ICU",
+     "name": "Покупка: двигатель ICU (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Purchase_BP_Laika_Engine_ICU",
+     "name": "Покупка: двигатель ICU (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Purchase_BP_RIS_Engine_ICU",
+     "name": "Покупка: двигатель ICU (RIS)"
+    },
+    {
+     "id": "ServiceBP_Purchase_BP_Rager_Engine_ICU",
+     "name": "Покупка: двигатель ICU (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Purchase_BP_WW_Engine_ICU",
+     "name": "Покупка: двигатель ICU (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_CityBike",
+     "name": "Ремонт: CityBike (велосипед)"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_Cruiser",
+     "name": "Ремонт: Крузер"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_Dirtbike",
+     "name": "Ремонт: Дёртбайк (мотоцикл)"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_Laika",
+     "name": "Ремонт: Лаика"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_MountainBike",
+     "name": "Ремонт: MountainBike (велосипед)"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_RIS",
+     "name": "Ремонт: RIS"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_Rager",
+     "name": "Ремонт: Рагер"
+    },
+    {
+     "id": "ServiceBP_Repair_BPC_WolfsWagen",
+     "name": "Ремонт: Вольфсваген"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Cruiser_Engine_ICU",
+     "name": "Ремонт: двигатель ICU (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Dirtbike_Engine_ICU",
+     "name": "Ремонт: двигатель ICU (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Door_ArmorHeavy_BackLeft_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, задняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Door_ArmorHeavy_BackRight_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, задняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Door_ArmorLight_BackLeft_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, задняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Door_ArmorLight_BackRight_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, задняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Engine_ICU",
+     "name": "Ремонт: двигатель ICU (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Radiator_Item",
+     "name": "Ремонт: радиатор (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Seat_BackLeft_Item",
+     "name": "Ремонт: сиденье, заднее левое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Seat_BackRight_Item",
+     "name": "Ремонт: сиденье, заднее правое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_TimingBelt_Item",
+     "name": "Ремонт: ремень ГРМ (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Wheel_ArmorLight_FrontLeft_Item",
+     "name": "Ремонт: колесо с лёгкой бронёй, переднее левое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Laika_Wheel_ArmorLight_FrontRight_Item",
+     "name": "Ремонт: колесо с лёгкой бронёй, переднее правое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_RIS_Engine_ICU",
+     "name": "Ремонт: двигатель ICU (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Rager_Engine_ICU",
+     "name": "Ремонт: двигатель ICU (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Vehicle_CattlePusher_Item",
+     "name": "Ремонт: толкатель для скота (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Vehicle_HoodFlag_Item",
+     "name": "Ремонт: флаг на капот (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Vehicle_RoofRack_Item",
+     "name": "Ремонт: багажник на крышу (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Vehicle_SpikedReinforcement_Item",
+     "name": "Ремонт: шипованный усилитель кузова (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_Vehicle_TrainBumper_Item",
+     "name": "Ремонт: усиленный бампер \"таран\" (универсальный)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_WW_Engine_ICU",
+     "name": "Ремонт: двигатель ICU (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_WW_Radiator_Item",
+     "name": "Ремонт: радиатор (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_BP_WW_TimingBelt_Item",
+     "name": "Ремонт: ремень ГРМ (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_Bicycle_Wheel_54_622_Item",
+     "name": "Ремонт: колесо велосипедное 54-622"
+    },
+    {
+     "id": "ServiceBP_Repair_Bicycle_Wheel_60_622_Item",
+     "name": "Ремонт: колесо велосипедное 60-622"
+    },
+    {
+     "id": "ServiceBP_Repair_Big_Vehicle_StorageRack",
+     "name": "Ремонт: багажная стойка (большой транспорт)"
+    },
+    {
+     "id": "ServiceBP_Repair_Car_Battery",
+     "name": "Ремонт: автомобильный аккумулятор"
+    },
+    {
+     "id": "ServiceBP_Repair_Car_Radio_Item",
+     "name": "Ремонт: автомобильная радиостанция"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Brakelight_Item",
+     "name": "Ремонт: стоп-сигнал (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Fender_Front_Item",
+     "name": "Ремонт: крыло переднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Fender_Rear_Item",
+     "name": "Ремонт: крыло заднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Headlight_Item",
+     "name": "Ремонт: фара (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Seat_Front_Item",
+     "name": "Ремонт: сиденье переднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Seat_Rear_Item",
+     "name": "Ремонт: сиденье заднее (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Wheel_155_66_R17",
+     "name": "Ремонт: шина 155/66 R17 (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Wheel_188_53_R17",
+     "name": "Ремонт: шина 188/53 R17 (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Cruiser_Wind_Deflector_Item",
+     "name": "Ремонт: дефлектор (Крузер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Body_Hellrider_Item",
+     "name": "Ремонт: корпус \"Hellrider\" (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Body_Item",
+     "name": "Ремонт: корпус (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Brakelight_Item",
+     "name": "Ремонт: стоп-сигнал (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Fender_Item",
+     "name": "Ремонт: крыло (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Front_Shield_Item",
+     "name": "Ремонт: передний щиток (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Front_Wheel_Cover_Item",
+     "name": "Ремонт: щиток переднего колеса (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Headlight_Item",
+     "name": "Ремонт: фара (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Hellrider_Skull_Item",
+     "name": "Ремонт: череп \"Hellrider\" (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Wheel_110_80_R19_Item",
+     "name": "Ремонт: шина 110/80 R19 (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Dirtbike_Wheel_90_90_R21_Item",
+     "name": "Ремонт: шина 90/90 R21 (Дёртбайк)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_ArmorHeavy_Left",
+     "name": "Ремонт: броня кузова, тяжёлая, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_ArmorHeavy_Right",
+     "name": "Ремонт: броня кузова, тяжёлая, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_ArmorHeavy_Top_Item",
+     "name": "Ремонт: броня кузова, тяжёлая, верхняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_ArmorLight_Right",
+     "name": "Ремонт: броня кузова, лёгкая, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_ArmorLight_Top",
+     "name": "Ремонт: броня кузова, лёгкая, верхняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_Front",
+     "name": "Ремонт: панель кузова, передняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_Left",
+     "name": "Ремонт: панель кузова, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_Right",
+     "name": "Ремонт: панель кузова, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Body_Top",
+     "name": "Ремонт: панель кузова, верхняя (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Bumper_Armor_Back_Item",
+     "name": "Ремонт: задний бампер с бронёй (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Bumper_Back_Item",
+     "name": "Ремонт: задний бампер (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Bumper_Front_Item",
+     "name": "Ремонт: передний бампер (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_DoorHood_Item",
+     "name": "Ремонт: капот (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_DoorTrunk_ArmorHeavy_Item",
+     "name": "Ремонт: крышка багажника с тяжёлой бронёй (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_DoorTrunk_ArmorLight_Item",
+     "name": "Ремонт: крышка багажника с лёгкой бронёй (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_DoorTrunk_Item",
+     "name": "Ремонт: крышка багажника (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Door_ArmorHeavy_FrontLeft_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, передняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Door_ArmorHeavy_FrontRight_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, передняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Door_ArmorLight_FrontLeft_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, передняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Door_ArmorLight_FrontRight_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, передняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Door_Left_Item",
+     "name": "Ремонт: дверь, левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Door_Right_Item",
+     "name": "Ремонт: дверь, правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Engine_Alternator_Item",
+     "name": "Ремонт: генератор (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Lights_FrontLeft",
+     "name": "Ремонт: фара, передняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Lights_FrontRight",
+     "name": "Ремонт: фара, передняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Lights_RearLeft",
+     "name": "Ремонт: фонарь, задняя левая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Lights_RearRight",
+     "name": "Ремонт: фонарь, задняя правая (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Seat_FrontLeft_Item",
+     "name": "Ремонт: сиденье, переднее левое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Laika_Seat_FrontRight_Item",
+     "name": "Ремонт: сиденье, переднее правое (Лаика)"
+    },
+    {
+     "id": "ServiceBP_Repair_Medium_Vehicle_StorageRack",
+     "name": "Ремонт: багажная стойка (средний транспорт)"
+    },
+    {
+     "id": "ServiceBP_Repair_Motorbike_Battery",
+     "name": "Ремонт: аккумулятор мотоцикла"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Armor_Military_Front_Item",
+     "name": "Ремонт: броня военная, передняя (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Bars_Civilian_Back_Item",
+     "name": "Ремонт: дуги задние гражданские (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Bars_Civilian_Front_Item",
+     "name": "Ремонт: дуги передние гражданские (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Body_Civilian_Item",
+     "name": "Ремонт: кузов гражданский (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Body_Military_Item",
+     "name": "Ремонт: кузов военный (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_BrakeLight_Center_Item",
+     "name": "Ремонт: стоп-сигнал центральный (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_BrakeLight_Left_Item",
+     "name": "Ремонт: стоп-сигнал левый (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_BrakeLight_Right_Item",
+     "name": "Ремонт: стоп-сигнал правый (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Hand_Guards_Civilian_Item",
+     "name": "Ремонт: защита рук, гражданская (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Headlight_Left_Item",
+     "name": "Ремонт: фара левая (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Headlight_Right_Item",
+     "name": "Ремонт: фара правая (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Light_Shades_Civilian_Item",
+     "name": "Ремонт: накладки на фары, гражданские (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Plow_Civilian",
+     "name": "Ремонт: плуг, гражданский (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Spikes_Military",
+     "name": "Ремонт: шипы, военные (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_RIS_Wheel_Armor_Item",
+     "name": "Ремонт: броня колёс (RIS)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorHeavy_Back_Item",
+     "name": "Ремонт: броня кузова, тяжёлая, задняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorHeavy_Left_Item",
+     "name": "Ремонт: броня кузова, тяжёлая, левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorHeavy_Right_Item",
+     "name": "Ремонт: броня кузова, тяжёлая, правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorHeavy_Top_Item",
+     "name": "Ремонт: броня кузова, тяжёлая, верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorLight_Back_Item",
+     "name": "Ремонт: броня кузова, лёгкая, задняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorLight_Left_Item",
+     "name": "Ремонт: броня кузова, лёгкая, левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorLight_Right_Item",
+     "name": "Ремонт: броня кузова, лёгкая, правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_ArmorLight_Top_Item",
+     "name": "Ремонт: броня кузова, лёгкая, верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_Front",
+     "name": "Ремонт: панель кузова, передняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_Left",
+     "name": "Ремонт: панель кузова, левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_Right",
+     "name": "Ремонт: панель кузова, правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Body_Top",
+     "name": "Ремонт: панель кузова, верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Bumper_Back_Item",
+     "name": "Ремонт: задний бампер (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Bumper_Front_Item",
+     "name": "Ремонт: передний бампер (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_DoorHood_Item",
+     "name": "Ремонт: капот (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_DoorTrunk_ArmorHeavy_Item",
+     "name": "Ремонт: крышка багажника с тяжёлой бронёй (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_DoorTrunk_ArmorLight_Item",
+     "name": "Ремонт: крышка багажника с лёгкой бронёй (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_DoorTrunk_Item",
+     "name": "Ремонт: крышка багажника (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorHeavy_BackLeft_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorHeavy_BackRight_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorHeavy_FrontLeft_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorHeavy_FrontRight_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorLight_BackLeft_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorLight_BackRight_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorLight_FrontLeft_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_ArmorLight_FrontRight_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_BackLeft_Item",
+     "name": "Ремонт: дверь, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_BackRight_Item",
+     "name": "Ремонт: дверь, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_FrontLeft_Item",
+     "name": "Ремонт: дверь, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Door_FrontRight_Item",
+     "name": "Ремонт: дверь, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Engine_Alternator_Item",
+     "name": "Ремонт: генератор (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Lights_FrontLeft",
+     "name": "Ремонт: фара, передняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Lights_FrontRight",
+     "name": "Ремонт: фара, передняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Lights_RearLeft",
+     "name": "Ремонт: фонарь, задняя левая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Lights_RearRight",
+     "name": "Ремонт: фонарь, задняя правая (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Lights_RearTop",
+     "name": "Ремонт: фонарь, задняя верхняя (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Seat_FrontLeft_Item",
+     "name": "Ремонт: сиденье, переднее левое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Seat_FrontRight_Item",
+     "name": "Ремонт: сиденье, переднее правое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Wheel_ArmorHeavy_FrontLeft_Item",
+     "name": "Ремонт: колесо с тяжёлой бронёй, переднее левое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Wheel_ArmorHeavy_FrontRight_Item",
+     "name": "Ремонт: колесо с тяжёлой бронёй, переднее правое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Wheel_ArmorLight_FrontLeft_Item",
+     "name": "Ремонт: колесо с лёгкой бронёй, переднее левое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Rager_Wheel_ArmorLight_FrontRight_Item",
+     "name": "Ремонт: колесо с лёгкой бронёй, переднее правое (Рагер)"
+    },
+    {
+     "id": "ServiceBP_Repair_Small_Vehicle_StorageRack",
+     "name": "Ремонт: багажная стойка (малый транспорт)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Body_ArmorHeavy_Top_Item",
+     "name": "Ремонт: броня кузова, тяжёлая, верхняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Body_Back",
+     "name": "Ремонт: панель кузова, задняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Body_Front",
+     "name": "Ремонт: панель кузова, передняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Body_Left",
+     "name": "Ремонт: панель кузова, левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Body_Right",
+     "name": "Ремонт: панель кузова, правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Body_Top",
+     "name": "Ремонт: панель кузова, верхняя (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Bumper_Armor_Back_Item",
+     "name": "Ремонт: задний бампер с бронёй (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Bumper_Back_Item",
+     "name": "Ремонт: задний бампер (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Bumper_Front_Item",
+     "name": "Ремонт: передний бампер (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_DoorHood_Item",
+     "name": "Ремонт: капот (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_DoorTrunk_ArmorHeavy_Item",
+     "name": "Ремонт: крышка багажника с тяжёлой бронёй (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_DoorTrunk_ArmorLight_Item",
+     "name": "Ремонт: крышка багажника с лёгкой бронёй (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_DoorTrunk_Item",
+     "name": "Ремонт: крышка багажника (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorHeavy_BackLeft_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorHeavy_BackRight_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorHeavy_FrontLeft_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorHeavy_FrontRight_Item",
+     "name": "Ремонт: дверь с тяжёлой бронёй, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorLight_BackLeft_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorLight_BackRight_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorLight_FrontLeft_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_ArmorLight_FrontRight_Item",
+     "name": "Ремонт: дверь с лёгкой бронёй, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_BackLeft_Item",
+     "name": "Ремонт: дверь, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_BackRight_Item",
+     "name": "Ремонт: дверь, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_FrontLeft_Item",
+     "name": "Ремонт: дверь, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Door_FrontRight_Item",
+     "name": "Ремонт: дверь, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Engine_Alternator_Item",
+     "name": "Ремонт: генератор (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Lights_FrontLeft",
+     "name": "Ремонт: фара, передняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Lights_FrontRight",
+     "name": "Ремонт: фара, передняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Lights_RearLeft",
+     "name": "Ремонт: фонарь, задняя левая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Lights_RearRight",
+     "name": "Ремонт: фонарь, задняя правая (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Seat_BackLeft_Item",
+     "name": "Ремонт: сиденье, заднее левое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Seat_BackRight_Item",
+     "name": "Ремонт: сиденье, заднее правое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Seat_FrontLeft_Item",
+     "name": "Ремонт: сиденье, переднее левое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Seat_FrontRight_Item",
+     "name": "Ремонт: сиденье, переднее правое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Wheel_ArmorLight_FrontLeft_Item",
+     "name": "Ремонт: колесо с лёгкой бронёй, переднее левое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_WW_Wheel_ArmorLight_FrontRight_Item",
+     "name": "Ремонт: колесо с лёгкой бронёй, переднее правое (Вольфсваген)"
+    },
+    {
+     "id": "ServiceBP_Repair_Wheel_155_R65_Item",
+     "name": "Ремонт: шина 155 R65 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Repair_Wheel_205_80_R12_Item",
+     "name": "Ремонт: шина 205/80 R12 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Repair_Wheel_255_55_R16_Item",
+     "name": "Ремонт: шина 255/55 R16 (универсальная)"
+    },
+    {
+     "id": "ServiceBP_Repair_Wheel_265_60_R18_Item",
+     "name": "Ремонт: шина 265/60 R18 (универсальная)"
     }
    ]
   }
