@@ -1425,26 +1425,6 @@ $('#l-val-run').onclick=lootValidateRun;
 lootHelpRender();
 window.addEventListener('storage',e=>{if(e.key==='loot-work-bump'&&lootStatus)lootRun(lootPubRefresh())});
 window.addEventListener('focus',()=>{if(lootStatus)lootRun(lootPubRefresh())});
-$('#cat-icons-fetch').onclick=async()=>{
- if(!(await askConfirm('Догрузка иконок','Скачать общую базу иконок (≈130 МБ) из последнего релиза на GitHub и извлечь отсутствующие? Файл кэшируется в data\\icons — повторный запуск работает из кэша мгновенно. Требуется интернет.')))return;
- let btn=$('#cat-icons-fetch'),st=$('#db-status'),old=st.textContent;
- try{let r=await fetch('/api/icons/auto-fetch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({confirm:true})}).then(v=>v.json());
- if(!r||!r.ok)throw new Error((r&&r.error)||'Не удалось запустить догрузку');
- if(r.started===false){st.textContent=old;toast('Все иконки уже на месте');return}
- btn.disabled=true;
- const mb=x=>Math.round(x/1048576)+' МБ';
- let timer=setInterval(async()=>{
-  try{let s=await fetch('/api/icons/auto-fetch/status').then(v=>v.json());
-  if(s.phase==='download'){let p=s.total?(Math.round(s.got/s.total*100)+' %'):'…';
-   st.textContent='Догрузка иконок: скачивание '+p+' ('+mb(s.got)+(s.total?' из '+mb(s.total):'')+')';return}
-  if(s.phase==='extract'){st.textContent='Догрузка иконок: извлечение '+Math.round(s.got/Math.max(1,s.total)*100)+' % · найдено новых: '+s.fetched;return}
-  if(s.phase==='error'){clearInterval(timer);btn.disabled=false;st.textContent='Ошибка догрузки иконок: '+s.error;toast('Иконки: '+s.error);return}
-  if(s.done){clearInterval(timer);btn.disabled=false;
-   st.textContent='Иконки догружены: '+s.fetched+' из '+s.missing+' отсутствующих';
-   iconBust=Date.now();renderCatalog();renderGoods();
-   toast('Догружено иконок: '+s.fetched)}}catch(e){}},800);
- }
- catch(e){st.textContent='Ошибка догрузки иконок: '+e.message;toast('Иконки: '+e.message)}};
 
 Q_NPCS.forEach(n=>{let o=document.createElement('option');o.value=n;$('#npc-list').append(o)});
 qDoc=qTemplate();qRenderEditor();qRenderCheck();qRenderPreview();

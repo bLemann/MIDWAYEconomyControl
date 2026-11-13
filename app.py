@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.23"
+VERSION = "0.8.24"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -451,11 +451,6 @@ def bundled_icon_index():
 
 def removed_icons_file():
     return data_dir() / "icons" / "__removed.json"
-
-
-ICONS_JOB = {"running": False, "phase": "", "got": 0, "total": 0, "fetched": 0,
-             "missing": 0, "error": None, "done": True}
-
 
 def icons_fetch_job(missing, seen):
     try:
@@ -1495,8 +1490,6 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(200, {"ok": True, "connections": load_connections()})
         if self.path == "/api/custom-items":
             return self.send_json(200, {"ok": True, "items": load_custom_items()})
-        if self.path == "/api/icons/auto-fetch/status":
-            return self.send_json(200, {"ok": True, **ICONS_JOB})
         if self.path.startswith("/api/icon/"):
             name = urllib.parse.unquote(self.path[len("/api/icon/"):].split("?", 1)[0])
             safe = re.sub(r"[^A-Za-z0-9_\-]", "", name)
@@ -1523,7 +1516,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/test", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/icons/auto-fetch", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/test", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -1558,8 +1551,6 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_loot_zone_window(doc)
         if self.path == "/api/loot/zone-window-close":
             return self.handle_loot_zone_window_close(doc)
-        if self.path == "/api/icons/auto-fetch":
-            return self.handle_icons_autofetch(doc)
         if self.path.startswith("/api/ftp/"):
             return self.handle_ftp(self.path, doc)
         if self.path in ("/api/quests/save", "/api/quests/delete"):
@@ -2736,53 +2727,6 @@ class Handler(SimpleHTTPRequestHandler):
             if isinstance(i, str) and i.strip() and not any(c in known for c in icon_candidates(i.strip().lower())):
                 missing.append(i.strip())
         return self.send_json(200, {"ok": True, "missing": missing, "missingCount": len(missing)})
-
-    def handle_icons_autofetch(self, data):
-        if not isinstance(data, dict) or data.get("confirm") is not True:
-            return self.send_json(400, {"ok": False, "error": "Auto-fetch requires explicit confirmation"})
-        if ICONS_JOB["running"]:
-            return self.send_json(409, {"ok": False, "error": "Догрузка иконок уже идёт"})
-        ids = []
-        if isinstance(data.get("ids"), list):
-            for i in data["ids"][:5000]:
-                if isinstance(i, str) and i.strip():
-                    ids.append(i.strip())
-        if not ids:
-            dbf = WEB / "items-db.json"
-            try:
-                doc = json.loads(dbf.read_text(encoding="utf-8"))
-                for c in doc.get("categories") or []:
-                    for it in (c.get("items") or []):
-                        if isinstance(it, dict) and isinstance(it.get("id"), str) and it["id"].strip():
-                            ids.append(it["id"].strip())
-            except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-                return self.send_json(500, {"ok": False, "error": "Не удалось прочитать items-db.json — передайте ids явно"})
-        if not ids:
-            return self.send_json(400, {"ok": False, "error": "Список Id пуст"})
-        known = set()
-        try:
-            known = {f.stem.lower() for f in icons_dir().iterdir() if f.is_file() and f.suffix.lower() in ICON_EXTS}
-        except OSError:
-            pass
-        known |= set(bundled_icon_index())
-        known -= load_removed_icons()
-        missing, seen = [], set()
-        for i in ids:
-            s = i.strip().lower()
-            if s and s not in seen:
-                seen.add(s)
-                if not any(c in known for c in icon_candidates(s)):
-                    missing.append(s)
-        if not missing:
-            return self.send_json(200, {"ok": True, "started": False, "missing": 0, "fetched": 0, "source": "none",
-                                        "note": "Все иконки уже на месте"})
-        ICONS_JOB.update(running=True, phase="download", got=0, total=0, fetched=0,
-                         missing=len(missing), error=None, done=False)
-        threading.Thread(target=icons_fetch_job, args=(missing, seen), daemon=True).start()
-        return self.send_json(200, {"ok": True, "started": True, "missing": len(missing)})
-
-    def handle_icons_autofetch_status(self):
-        return self.send_json(200, {"ok": True, **ICONS_JOB})
 
     ZONE_WINDOWS = {}
 

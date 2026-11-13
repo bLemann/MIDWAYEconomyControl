@@ -6,8 +6,9 @@
 <style>
 :root{--bg:#0d0f13;--panel:#131720;--line:#1e2430;--line2:#2a3242;--text:#e6ebf2;--muted:#8a93a3;--amber:#ffb428;--green:#2ecc71;--red:#ff4d4d;--mono:Consolas,'Courier New',monospace}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:13px/1.5 'Segoe UI',system-ui,sans-serif}
-header{display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line2);flex-wrap:wrap}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:13px/1.5 'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line2);flex-wrap:wrap;flex:none}
 header h1{font-size:14px;margin:0;letter-spacing:.4px}
 .badge{border:1px solid var(--amber);color:var(--amber);border-radius:3px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:.5px}
 .badge.none{border-color:var(--line2);color:var(--muted)}
@@ -19,9 +20,9 @@ button.warn{border-color:var(--red);color:#ffb3b3}
 button:disabled{opacity:.4;cursor:default}
 label.chk{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);cursor:pointer}
 #status{font-size:11px;color:var(--muted)}
-main{display:flex;gap:12px;padding:12px 14px;height:calc(100vh - 54px)}
-#left{width:400px;min-width:300px;display:flex;flex-direction:column;gap:10px}
-#zlist{flex:1;overflow:auto;display:grid;gap:8px;align-content:start}
+main{display:flex;gap:12px;padding:12px 14px;flex:1;min-height:0}
+#left{width:400px;min-width:300px;display:flex;flex-direction:column;gap:10px;min-height:0}
+#zlist{flex:1;overflow:auto;display:grid;gap:8px;align-content:start;min-height:0}
 .zcard{background:#10131a;border:1px solid var(--line2);border-radius:5px;padding:8px;cursor:pointer}
 .zcard.sel{border-color:var(--amber)}
 .zcard .hr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -51,6 +52,7 @@ textarea:focus{border-color:var(--amber)}
   <label class="chk"><input type="checkbox" id="draw"> РИСОВАТЬ (тянуть ЛКМ)</label>
   <span class="note" style="margin:0">ПКМ — пан, колесо — зум</span>
   <span class="spacer"></span>
+  <span id="status">Загрузка…</span>
   <button id="b-fit">СБРОС ВИДА</button>
   <button id="b-add">ДОБАВИТЬ ЗОНУ</button>
   <button id="b-json">JSON</button>
@@ -68,7 +70,8 @@ textarea:focus{border-color:var(--amber)}
   </div>
   <div id="jsonwrap" class="hidden" style="flex:1"><textarea id="jsondoc" spellcheck="false"></textarea></div>
 </main>
-<footer><span id="status">Загрузка…</span><span class="spacer"></span></footer>
+<footer class="hidden"></footer>
+<script src="zonemap-data.js"></script>
 <script src="zonemap.js"></script>
 </body>
 </html>

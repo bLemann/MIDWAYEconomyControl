@@ -101,7 +101,8 @@ async function load(){
   if(!Array.isArray(doc.Zones))doc.Zones=[];
   working=!!(w&&w.doc&&Object.keys(w.doc).length);
   sel=doc.Zones.length?0:-1;
-  img=new Image();img.onload=()=>draw();img.src='map.webp';
+  img=new Image();img.onload=()=>draw();
+  img.src=(typeof MAP_B64!=='undefined'&&MAP_B64)?'data:image/webp;base64,'+MAP_B64:'map.webp';
   render();
   $('#status').textContent='Мод: '+mod+' · зон: '+doc.Zones.length+(working?' · загружена WORKING-правка':' · из базы (нет правок)');
  }catch(e){$('#status').textContent='Ошибка загрузки: '+e.message}}
@@ -181,6 +182,7 @@ window.addEventListener('mouseup',()=>{
  doc.Zones.push({TopLeft:zFmt(g1.x,g1.y),BottomRight:zFmt(g2.x,g2.y)});
  sel=doc.Zones.length-1;render()});
 window.addEventListener('resize',resize);
+if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe($('#cvwrap'));
 
 $('#b-fit').onclick=resetView;
 $('#b-add').onclick=()=>{const c=p2g(540,540);
