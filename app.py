@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.24"
+VERSION = "0.8.25"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -381,16 +381,28 @@ def icon_candidates(item_id):
     return out
 
 
+_ICON_DIR_CACHE = {"stamp": None, "map": {}}
+
+
 def find_icon_file(item_id):
+    d = icons_dir()
     try:
-        files = [f for f in icons_dir().iterdir() if f.is_file() and f.suffix.lower() in ICON_EXTS]
+        stamp = d.stat().st_mtime
     except OSError:
         return None
-    by_stem = {}
-    for f in files:
-        by_stem.setdefault(f.stem.lower(), f)
+    if _ICON_DIR_CACHE["stamp"] != stamp:
+        m = {}
+        try:
+            for f in d.iterdir():
+                if f.is_file() and f.suffix.lower() in ICON_EXTS:
+                    m.setdefault(f.stem.lower(), f)
+        except OSError:
+            return None
+        _ICON_DIR_CACHE["stamp"] = stamp
+        _ICON_DIR_CACHE["map"] = m
+    mmap = _ICON_DIR_CACHE["map"]
     for cand in icon_candidates(item_id):
-        f = by_stem.get(cand)
+        f = mmap.get(cand)
         if f:
             return f
     return None
