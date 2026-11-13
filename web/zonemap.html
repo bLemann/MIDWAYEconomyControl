@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Зоны лута · MIDWAY</title>
+<style>
+:root{--bg:#0d0f13;--panel:#131720;--line:#1e2430;--line2:#2a3242;--text:#e6ebf2;--muted:#8a93a3;--amber:#ffb428;--green:#2ecc71;--red:#ff4d4d;--mono:Consolas,'Courier New',monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px/1.5 'Segoe UI',system-ui,sans-serif}
+header{display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line2);flex-wrap:wrap}
+header h1{font-size:14px;margin:0;letter-spacing:.4px}
+.badge{border:1px solid var(--amber);color:var(--amber);border-radius:3px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.badge.none{border-color:var(--line2);color:var(--muted)}
+.spacer{flex:1}
+button{font:inherit;color:var(--text);background:#1a2130;border:1px solid var(--line2);border-radius:4px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.4px}
+button:hover{border-color:var(--amber)}
+button.primary{background:#1f4d33;border-color:#2ecc71;color:#d9ffe8}
+button.warn{border-color:var(--red);color:#ffb3b3}
+button:disabled{opacity:.4;cursor:default}
+label.chk{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);cursor:pointer}
+#status{font-size:11px;color:var(--muted)}
+main{display:flex;gap:12px;padding:12px 14px;height:calc(100vh - 54px)}
+#left{width:400px;min-width:300px;display:flex;flex-direction:column;gap:10px}
+#zlist{flex:1;overflow:auto;display:grid;gap:8px;align-content:start}
+.zcard{background:#10131a;border:1px solid var(--line2);border-radius:5px;padding:8px;cursor:pointer}
+.zcard.sel{border-color:var(--amber)}
+.zcard .hr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.zcard .hr b{font-size:12px}
+.zcard .hr button{padding:2px 9px}
+.zrow{display:flex;gap:6px;align-items:center;margin-top:4px}
+.zlb{width:26px;font-size:10px;color:var(--muted);font-family:var(--mono)}
+.zrow input{width:118px;padding:4px 6px;font:11px var(--mono);background:#0e1116;color:var(--text);border:1px solid var(--line2);border-radius:3px;outline:none}
+.zrow input:focus{border-color:var(--amber)}
+#right{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+#cvwrap{flex:1;position:relative;overflow:hidden;background:#0e1116;border:1px solid var(--line2);border-radius:6px}
+canvas{position:absolute;inset:0;cursor:crosshair}
+#hint{position:absolute;left:10px;bottom:8px;font:11px var(--mono);color:#ffd88a;background:rgba(13,15,19,.8);border:1px solid var(--line2);border-radius:3px;padding:2px 8px;pointer-events:none}
+#zoomhint{position:absolute;right:10px;bottom:8px;font:11px var(--mono);color:var(--muted);background:rgba(13,15,19,.8);border:1px solid var(--line2);border-radius:3px;padding:2px 8px;pointer-events:none}
+footer{display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--panel);border-top:1px solid var(--line2)}
+.note{font-size:11px;color:var(--muted);line-height:1.6;margin:8px 2px}
+textarea{width:100%;min-height:calc(100vh - 170px);background:#10131a;color:#c7d0dc;border:1px solid var(--line2);border-radius:5px;font:12px/1.5 var(--mono);white-space:pre;resize:vertical;padding:10px;outline:none}
+textarea:focus{border-color:var(--amber)}
+.empty{color:var(--muted);font-size:12px;text-align:center;padding:20px 0}
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">Зоны лута</h1>
+  <span class="badge none" id="wbadge">БАЗА</span>
+  <label class="chk"><input type="checkbox" id="draw"> РИСОВАТЬ (тянуть ЛКМ)</label>
+  <span class="note" style="margin:0">ПКМ — пан, колесо — зум</span>
+  <span class="spacer"></span>
+  <button id="b-fit">СБРОС ВИДА</button>
+  <button id="b-add">ДОБАВИТЬ ЗОНУ</button>
+  <button id="b-json">JSON</button>
+  <button class="warn" id="b-reset">СБРОСИТЬ ПРАВКУ</button>
+  <button class="primary" id="b-save">СОХРАНИТЬ В WORKING</button>
+  <button id="b-close">ЗАКРЫТЬ ОКНО</button>
+</header>
+<main>
+  <div id="left">
+    <div id="zlist"><p class="empty">Загрузка…</p></div>
+    <p class="note" style="margin:0">Координаты — Unreal-строки «X=… Y=…» (TopLeft → BottomRight). Клик по карточке — подсветка. Поля Zones.json вне Zones сохраняются. Публикация — в основном окне, вкладка СПАВНЕРЫ → «ОТПРАВИТЬ ВСЁ НА СЕРВЕР».</p>
+  </div>
+  <div id="right">
+    <div id="cvwrap"><canvas id="cv"></canvas><span id="hint"></span><span id="zoomhint"></span></div>
+  </div>
+  <div id="jsonwrap" class="hidden" style="flex:1"><textarea id="jsondoc" spellcheck="false"></textarea></div>
+</main>
+<footer><span id="status">Загрузка…</span><span class="spacer"></span></footer>
+<script src="zonemap.js"></script>
+</body>
+</html>

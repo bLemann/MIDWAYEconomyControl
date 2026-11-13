@@ -14,17 +14,18 @@
     <div class="byline">by Lemann</div>
   </div>
   <nav class="profiles">
-    <button class="profile active"><i class="p-ico">TC</i><span>SCUM TRADER CONFIG EDITOR<small>EconomyOverride.json</small></span></button>
-    <button class="profile soon" disabled><i class="p-ico">Q</i><span>SCUM QUEST CONFIGURATOR<small>Quest.json · скоро</small></span></button>
-    <button class="profile soon" disabled><i class="p-ico">L</i><span>SCUM LOOT CONFIGURATOR<small>Loot.json · скоро</small></span></button>
+    <button class="profile active" id="prof-tc"><i class="p-ico">TC</i><span>SCUM TRADER CONFIG EDITOR<small>EconomyOverride.json</small></span></button>
+    <button class="profile" id="prof-q"><i class="p-ico">Q</i><span>SCUM QUEST CONFIGURATOR<small>Quest.json</small></span></button>
+    <button class="profile" id="prof-l"><i class="p-ico">L</i><span>SCUM LOOT CONFIGURATOR<small>LootBP · VANILLA DB</small></span></button>
     <button class="profile soon" disabled><i class="p-ico">S</i><span>SCUM SKILL EDITOR<small>Character.sqlite · скоро</small></span></button>
   </nav>
   <div class="top-right">
     <span id="changes-flag" class="flag" hidden>● Есть изменения</span>
-    <button class="ghost" id="undo-btn" title="Отменить последнее действие (до 50 шагов)" disabled>↩ ОТМЕНИТЬ</button>
+    <button class="ghost tc-only" id="undo-btn" title="Отменить последнее действие (до 50 шагов)" disabled>↩ ОТМЕНИТЬ</button>
     <button class="ghost" id="upd-check">↻ ОБН</button>
     <button class="ghost" id="import">← ИМПОРТ ФАЙЛА</button>
     <input id="file" type="file" accept=".json" hidden>
+    <input id="qfile" type="file" accept=".json" multiple hidden>
   </div>
 </div>
 
@@ -46,21 +47,26 @@
 
 <div class="tabbar">
   <div class="tabs-main">
-    <button class="tab" data-view="settings">НАСТРОЙКИ</button>
-    <button class="tab active" data-view="items">ПРЕДМЕТЫ</button>
-    <button class="tab" data-view="export">ВЫГРУЗКА</button>
+    <button class="tab tc-only" data-view="settings">НАСТРОЙКИ</button>
+    <button class="tab tc-only active" data-view="items">ПРЕДМЕТЫ</button>
+    <button class="tab tc-only" data-view="export">ВЫГРУЗКА</button>
+    <button class="tab q-only" data-view="q-editor">РЕДАКТОР</button>
+    <button class="tab q-only" data-view="q-export">ЭКСПОРТ</button>
+    <button class="tab l-only active" data-view="l-browse">БАЗА ЛУТА</button>
   </div>
   <div class="tabs-side">
-    <button class="tab side" data-view="catalog">КАТАЛОГ</button>
+    <button class="tab side tc-only" data-view="catalog">КАТАЛОГ</button>
     <button class="tab side" data-view="ftp">FTP / ФАЙЛЫ</button>
-    <button class="tab side" data-view="rcon">RCON</button>
-    <button class="tab side" data-view="history">ИСТОРИЯ</button>
+    <button class="tab side tc-only" data-view="rcon">RCON</button>
+    <button class="tab side tc-only" data-view="history">ИСТОРИЯ</button>
+    <button class="tab side q-only" data-view="q-help">СПРАВКА</button>
+    <button class="tab side l-only" data-view="l-validate">ВАЛИДАТОР</button>
   </div>
 </div>
 
 <main>
 
-<section class="view active" id="items">
+<section class="view active tc-only" id="items">
   <div class="items-layout">
     <aside class="tools">
       <h4>ИНСТРУМЕНТЫ</h4>
@@ -151,13 +157,13 @@
   </div>
 </section>
 
-<section class="view" id="settings">
+<section class="view tc-only" id="settings">
   <div class="toolbar"><div><h2>Настройки экономики</h2><p>Глобальные параметры импортированного JSON. Флаги включаются переключателями, значения — полями.</p></div>
   <button class="btn-red" id="save-rules">ПРИМЕНИТЬ В ДОКУМЕНТ</button></div>
   <article class="panel"><div id="rule-fields" class="rule-grid">Импортируйте конфигурацию экономики.</div></article>
 </section>
 
-<section class="view" id="catalog">
+<section class="view tc-only" id="catalog">
   <div class="toolbar"><div><h2>Каталог предметов</h2><p>База ID по категориям + ваши собственные записи (UNVERIFIED) — сохраняются в data\custom-items.json.</p></div>
   <span>
     <button class="btn-dark" id="db-import-btn">ИМПОРТ СВОЕЙ БАЗЫ</button>
@@ -170,6 +176,7 @@
   <div class="filters">
     <input id="search" placeholder="Поиск по названию или ID">
     <select id="category"><option value="all">Все категории</option></select>
+    <button class="btn-dark" id="cat-icons-fetch" title="Скачать общую базу иконок с GitHub и извлечь отсутствующие">ИКОНКИ: ДОГРУЗИТЬ</button>
   </div>
   <div class="scroll">
     <table>
@@ -180,7 +187,7 @@
 </article>
 </section>
 
-<section class="view" id="export">
+<section class="view tc-only" id="export">
   <article class="panel srv-panel"><h3>СЕРВЕР · АВТОЗАГРУЗКА ECONOMY OVERRIDE</h3>
     <div class="srv-row">
       <button class="btn-green" id="srv-download">СКАЧАТЬ С СЕРВЕРА → РЕДАКТОР</button>
@@ -242,9 +249,10 @@
       <div class="file-list" id="ftp-files"></div>
     </article>
     <article class="panel"><h3>Передача конфигурации</h3>
-      <p>Скачать выбранный файл можно из списка слева.</p>
-      <button id="ftp-push-doc" class="btn-red">ВЫГРУЗИТЬ ДОКУМЕНТ НА СЕРВЕР</button>
-      <button id="ftp-icon-scan" class="btn-dark">ИСКАТЬ МИНИАТЮРЫ ПРЕДМЕТОВ НА СЕРВЕРЕ</button>
+      <p>Скачать выбранный файл можно из списка слева. У JSON-файлов есть кнопка «→ Редактор» в режиме QUEST.</p>
+      <button id="q-ftp-push" class="btn-red q-only">ВЫГРУЗИТЬ ТЕКУЩИЙ КВЕСТ НА СЕРВЕР</button>
+      <button id="ftp-push-doc" class="btn-red tc-only">ВЫГРУЗИТЬ ДОКУМЕНТ НА СЕРВЕР</button>
+      <button id="ftp-icon-scan" class="btn-dark tc-only">ИСКАТЬ МИНИАТЮРЫ ПРЕДМЕТОВ НА СЕРВЕРЕ</button>
       <label class="file-upload">Файл для отправки<input id="ftp-upload-file" type="file"></label>
       <button id="ftp-upload" class="btn-red">ЗАГРУЗИТЬ ФАЙЛ С РЕЗЕРВНОЙ КОПИЕЙ</button>
       <p class="note">«Выгрузить документ» отправляет текущий документ как EconomyOverride.json в выбранную папку (существующий файл копируется в .backup, нехватающие папки создаются автоматически, после выгрузки показывается путь). «ТЕСТ ПОДКЛЮЧЕНИЯ» пошагово проверяет TCP, баннер, TLS, логин и папку. «Искать миниатюры» сканирует сервер до 4 уровней, находит файлы, названные по ItemID (например Weapon_AK47.png), и сохраняет их в data\icons — то же самое программа делает автоматически при запуске и импорте, если иконки отсутствуют и FTP-профиль сохранён. Загрузка файла: существующий файл сначала копируется в .backup-<метка времени>, новый файл создаётся без копии.</p>
@@ -252,7 +260,7 @@
   </div>
 </section>
 
-<section class="view" id="rcon">
+<section class="view tc-only" id="rcon">
   <div class="toolbar"><div><h2>RCON</h2><p>Состояние административного подключения к SCUM.</p></div><span class="tag">ПРОТОКОЛ НЕ ПОДТВЕРЖДЁН</span></div>
   <div class="columns">
     <article class="panel"><h3>Параметры сервера</h3>
@@ -273,9 +281,339 @@
   </div>
 </section>
 
-<section class="view" id="history">
+<section class="view tc-only" id="history">
   <div class="toolbar"><div><h2>История изменений</h2><p>Журнал действий текущей сессии.</p></div><button class="btn-dark" id="clear-history">ОЧИСТИТЬ ЖУРНАЛ</button></div>
   <article class="panel" id="history-list"><p class="empty">Изменений пока нет.</p></article>
+</section>
+
+<section class="view q-only" id="q-editor">
+  <div class="items-layout">
+    <aside class="tools">
+      <h4>КВЕСТЫ</h4>
+      <button class="btn-green big" id="q-new">НОВЫЙ КВЕСТ</button>
+      <button class="btn-dark big" id="q-duplicate">ДУБЛИРОВАТЬ ТЕКУЩИЙ</button>
+      <div id="quest-list" class="trader-list"><p class="empty">Папка data\quests пуста</p></div>
+      <button class="btn-red big" id="q-delete" disabled>УДАЛИТЬ СОХРАНЁННЫЙ</button>
+      <small class="sec-cap">ФАЙЛ</small>
+      <label>ИМЯ ФАЙЛА<input id="q-filename" placeholder="STORY_01_My_Quest.json" spellcheck="false"></label>
+      <button class="btn-red big" id="q-save">СОХРАНИТЬ В data\quests</button>
+      <p class="note">Квесты хранятся локально в data\quests (формат — как у STORY-файлов игры: UTF-8, отступ 2). Импорт — кнопка «← ИМПОРТ ФАЙЛОВ» сверху, можно несколько сразу. Имя файла: STORY_Латиница.json.</p>
+    </aside>
+    <div class="center-col">
+      <article class="panel">
+        <h3>КВЕСТ</h3>
+        <div class="form-grid">
+          <label>NPC<input id="q-npc" list="npc-list" placeholder="GeneralGoods" spellcheck="false"><datalist id="npc-list"></datalist></label>
+          <label>TIER (1–3)<select id="q-tier"><option>1</option><option>2</option><option>3</option></select></label>
+          <div class="wide q-pair"><label>ЗАГОЛОВОК — RU<input id="q-title-ru" placeholder="Последний рубеж 1/5 — Название"></label><label>ЗАГОЛОВОК — EN<input id="q-title-en" placeholder="Last Frontier 1/5 — Title"></label></div>
+          <label class="wide">ОПИСАНИЕ — «RU: …» с новой строки «EN: …»<textarea id="q-desc" rows="3" spellcheck="false"></textarea></label>
+          <label>ЛИМИТ ВРЕМЕНИ, ЧАСОВ<input id="q-timelimit" type="number" step="0.5" min="0.5" placeholder="24"></label>
+        </div>
+        <div class="cond-head"><h3>НАГРАДЫ · REWARDPOOL</h3><span><button class="btn-dark" id="reward-apply-tier" title="Подставить типовую награду по статистике эталонов для выбранного Tier">ТИПОВАЯ ДЛЯ TIER</button><button class="btn-dark" id="reward-add">+ ДОБАВИТЬ НАГРАДУ</button></span></div>
+        <div id="rewards" class="cond-list"></div>
+      </article>
+      <article class="panel">
+        <div class="cond-head"><h3>УСЛОВИЯ · CONDITIONS</h3><button class="btn-green" id="cond-add">+ ДОБАВИТЬ УСЛОВИЕ</button></div>
+        <div id="conditions" class="cond-list"></div>
+        <p class="note">Подтверждённые типы условий: Elimination (убийство целей) и Fetch (сбор предметов). Любой другой Type считается ошибкой и блокирует публикацию на сервер.</p>
+      </article>
+    </div>
+    <aside class="side-col">
+      <h4>ПРОВЕРКА</h4>
+      <div id="check-status" class="check-status">—</div>
+      <div id="check-issues" class="check-list"></div>
+      <div id="check-warnings" class="check-list"></div>
+      <p class="note">Ошибки (красные) блокируют выгрузку на сервер; локальное сохранение и экспорт — с подтверждением. Проверка сверяется с подтверждённым форматом STORY_01–05: типы, NPC, цели и предметы вне эталонов дают предупреждения.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="view q-only" id="q-export">
+  <article class="panel srv-panel"><h3>СЕРВЕР · ПУБЛИКАЦИЯ КВЕСТОВ</h3>
+    <div class="srv-row">
+      <button class="btn-red" id="q-srv-upload">ВЫГРУЗИТЬ КВЕСТ НА СЕРВЕР</button>
+      <button class="btn-dark" id="q-srv-snapshot">СНЯТЬ СНАПШОТ КВЕСТОВ СЕРВЕРА</button>
+      <button class="btn-dark" id="q-srv-diff">СВЕРИТЬ С СЕРВЕРОМ</button>
+      <button class="btn-red" id="q-srv-batch">ОПУБЛИКОВАТЬ ИЗМЕНЁННЫЕ</button>
+    </div>
+    <div id="q-srv-status" class="hint">Операций с сервером ещё не было</div>
+    <div id="q-diff-summary" class="hint"></div>
+    <div id="q-diff-list" class="q-diff-list"></div>
+    <p class="hint">Используется FTP-профиль из вкладки «FTP / ФАЙЛЫ». Квесты лежат на сервере в удалённой папке Quests\Override (стандартный путь: /Server/SCUM/Saved/Config/WindowsServer/Quests/Override). «Снапшот» скачивает все STORY_*.json в data\quests-server и сразу выполняет сверку; статусы также видны в списке квестов редактора. «Сверить» сравнивает содержимое файлов (по нормализованному JSON, форматирование не учитывается). «Опубликовать изменённые» выгружает одним пакетом файлы со статусами «ОТЛИЧАЕТСЯ» и «НЕТ НА СЕРВЕРЕ» — существующие файлы копируются в .backup-метку, нехватающие папки создаются автоматически.</p>
+  </article>
+  <div class="toolbar"><div><h2>Экспорт</h2><p>Локальная копия квеста и технический JSON.</p></div>
+  <button class="btn-red" id="q-export-download">СКАЧАТЬ JSON</button><button class="btn-dark" id="q-export-open">ОТКРЫТЬ ПАПКУ</button></div>
+  <div class="columns">
+    <article class="panel"><h3>ТЕХНИЧЕСКИЙ JSON · ТЕКУЩИЙ КВЕСТ</h3>
+      <textarea id="q-json-preview" class="json tall" readonly spellcheck="false" placeholder="Откройте или создайте квест"></textarea>
+      <p class="hint">Обновляется при каждом изменении. Формат совпадает с эталонными STORY-файлами: UTF-8, отступ 2, «RU | EN» в заголовках.</p>
+    </article>
+    <article class="panel"><h3>ПРИМЕНИТЬ ТЕХНИЧЕСКИЙ JSON</h3>
+      <textarea id="q-json-import" class="json tall" spellcheck="false" placeholder='{ "AssociatedNPC": "GeneralGoods", ... }'></textarea>
+      <button class="btn-red" id="q-export-apply">ЗАГРУЗИТЬ ИЗ ТЕКСТА</button>
+      <p class="hint">JSON проходит клиентскую проверку формата; результат появляется в редакторе — сохраните его в data\quests.</p>
+    </article>
+  </div>
+</section>
+
+<section class="view q-only" id="q-help">
+  <div class="toolbar"><div><h2>Справка · формат квестов SCUM</h2><p>Факты подтверждены разбором эталонных файлов STORY_01–05 (серверные Quests\Override).</p></div><span class="tag">VERIFIED FORMAT</span></div>
+  <div class="columns">
+    <article class="panel"><h3>КОРЕНЬ ФАЙЛА</h3>
+      <table class="help-table">
+        <thead><tr><th>ПОЛЕ</th><th>ТИП</th><th>ПРИМЕР / ПРАВИЛО</th></tr></thead>
+        <tbody>
+          <tr><td>AssociatedNPC</td><td>строка</td><td>Подтверждены: GeneralGoods, Doctor, Armorer, Mechanic</td></tr>
+          <tr><td>Tier</td><td>int</td><td>1–3</td></tr>
+          <tr><td>Title</td><td>строка</td><td>«RU | EN» — одна строка, разделитель " | "</td></tr>
+          <tr><td>Description</td><td>строка</td><td>«RU: …» + перевод строки + «EN: …»</td></tr>
+          <tr><td>TimeLimitHours</td><td>float</td><td>24.0</td></tr>
+          <tr><td>RewardPool</td><td>массив</td><td>[{CurrencyNormal: int, Fame: int}]</td></tr>
+          <tr><td>Conditions</td><td>массив</td><td>минимум одно условие</td></tr>
+        </tbody>
+      </table>
+    </article>
+    <article class="panel"><h3>ТИПЫ УСЛОВИЙ</h3>
+      <table class="help-table">
+        <thead><tr><th>ПОЛЕ</th><th>ELIMINATION</th><th>FETCH</th></tr></thead>
+        <tbody>
+          <tr><td>TrackingCaption</td><td colspan="2">«RU | EN» — подпись трекера</td></tr>
+          <tr><td>SequenceIndex</td><td colspan="2">int, порядок условия (с 0)</td></tr>
+          <tr><td>CanBeAutoCompleted</td><td>true</td><td>false</td></tr>
+          <tr><td>Type</td><td>"Elimination"</td><td>"Fetch"</td></tr>
+          <tr><td>TargetCharacters</td><td>["Puppet"]</td><td>—</td></tr>
+          <tr><td>Amount</td><td>int &gt; 0</td><td>—</td></tr>
+          <tr><td>DisablePurchaseOfRequiredItems</td><td>—</td><td>false</td></tr>
+          <tr><td>PlayerKeepsItems</td><td>—</td><td>true</td></tr>
+          <tr><td>RequiredItems</td><td>—</td><td>[{AcceptedItems:["Apple_2"],RequiredNum:3,MinAcceptedItemHealth:0.0}]</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Тип «Interact» и прочие в открытых источниках упоминаются, но в эталонных файлах не встречались — конфигуратор считает их ошибкой (fail-closed), чтобы не публиковать непроверенное.</p>
+    </article>
+  </div>
+  <article class="panel"><h3>РАЗВЁРТЫВАНИЕ</h3>
+    <p class="note">Серверные квесты: <b>/Server/SCUM/Saved/Config/WindowsServer/Quests/Override</b> — папка доступна по FTP (FileZilla Server 1.x, TLS). Перед публикацией приложение создаёт .backup-копию существующего файла и создаёт нехватающие папки. Клиентские квест-паки монтируются как PAK в ~mods (в клиенте уже стоит zz_LFQuestS_TEST_P.pak из MIDWAY_R16 — наблюдение, не управляется этим инструментом). Названия и тексты — в формате «RU | EN», как требует игра.</p>
+  </article>
+</section>
+
+<section class="view l-only" id="l-browse">
+  <div class="toolbar">
+    <div><h2>База лута · VANILLA DB</h2><p>Только чтение: спавнеры, дерево лута, параметры предметов, кулдауны и зоны из каталога LootBP.</p></div>
+    <span class="hint"><span id="l-root-path">—</span> · построено <span id="l-built">—</span></span>
+    <span class="l-rootset"><input id="l-root-input" placeholder="Путь к папке LootBP, если не найдена сама" spellcheck="false"><button class="btn-dark" id="l-root-apply">ПРИМЕНИТЬ ПУТЬ</button></span>
+    <button class="btn-dark" id="l-refresh">↻ ПЕРЕСКАНИРОВАТЬ</button>
+  </div>
+  <article class="panel srv-panel"><h3>СЕРВЕР · ЗАГРУЗКА БАЗЫ ЛУТА (LOOTBP)</h3>
+    <div class="srv-row">
+      <button class="btn-green" id="l-srv-download">СКАЧАТЬ БАЗУ ЛУТА С СЕРВЕРА</button>
+    </div>
+    <div id="l-srv-status" class="hint">Операций с сервером ещё не было</div>
+    <p class="hint">Используется FTP-профиль из вкладки «FTP / ФАЙЛЫ». Ищется папка базы лута: сначала <b>&lt;профиль&gt;\LootBP</b>, затем сама папка профиля (если в ней прямо лежат Loot и CooldownGroups — результат команд #ExportDefaultItemSpawnerPresets / #ExportDefaultLootTree / #ExportDefaultItemSpawningParameters / #ExportDefaultItemSpawningCooldownGroups). Скачивание рекурсивное (~1400 файлов, до 10 уровней), после загрузки структура проверяется и приложение переключается на копию data\loot-server с пересканированием индекса. Предыдущая копия сохраняется рядом как loot-server.bak-метка.</p>
+  </article>
+  <div class="l-tabs">
+    <button class="l-tab active" data-lsec="overview">ОБЗОР</button>
+    <button class="l-tab" data-lsec="spawners">СПАВНЕРЫ</button>
+    <button class="l-tab" data-lsec="nodes">ДЕРЕВО ЛУТА</button>
+    <button class="l-tab" data-lsec="items">ПРЕДМЕТЫ</button>
+    <button class="l-tab" data-lsec="cooldowns">КУЛДАУНЫ</button>
+    <button class="l-tab" data-lsec="zones">ЗОНЫ</button>
+    <button class="l-tab" data-lsec="help">СПРАВКА</button>
+  </div>
+
+  <div class="l-pane active" id="l-pane-overview">
+    <div class="l-stats" id="l-stats"></div>
+    <div class="columns">
+      <article class="panel"><h3>ОШИБКИ ЧТЕНИЯ ФАЙЛОВ</h3><div id="l-over-errors" class="l-list"><p class="empty">Нет</p></div></article>
+      <article class="panel">
+        <h3>ПОСТ-ДЕЙСТВИЯ · НАБЛЮДАЕМЫЕ ЗНАЧЕНИЯ</h3><div id="l-over-actions" class="l-tags"></div>
+        <h3>КЛЮЧИ СХЕМЫ · НАБЛЮДАЕМЫЕ</h3><div id="l-over-keys" class="l-tags"></div>
+      </article>
+    </div>
+  </div>
+
+  <div class="l-pane" id="l-pane-spawners">
+    <article class="panel">
+      <div class="filters">
+        <select id="l-sp-scope"><option value="default">Vanilla (Default)</option><option value="override">Override (моды)</option></select>
+        <select id="l-sp-mod" hidden><option value="all">Все моды</option></select>
+        <select id="l-sp-group"><option value="all">Все группы</option></select>
+        <input id="l-sp-q" placeholder="Поиск по Id пресета">
+      </div>
+      <p class="hint" id="l-sp-count">—</p>
+      <div class="scroll"><table>
+        <thead><tr><th title="Имя файла пресета: группа—тип—подтип—контейнер">ПРЕСЕТ</th><th title="Первая часть имени пресета (Buildings, Character, Farming...)">ГРУППА</th><th title="Имя override-мода; «—» = ваниль">МОД</th><th title="Сколько записей Items (прямых предметов) в пресете">ITEMS</th><th title="Сколько записей Nodes (выдач через дерево лута)">NODES</th><th title="Сколько FixedItems — гарантированных предметов">FIXED</th><th title="Сколько Subpresets — вложенных наборов">SUBPRESETS</th><th title="ShouldFilterItemsByZone: спавн только в зонах мода (Zones.json)">ZONE</th><th title="Есть ли пресет в ванильной базе">VANILLA</th></tr></thead>
+        <tbody id="l-sp-rows"><tr><td colspan="9" class="empty">Загрузка…</td></tr></tbody>
+      </table></div>
+      <div class="l-pager"><button class="btn-dark" id="l-sp-prev">← НАЗАД</button><span id="l-sp-page">—</span><button class="btn-dark" id="l-sp-next">ДАЛЕЕ →</button></div>
+      <div class="l-pub"><button class="btn-red" id="l-sp-publish-all" disabled>ОТПРАВИТЬ ВСЁ НА СЕРВЕР (0)</button><button class="btn-dark" id="l-export-zip" disabled>ЭКСПОРТ OVERRIDE (ZIP)</button><span id="l-sp-pub-status" class="hint-inline"></span></div>
+      <p class="note">✎ после имени — есть WORKING-правка. Откройте пресет и нажмите «ПРАВИТЬ (WORKING)»: справа от JSON будет словарь его параметров, шпаргалка — во вкладке «СПРАВКА».</p>
+    </article>
+    <article class="panel" id="l-sp-detail" hidden>
+      <div class="cond-head"><h3 id="l-sp-detail-title">—</h3><button class="btn-dark" id="l-sp-detail-close">ЗАКРЫТЬ</button></div>
+      <div class="l-pager"><button class="btn-green" id="l-sp-edit">ПРАВИТЬ (WORKING)</button><button class="btn-dark" id="l-sp-calc">КАЛЬКУЛЯТОР ШАНСОВ</button><button class="btn-dark" id="l-sp-reset" hidden>СБРОСИТЬ ПРАВКУ</button><button class="btn-red" id="l-sp-publish" hidden>ОТПРАВИТЬ НА СЕРВЕР</button></div>
+      <div id="l-sp-detail-issues" class="l-issues"></div>
+      <div id="l-sp-detail-help" class="l-help-params"></div>
+      <pre id="l-sp-detail-doc" class="l-json"></pre>
+    </article>
+  </div>
+
+  <div class="l-pane" id="l-pane-nodes">
+    <div class="columns">
+      <article class="panel">
+        <div class="filters">
+          <select id="l-n-scope"><option value="Current">Current (рабочий)</option><option value="Default">Default (ваниль)</option></select>
+          <input id="l-n-q" placeholder="Поиск по имени файла дерева">
+        </div>
+        <p class="hint" id="l-n-count">—</p>
+        <div class="scroll"><table>
+          <thead><tr><th>ФАЙЛ</th><th>ЛИСТЬЯ</th><th>УЗЛЫ</th><th>ГЛУБИНА</th><th>НЕ В БАЗЕ</th></tr></thead>
+          <tbody id="l-n-rows"><tr><td colspan="5" class="empty">Загрузка…</td></tr></tbody>
+        </table></div>
+        <div class="l-pub"><button class="btn-red" id="l-n-publish" disabled>ОТПРАВИТЬ ДЕРЕВО (0)</button><span id="l-n-pub-status" class="hint-inline"></span></div>
+      </article>
+      <article class="panel" id="l-n-view" hidden>
+        <div class="cond-head"><h3 id="l-n-title">—</h3><button class="btn-dark" id="l-n-back">← К СПИСКУ</button></div>
+        <div class="l-pager"><button class="btn-green" id="l-n-edit">ПРАВИТЬ (WORKING)</button><button class="btn-dark" id="l-n-reset" hidden>СБРОСИТЬ ПРАВКУ</button></div>
+        <div id="l-n-tree" class="l-tree"></div>
+        <p class="note">Листы без «нет в базе» найдены в Parameters.json; жёлтые — отсутствуют (Rarity принадлежит узлу, не предмету). Пост-действия показаны на узле. Rarity на узле/ссылке задаёт класс редкости для всей ветки: понижение класса = предметы ветки чаще. «ПРАВИТЬ (WORKING)» открывает визуальный редактор дерева (узлы, Rarity, Merge, add/copy/delete); JSON-режим и ChildrenMergeMode корня — кнопкой «JSON…» в редакторе. <code>ChildrenMergeMode</code> (Replace / Append) в файлах экспорта не встречается — ключ для override-правок: на любом узле с детьми.</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="l-pane" id="l-pane-items">
+    <article class="panel">
+      <div class="filters">
+        <input id="l-it-q" placeholder="Поиск по Id предмета">
+        <select id="l-it-loc"><option value="all">Все локации</option><option>Coastal</option><option>Continental</option><option>Mountain</option></select>
+        <select id="l-it-cd"><option value="all">Все кулдауны</option><option value="none">Без группы</option></select>
+      </div>
+      <div class="l-itb">
+        <div class="l-itb-row">
+          <label>AllowedLocations<select id="l-itb-loc"><option value="">— не менять</option><option>Coastal</option><option>Continental</option><option>Mountain</option><option value="ALL3">Все три</option></select></label>
+          <label>CooldownGroup<select id="l-itb-cdg"><option value="">— не менять</option><option value="NONE">убрать группу</option><option value="SET">задать</option></select><input id="l-itb-cdg-name" list="l-itb-dl" placeholder="имя группы" hidden spellcheck="false"></label>
+          <label>Спавн<select id="l-itb-dis"><option value="">— не менять</option><option value="on">true (выкл. спавн)</option><option value="off">false (вкл.)</option></select></label>
+        </div>
+        <div class="l-itb-row">
+          <label>CD Min<input id="l-itb-cdmin" type="number" step="any" min="0" placeholder="—"></label>
+          <label>CD Max<input id="l-itb-cdmax" type="number" step="any" min="0" placeholder="—"></label>
+          <label>Usage OVR<select id="l-itb-use"><option value="">— не менять</option><option value="on">вкл</option><option value="off">выкл</option></select><input id="l-itb-use-i" type="number" step="any" min="0" placeholder="init"><input id="l-itb-use-r" type="number" step="any" min="0" placeholder="rand"></label>
+          <label>Stack OVR<select id="l-itb-st"><option value="">— не менять</option><option value="on">вкл</option><option value="off">выкл</option></select><input id="l-itb-st-i" type="number" step="any" min="0" placeholder="init"><input id="l-itb-st-r" type="number" step="any" min="0" placeholder="rand"></label>
+        </div>
+        <div class="l-itb-row">
+          <button class="btn-red" id="l-itb-apply" disabled>МАССОВО ИЗМЕНИТЬ НАЙДЕННЫЕ</button>
+          <span id="l-itb-status" class="hint-inline"></span>
+        </div>
+        <datalist id="l-itb-dl"></datalist>
+        <p class="note">Пустые поля («—») не меняются. Применяется ко ВСЕМ предметам под фильтром выше (поиск/локация/кулдаун), не только к видимой странице. Существующие WORKING-правки перезаписываются только по затронутым полям. Публикация — кнопкой «ОТПРАВИТЬ ПРЕДМЕТЫ».</p>
+      </div>
+      <p class="hint" id="l-it-count">—</p>
+      <div class="scroll"><table>
+        <thead><tr><th title="Item ID предмета из Parameters.json">ITEM ID</th><th title="AllowedLocations: где предмет может спавниться — Coastal (побережье) / Continental (континент) / Mountain (горы)">ЛОКАЦИИ</th><th title="CooldownGroup и тайминги: взятый предмет вернётся в спавн после таймера группы">КУЛДАУН</th><th title="Variations: варианты модели (цвет/версия), при спавне выбирается один">ВАРИАЦИИ</th><th title="ShouldOverrideInitialAndRandomUsage → InitialUsageOverride / RandomUsageOverride">USING OVR</th><th title="ShouldOverrideInitialAndRandomStack → InitialStackOverride / RandomStackOverride">STACK OVR</th><th title="IsDisabledForSpawning=true — предмет исключён из спавна по всей карте (глобально!)">СПАВН ВЫКЛ</th></tr></thead>
+        <tbody id="l-it-rows"><tr><td colspan="7" class="empty">Загрузка…</td></tr></tbody>
+      </table></div>
+      <div class="l-pager"><button class="btn-dark" id="l-it-prev">← НАЗАД</button><span id="l-it-page">—</span><button class="btn-dark" id="l-it-next">ДАЛЕЕ →</button></div>
+      <div class="l-pub"><button class="btn-red" id="l-it-publish" disabled>ОТПРАВИТЬ ПРЕДМЕТЫ (0)</button><span id="l-it-pub-status" class="hint-inline"></span></div>
+      <p class="note"><b>ЛОКАЦИИ</b> — география спавна предмета; <b>КУЛДАУН</b> — группа и окно возврата после взятия; <b>ВАРИАЦИИ</b> — варианты одной модели; <b>USING/STACK OVR</b> — переопределение ресурса использования и размера стака; <b>СПАВН ВЫКЛ</b> — глобальное отключение спавна. Чтобы предмета было больше: уберите его из жёсткого кулдауна или добавьте в записи пресетов (спавнеры → ПРАВИТЬ). Клик по ITEM ID — «ПРАВИТЬ (WORKING)»; ✎ — есть правка.</p>
+    </article>
+  </div>
+
+  <div class="l-pane" id="l-pane-cooldowns">
+    <article class="panel">
+      <h3>OVERRIDE-ФАЙЛЫ КУЛДАУНОВ · WORKING</h3>
+      <div class="l-pager"><button class="btn-green" id="l-cd-new">НОВЫЙ OVERRIDE-ФАЙЛ</button></div>
+      <div class="scroll"><table>
+        <thead><tr><th>ФАЙЛ</th><th>ГРУПП</th><th>СОХРАНЕНО</th><th></th></tr></thead>
+        <tbody id="l-cd-w-rows"><tr><td colspan="4" class="empty">Файлов нет</td></tr></tbody>
+      </table></div>
+      <div class="l-pub"><button class="btn-red" id="l-cd-publish" disabled>ОТПРАВИТЬ КУЛДАУНЫ (0)</button><span id="l-cd-pub-status" class="hint-inline"></span></div>
+      <p class="note">Override-файл добавляет/заменяет группы поверх CooldownGroups.json (имя файла любое). <code>DeleteAllDefaultCooldownGroups=true</code> удаляет все дефолтные группы; <code>DefaultCooldownGroupsToDelete</code> — список имён групп на удаление.</p>
+    </article>
+    <article class="panel">
+      <p class="hint" id="l-cd-meta">—</p>
+      <div class="scroll"><table>
+        <thead><tr><th title="Имя группы кулдауна">ГРУППА</th><th title="CooldownMin: минимум таймера возврата предметов группы">MIN</th><th title="CooldownMax: максимум таймера возврата">MAX</th><th title="IsAffectedByLowerGroups: учитывать приоритет нижестоящих групп (наблюдение)">ЗАВИСИТ ОТ НИЖНИХ</th><th title="Сколько предметов Parameters.json привязано к группе">ИСПОЛЬЗУЮТ ПРЕДМЕТЫ</th></tr></thead>
+        <tbody id="l-cd-rows"><tr><td colspan="5" class="empty">Групп нет</td></tr></tbody>
+      </table></div>
+      <p class="note">CooldownMin..Max — окно возврата: предмет группы, который уже взяли, не выдаётся снова, пока таймер не истечёт (меньше = лут возвращается быстрее). Единицы времени файлом не декларируются — в UI только числа из CooldownGroups.json.</p>
+    </article>
+  </div>
+
+  <div class="l-pane" id="l-pane-zones">
+    <article class="panel">
+      <div class="filters">
+        <input id="l-z-new" placeholder="Имя нового мода (папки)" spellcheck="false">
+        <button class="btn-green" id="l-z-add">ДОБАВИТЬ МОД</button>
+      </div>
+      <div class="scroll"><table>
+        <thead><tr><th>МОД</th><th>ZONES.JSON</th><th>ЗОН</th><th>ПРЕСЕТОВ</th><th>СПАВНЕРОВ С ЗОНАМИ</th><th>КООРДИНАТЫ</th><th></th></tr></thead>
+        <tbody id="l-z-rows"><tr><td colspan="7" class="empty">Загрузка…</td></tr></tbody>
+      </table></div>
+      <div class="l-pub"><button class="btn-red" id="l-z-publish" disabled>ОТПРАВИТЬ ЗОНЫ (0)</button><span id="l-z-pub-status" class="hint-inline"></span></div>
+      <p class="note">Координаты — строки формата Unreal Engine «X=… Y=…» (TopLeft → BottomRight). Подтверждённый пример в данных — мод bunkerD2. «ПРАВИТЬ (WORKING)» открывает отдельное окно с картой: рисование мышью, зум колесиком, карточки зон; JSON-режим — кнопкой «JSON…» в окне или кнопкой «ПРАВИТЬ (JSON)» в строке; поля Zones.json вне Zones сохраняются.</p>
+    </article>
+  </div>
+
+  <div class="l-pane" id="l-pane-help">
+    <article class="panel">
+      <h3>КАК УСТРОЕН ЛУТ — 5 ШАГОВ ДЛЯ НОВИЧКА</h3>
+      <ol class="l-steps">
+        <li><b>Точка лута = пресет-спавнер.</b> Каждый ящик, полка, труп — файл в <code>Spawners\Presets</code>. Имя читается как адрес: <code>Buildings-Armory-TV_Bunker-World_Shelf</code> = здание → оружейная → ТВ-бункер → полка у ТВ.</li>
+        <li><b>Записи выдачи.</b> <code>Nodes</code> — ссылки на узлы дерева лута (конкретные предметы берутся из дерева); <code>Items</code> — прямой список предметов <code>{Id, Rarity}</code>; <code>FixedItems</code> — гарантированные предметы; <code>Subpresets</code> — вложенные наборы из других пресетов.</li>
+        <li><b>Шанс и количество.</b> <code>Probability</code> (%) решает, сработает ли запись; <code>QuantityMin..Max</code> — сколько предметов выдаст за срабатывание; <code>AllowDuplicates</code> — может ли один предмет выпасть дважды за раз.</li>
+        <li><b>Редкость выбирает предмет.</b> Внутри узла/группы шанс предмета зависит от Rarity: <span class="l-tag">Abundant</span> → <span class="l-tag">Common</span> → <span class="l-tag">Uncommon</span> → <span class="l-tag">Rare</span> → <span class="l-tag">VeryRare</span> → <span class="l-tag">ExtremelyRare</span> (от «часто» к «почти никогда»).</li>
+        <li><b>Кулдауны и зоны.</b> Группа кулдауна предмета решает, вернётся ли взятый предмет и когда; <code>ShouldFilterItemsByZone</code> + <code>Zones.json</code> ограничивают спавн границами зон мода; <code>AllowedLocations</code> (Coastal/Continental/Mountain) — география предмета на карте.</li>
+      </ol>
+    </article>
+    <div class="columns">
+      <article class="panel">
+        <h3 class="l-up-t">▲ ПОДНЯТЬ ЛУТ — ЧЕМ КРУТИТЬ</h3>
+        <table class="l-dict">
+          <tr><td>Probability ↑</td><td>Запись срабатывает чаще (например 5 → 30). Самый сильный регулятор «богатства» точки лута.</td></tr>
+          <tr><td>QuantityMax ↑</td><td>Больше предметов за одно срабатывание. QuantityMin держите ≤ QuantityMax.</td></tr>
+          <tr><td>Rarity ↓ класс</td><td>В записи предмета/узла: Rare → Common → Abundant — предмет чаще выбирается из группы.</td></tr>
+          <tr><td>+ Id / + Ids</td><td>Добавить предмет в Items или путь в Nodes.Ids — больше разнообразия в точке.</td></tr>
+          <tr><td>+ FixedItems</td><td>Гарантированные предметы при каждом респауне контейнера.</td></tr>
+          <tr><td>Кулдаун ↓</td><td>CooldownMin/Max группы меньше — взятые предметы возвращаются быстрее (вкладка КУЛДАУНЫ, у предметов видно их группы).</td></tr>
+        </table>
+      </article>
+      <article class="panel">
+        <h3 class="l-down-t">▼ ПОНИЗИТЬ ЛУТ — ЧЕМ КРУТИТЬ</h3>
+        <table class="l-dict">
+          <tr><td>Probability ↓ / 0</td><td>Запись срабатывает редко; 0 фактически выключает её.</td></tr>
+          <tr><td>QuantityMax ↓</td><td>Меньше предметов за срабатывание; QuantityMin = QuantityMax = 1 — строго по одному.</td></tr>
+          <tr><td>Rarity ↑ класс</td><td>Common → Rare → VeryRare — предмет выпадает заметно реже.</td></tr>
+          <tr><td>− Id / − Ids</td><td>Убрать предмет или путь узла из записи.</td></tr>
+          <tr><td>− FixedItems</td><td>Убрать гарантированные предметы из контейнера.</td></tr>
+          <tr><td>Кулдаун ↑</td><td>Таймеры группы больше — лут возвращается медленнее.</td></tr>
+          <tr><td>IsDisabledForSpawning</td><td>В ПРЕДМЕТАХ: true — предмет не спавнится вообще по всей карте (глобально, осторожно!).</td></tr>
+        </table>
+      </article>
+    </div>
+    <article class="panel">
+      <h3>СЛОВАРЬ ПАРАМЕТРОВ СПАВНЕРА</h3>
+      <div id="l-help-dict" class="l-help-params"></div>
+      <h3>ПАРАМЕТРЫ ПРЕДМЕТОВ (ITEMS → PARAMETERS.JSON)</h3>
+      <div id="l-help-items" class="l-help-params"></div>
+      <h3>ПОСТ-ДЕЙСТВИЯ (POSTSPAWNACTIONS) — НАБЛЮДАЕМЫЕ В БАЗЕ</h3>
+      <div id="l-help-post" class="l-help-params"></div>
+      <h3>ПОЧЕМУ WARNING «ID ПРЕДМЕТА ОТСУТСТВУЕТ В PARAMETERS.JSON»</h3>
+      <p class="note">Parameters.json — справочник спавнящихся предметов текущего экспорта (1137 записей). Пресеты порой ссылаются на Id, которых в нём нет: это «дырки» в сериях вариантов — например, у брони есть 01_01, 01_03 и 01_04, а 01_02 разработчики удалили из спавна, и ссылка на неё осталась в старом пресете. Игра при срабатывании записи молча пропускает неизвестный Id — остальные предметы записи спавнятся, поэтому это WARNING, а не ERROR. Такой «призрачный» предмет не появится в игре никогда: повышать ему Probability или менять Rarity бессмысленно. Для нового лута берите Id из вкладки ПРЕДМЕТЫ.</p>
+      <p class="note">Описания построены на анализе 1400 файлов реального экспорта (наблюдаемые ключи и значения схемы) и общих механиках игры; то, что нельзя подтвердить документацией, помечено «наблюдение». Единицы времени кулдаунов файлом не декларируются. Все правки идут в WORKING-копию — файлы базы не меняются, ваниль восстанавливается кнопкой «СБРОСИТЬ ПРАВКУ».</p>
+    </article>
+  </div>
+</section>
+
+<section class="view l-only" id="l-validate">
+  <div class="toolbar">
+    <div><h2>Валидатор базы лута</h2><p>Ссылки спавнеров на дерево и под-пресеты, enum Rarity, диапазоны Probability/Quantity, связь с Parameters.json и кулдаунами. Пути дерева сверяются без учёта регистра — как читает игра.</p></div>
+    <button class="btn-red" id="l-val-run">ЗАПУСТИТЬ ПРОВЕРКУ</button>
+  </div>
+  <article class="panel">
+    <div class="l-val-counts" id="l-val-counts"><p class="empty">Проверка ещё не запускалась</p></div>
+    <p class="hint" id="l-val-status">ERROR блокирует экспорт конфигурации, WARNING требует внимания, INFO — наблюдения.</p>
+    <div id="l-val-list" class="l-issues"></div>
+    <p class="note"><b>Почему WARNING «Id предмета отсутствует в Parameters.json»</b> — пресет ссылается на предмет, у которого в текущем экспорте нет параметров спавна. Почти всегда это «дырка» в серии вариантов: в базе есть Armor_Tactical_Vest_01_01/01_03/01_04, но нет 01_02 — вариант удалили из спавна в патчах, а ссылка в старом пресете осталась. Игра молча пропускает такой предмет: остальные предметы записи спавнятся как ни в чём не бывало — поэтому это WARNING, а не ERROR. Такой предмет не появится никогда; для нового лута берите Id из вкладки ПРЕДМЕТЫ (там только реально спавнящиеся). ERROR — это сломанные пути дерева (node-ref) и отсутствующие subpresets: там запись теряет смысл целиком.</p>
+  </article>
 </section>
 
 <footer>MIDWAY ECONOMY CONTROL · BY LEMANN <span>TRADER CONFIG · ECONOMYOVERRIDE.JSON · LOCAL TOOL</span></footer>
@@ -361,6 +699,122 @@
     <button class="btn-green" type="submit">ДОБАВИТЬ</button>
     <button type="button" class="btn-dark" id="cancel">Отмена</button>
   </form>
+</dialog>
+
+<dialog id="q-items-dialog">
+  <div class="dlg-head"><h3>КАТАЛОГ ПРЕДМЕТОВ · ВЫБОР ДЛЯ ACCEPTEDITEMS</h3><span id="q-items-target" class="hint-inline"></span></div>
+  <div class="filters">
+    <input id="q-items-search" placeholder="Поиск по названию или ID">
+    <select id="q-items-cat"></select>
+  </div>
+  <div class="add-results" id="q-items-results"></div>
+  <p class="note">Клик по строке добавляет ID в выбранную группу предметов; диалог остаётся открытым — можно добавить несколько позиций. Уже имеющиеся в группе ID пропускаются. Позиции, которых нет в базе, добавляйте вручную в поле группы (они получат статус непроверенных).</p>
+  <div class="dlg-foot"><span id="q-items-status" class="hint-inline"></span><button type="button" class="btn-dark" id="q-items-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-edit-dialog">
+  <div class="dlg-head"><h3 id="l-edit-title">—</h3><span id="l-edit-target" class="hint-inline"></span></div>
+  <p class="hint">Быстрая шпаргалка: <b>Probability ↑</b> — запись срабатывает чаще; <b>QuantityMax ↑</b> — больше предметов за раз; <b>Rarity на класс ниже</b> (Rare → Common) — предмет чаще выбирается из группы; <b>FixedItems</b> — гарантированный лут (удалить = меньше лута). Полный словарь — вкладка «СПРАВКА».</p>
+  <textarea id="l-edit-doc" rows="22" spellcheck="false"></textarea>
+  <p class="note">Правка сохраняется в WORKING-копию (data\loot-working.json) — файлы базы не меняются. Ванильный вариант восстанавливается кнопкой «СБРОСИТЬ ПРАВКУ» в карточке спавнера. Ссылки на дерево и предметы сверяются с базой при сохранении.</p>
+  <div class="dlg-foot"><span id="l-edit-status" class="hint-inline"></span><button type="button" class="btn-green" id="l-edit-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-edit-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-itd-dialog">
+  <div class="dlg-head"><h3 id="l-itd-title">—</h3><span class="hint-inline">ПРЕДМЕТЫ · WORKING</span></div>
+  <div class="l-itd-grid">
+    <div class="l-itd-locs full"><b>AllowedLocations</b>
+      <label class="chk"><input type="checkbox" id="l-itd-loc-coastal">Coastal</label>
+      <label class="chk"><input type="checkbox" id="l-itd-loc-continental">Continental</label>
+      <label class="chk"><input type="checkbox" id="l-itd-loc-mountain">Mountain</label>
+    </div>
+    <label class="full">CooldownGroup<input id="l-itd-cdg" placeholder="пусто = убрать группу" spellcheck="false"></label>
+    <label>CooldownPerSquadMemberMin<input id="l-itd-cdmin" type="number" step="any" min="0"></label>
+    <label>CooldownPerSquadMemberMax<input id="l-itd-cdmax" type="number" step="any" min="0"></label>
+    <label class="chk full"><input type="checkbox" id="l-itd-uset">ShouldOverrideInitialAndRandomUsage — переопределять ресурс</label>
+    <label>InitialUsageOverride<input id="l-itd-usage-i" type="number" step="any" min="0"></label>
+    <label>RandomUsageOverride<input id="l-itd-usage-r" type="number" step="any" min="0"></label>
+    <label class="chk full"><input type="checkbox" id="l-itd-stset">ShouldOverrideInitialAndRandomStack — переопределять стак</label>
+    <label>InitialStackOverride<input id="l-itd-sti" type="number" step="any" min="0"></label>
+    <label>RandomStackOverride<input id="l-itd-str" type="number" step="any" min="0"></label>
+    <label class="chk full warn"><input type="checkbox" id="l-itd-dis">IsDisabledForSpawning — выключить спавн по всей карте (глобально!)</label>
+  </div>
+  <p class="hint" id="l-itd-base"></p>
+  <p class="note">Правка сохраняется в WORKING (data\loot-working.json) — файлы базы не меняются. Публикация пишет один файл Items\Override\Parameters.json: база + правки + текущий Override сервера. Изменённые поля уходят в patch, остальное берётся из базы.</p>
+  <div class="dlg-foot"><span id="l-itd-status" class="hint-inline"></span><button type="button" class="btn-dark" id="l-itd-reset" hidden>СБРОСИТЬ ПРАВКУ</button><button type="button" class="btn-green" id="l-itd-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-itd-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-cdd-dialog">
+  <div class="dlg-head"><h3 id="l-cdd-title">—</h3><span class="hint-inline">КУЛДАУНЫ · WORKING</span></div>
+  <textarea id="l-cdd-doc" rows="20" spellcheck="false"></textarea>
+  <p class="note">Схема: {"DeleteAllDefaultCooldownGroups": bool, "DefaultCooldownGroupsToDelete": ["Имя", …], "CooldownGroups": [{"Name": "…", "CooldownMin": 0, "CooldownMax": 0, "IsAffectedByLowerGroups": bool}]}. Публикация → CooldownGroups\Override\&lt;файл&gt;.json. CooldownMin ≤ CooldownMax, имена групп уникальны.</p>
+  <div class="dlg-foot"><span id="l-cdd-status" class="hint-inline"></span><button type="button" class="btn-green" id="l-cdd-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-cdd-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-cde-dialog">
+  <div class="dlg-head"><h3 id="l-cde-title">—</h3><span class="hint-inline">КУЛДАУНЫ · РЕДАКТОР</span></div>
+  <label class="full">Имя override-файла<input id="l-cde-name" spellcheck="false"></label>
+  <div class="l-cde-file">
+    <label class="chk warn"><input type="checkbox" id="l-cde-delall">DeleteAllDefaultCooldownGroups — удалить ВСЕ дефолтные группы</label>
+    <div class="l-cde-del"><b>DefaultCooldownGroupsToDelete:</b><span id="l-cde-del-list" class="l-tags"></span></div>
+    <div class="l-cde-del-add"><input id="l-cde-del-input" placeholder="Имя группы на удаление" list="l-cde-groups-dl" spellcheck="false"><button type="button" class="btn-dark" id="l-cde-del-add-btn">+</button></div>
+  </div>
+  <div id="l-cde-groups" class="l-cde-groups"></div>
+  <datalist id="l-cde-groups-dl"></datalist>
+  <div class="l-pager"><button type="button" class="btn-green" id="l-cde-add">ДОБАВИТЬ ГРУППУ</button></div>
+  <p class="note">CooldownMin..Max — окно возврата предметов группы (Min ≤ Max); <b>нижние</b> — IsAffectedByLowerGroups (приоритет нижестоящих групп, наблюдение). Имя группы — подсказки из CooldownGroups.json. Override-файл добавляет/заменяет группы поверх дефолтных.</p>
+  <div class="dlg-foot"><span id="l-cde-status" class="hint-inline"></span><button type="button" class="btn-dark" id="l-cde-json">JSON…</button><button type="button" class="btn-green" id="l-cde-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-cde-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-nd-dialog">
+  <div class="dlg-head"><h3 id="l-nd-title">—</h3><span class="hint-inline">ДЕРЕВО ЛУТА · WORKING</span></div>
+  <textarea id="l-nd-doc" rows="22" spellcheck="false"></textarea>
+  <p class="note">Файл дерева: {"Name": "ItemLootTreeNodes.…", "Children": […]}. Публикация → Nodes\Override\&lt;файл&gt;.json — файл перекрывает одноимённый из Default/Current. Ключ <code>ChildrenMergeMode</code> задаётся на любом узле с Children: <b>Replace</b> — дети этого узла полностью заменяют детей одноимённой системной группы; <b>Append</b> — дети добавляются в конец к дефолтным (без ключа — замена файла целиком). Селектор ниже управляет корнем файла; на вложенных узлах ключ правится в JSON.</p>
+  <label class="full">ChildrenMergeMode корня файла<select id="l-nd-merge">
+    <option value="">— не задан (файл заменяет Default целиком)</option>
+    <option value="Replace">Replace — заменить детей системной группы</option>
+    <option value="Append">Append — добавить детей в конец дефолтных</option>
+  </select></label>
+  <label class="full">Имя override-файла<input id="l-nd-name" spellcheck="false"></label>
+  <div class="dlg-foot"><span id="l-nd-status" class="hint-inline"></span><button type="button" class="btn-green" id="l-nd-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-nd-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-ned-dialog">
+  <div class="dlg-head"><h3 id="l-ned-title">—</h3><span class="hint-inline">ДЕРЕВО ЛУТА · РЕДАКТОР</span></div>
+  <label class="full">Имя override-файла<input id="l-ned-name-file" spellcheck="false"></label>
+  <div id="l-ned-tree" class="l-ned-tree"></div>
+  <datalist id="l-ned-items"></datalist>
+  <p class="note"><b>Rarity</b> — класс редкости ветки (понижение класса = предметы ветки чаще); <b>Merge</b> — ChildrenMergeMode (Replace — заменить детей системной группы, Append — добавить в конец). Имена листьев — Item ID: подсказки из Parameters.json при вводе. <b>[+]</b> добавить ребёнка (узел становится группой), <b>[⧉]</b> копия узла, <b>[×]</b> удалить (кроме корня).</p>
+  <div class="dlg-foot"><span id="l-ned-status" class="hint-inline"></span><button type="button" class="btn-dark" id="l-ned-json">JSON…</button><button type="button" class="btn-green" id="l-ned-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-ned-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-zd-dialog">
+  <div class="dlg-head"><h3 id="l-zd-title">—</h3><span class="hint-inline">ЗОНЫ · WORKING</span></div>
+  <textarea id="l-zd-doc" rows="22" spellcheck="false"></textarea>
+  <p class="note">Файл Zones.json мода: {"Zones": [{"TopLeft": "X=… Y=…", "BottomRight": "X=… Y=…"}], …} — верхнеуровневые поля вне Zones сохраняются. Публикация → Spawners\Presets\Override\&lt;мод&gt;\Zones.json.</p>
+  <div class="dlg-foot"><span id="l-zd-status" class="hint-inline"></span><button type="button" class="btn-dark" id="l-zd-reset" hidden>СБРОСИТЬ ПРАВКУ</button><button type="button" class="btn-green" id="l-zd-save">СОХРАНИТЬ В WORKING</button><button type="button" class="btn-dark" id="l-zd-cancel">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="l-calc-dialog">
+  <div class="dlg-head"><h3 id="l-calc-title">—</h3><span class="hint-inline">КАЛЬКУЛЯТОР ШАНСОВ · ОЦЕНКА</span></div>
+  <div class="l-calc-w">
+    <b>ВЕСА РЕДКОСТИ (настраиваемые — реальные веса игра не документирует)</b>
+    <label>Abundant<input id="l-cw-ab" type="number" min="1" max="20" value="6"></label>
+    <label>Common<input id="l-cw-co" type="number" min="1" max="20" value="5"></label>
+    <label>Uncommon<input id="l-cw-un" type="number" min="1" max="20" value="4"></label>
+    <label>Rare<input id="l-cw-ra" type="number" min="1" max="20" value="3"></label>
+    <label>VeryRare<input id="l-cw-ve" type="number" min="1" max="20" value="2"></label>
+    <label>ExtremelyRare<input id="l-cw-ex" type="number" min="1" max="20" value="1"></label>
+    <button type="button" class="btn-dark" id="l-calc-run">ПЕРЕСЧИТАТЬ</button>
+  </div>
+  <div id="l-calc-summary" class="l-calc-summary"></div>
+  <div class="scroll"><table>
+    <thead><tr><th>ПРЕДМЕТ</th><th title="Сколько записей Items содержат предмет">ЗАПИСЕЙ</th><th>RARITY</th><th>ВЕС</th><th title="Оценка шанса получить хотя бы 1 за респавн контейнера">ШАНС ≥1</th><th title="Оценка среднего количества за респавн">СР. КОЛ-ВО</th></tr></thead>
+    <tbody id="l-calc-rows"><tr><td colspan="6" class="empty">—</td></tr></tbody>
+  </table></div>
+  <div id="l-calc-extra" class="l-calc-extra"></div>
+  <p class="note">Это модель оценки, не точная механика игры: записи независимы; выбор предмета внутри записи пропорционален весам редкости (веса выше можно менять); Quantity равномерно Min..Max (в расчёте среднее); FixedItems спавнятся всегда; Nodes-записи считаются агрегированно — предметы за ними живут в дереве лута; Subpresets не разворачиваются. Расчёт по EFFECTIVE-документу (с учётом WORKING-правки пресета).</p>
+  <div class="dlg-foot"><span id="l-calc-status" class="hint-inline"></span><button type="button" class="btn-dark" id="l-calc-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <div id="toast"></div>
