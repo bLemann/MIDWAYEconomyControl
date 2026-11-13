@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.22"
+VERSION = "0.8.23"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -319,6 +319,17 @@ def icons_dir():
 ICON_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 ICON_URL_TYPES = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif", "image/bmp": ".bmp"}
 ITEM_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{1,120}$")
+ICON_ALIAS_RES = (
+    (re.compile(r"^(\d{1,3})_teeth_necklace$"), "ico_{n}_human_teeth_necklace"),
+    (re.compile(r"^(\d{1,3})_pieces_ear_necklace$"), "ico_{n}_ear_necklace"),
+)
+ICON_ALIAS_EXACT = {
+    "1h_wrench_pipe": "1h_pipe_wrench",
+    "amantia_phalloides": "amanita_phalloides",
+    "amanita_pantheria": "amanita_pantherina",
+    "bundle_of_saftey_pins": "bundle_of_safety_pins",
+    "geek_goggles": "geek_goggels",
+}
 
 def custom_items_file():
     return data_dir() / "custom-items.json"
@@ -335,14 +346,53 @@ def server_files_dir():
     d.mkdir(parents=True, exist_ok=True)
     return d
 
+def icon_candidates(item_id):
+    s = str(item_id).lower()
+    seen, out = {s}, [s]
+    alt = ICON_ALIAS_EXACT.get(s)
+    if alt and alt not in seen:
+        seen.add(alt)
+        out.append(alt)
+    cur = s
+    while True:
+        m = re.search(r"_(\d{1,3})$", cur)
+        if not m:
+            break
+        cur = cur[: m.start()]
+        for x in (cur, cur + "_01", cur + "_02", cur + "_03"):
+            if x not in seen:
+                seen.add(x)
+                out.append(x)
+    for suf in ("_01", "_02", "_03"):
+        x = s + suf
+        if x not in seen:
+            seen.add(x)
+            out.append(x)
+    for rx, tpl in ICON_ALIAS_RES:
+        m = rx.match(s)
+        if not m:
+            continue
+        for f0 in dict.fromkeys([m.group(1), str(int(m.group(1)))]):
+            x = tpl.format(n=f0)
+            for cand in (x, x + "_01", x + "_02"):
+                if cand not in seen:
+                    seen.add(cand)
+                    out.append(cand)
+    return out
+
+
 def find_icon_file(item_id):
-    safe = item_id.lower()
     try:
-        for f in icons_dir().iterdir():
-            if f.is_file() and f.suffix.lower() in ICON_EXTS and f.stem.lower() == safe:
-                return f
+        files = [f for f in icons_dir().iterdir() if f.is_file() and f.suffix.lower() in ICON_EXTS]
     except OSError:
-        pass
+        return None
+    by_stem = {}
+    for f in files:
+        by_stem.setdefault(f.stem.lower(), f)
+    for cand in icon_candidates(item_id):
+        f = by_stem.get(cand)
+        if f:
+            return f
     return None
 
 def write_icon_file(item_id, ext, raw):
@@ -402,6 +452,73 @@ def bundled_icon_index():
 def removed_icons_file():
     return data_dir() / "icons" / "__removed.json"
 
+
+ICONS_JOB = {"running": False, "phase": "", "got": 0, "total": 0, "fetched": 0,
+             "missing": 0, "error": None, "done": True}
+
+
+def icons_fetch_job(missing, seen):
+    try:
+        cache = icons_dir() / "icons-base.zip.cache"
+        if cache.is_file() and cache.stat().st_size > 10 * 1024 * 1024:
+            src = cache
+            ICONS_JOB.update(phase="extract", got=0, total=0)
+        else:
+            url = "https://github.com/" + REPO + "/releases/latest/download/icons.zip"
+            tmp = icons_dir() / "icons-base.zip.tmp"
+            try:
+                ICONS_JOB.update(phase="download", got=0, total=0)
+                req = urllib.request.Request(url, headers={"User-Agent": "MIDWAYEconomyControl/" + VERSION})
+                with urllib.request.urlopen(req, timeout=60) as r, open(tmp, "wb") as f:
+                    total = int(r.headers.get("Content-Length") or 0)
+                    ICONS_JOB.update(total=total)
+                    got = 0
+                    while True:
+                        chunk = r.read(262144)
+                        if not chunk:
+                            break
+                        got += len(chunk)
+                        if got > 300 * 1024 * 1024:
+                            raise ValueError("База иконок слишком большая (>300 МБ)")
+                        f.write(chunk)
+                        ICONS_JOB.update(got=got)
+            except (urllib.error.URLError, OSError, ValueError) as exc:
+                try:
+                    tmp.unlink()
+                except OSError:
+                    pass
+                ICONS_JOB.update(running=False, phase="error", error="Скачивание не удалось: " + str(exc)[:220], done=True)
+                return
+            if cache.exists():
+                try:
+                    cache.unlink()
+                except OSError:
+                    pass
+            tmp.replace(cache)
+            src = cache
+            ICONS_JOB.update(phase="extract", got=0, total=0)
+        fetched = 0
+        with zipfile.ZipFile(src) as z:
+            names = [n for n in z.namelist() if not n.endswith("/")]
+            ICONS_JOB.update(total=len(names))
+            for idx, n in enumerate(names):
+                p = Path(n)
+                if idx % 150 == 0 or idx == len(names) - 1:
+                    ICONS_JOB.update(got=idx + 1)
+                if p.suffix.lower() not in ICON_EXTS or p.stem.lower() not in seen:
+                    continue
+                data_bytes = z.read(n)
+                if len(data_bytes) > 2 * 1024 * 1024:
+                    continue
+                try:
+                    (icons_dir() / (p.stem.lower() + p.suffix.lower())).write_bytes(data_bytes)
+                    fetched += 1
+                except OSError:
+                    continue
+        ICONS_JOB.update(running=False, phase="done", done=True, fetched=fetched, got=len(names), total=len(names))
+    except Exception as exc:
+        ICONS_JOB.update(running=False, phase="error", error=str(exc)[:250], done=True)
+
 def load_removed_icons():
     try:
         raw = json.loads(removed_icons_file().read_text(encoding="utf-8"))
@@ -425,8 +542,11 @@ def read_icon_bytes(item_id):
             pass
     if safe in load_removed_icons():
         return None, ""
-    zn = bundled_icon_index().get(safe)
-    if zn:
+    idx = bundled_icon_index()
+    for cand in icon_candidates(safe):
+        zn = idx.get(cand)
+        if not zn:
+            continue
         for attempt in range(5):
             try:
                 with zipfile.ZipFile(icon_zip_file()) as z:
@@ -1375,6 +1495,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(200, {"ok": True, "connections": load_connections()})
         if self.path == "/api/custom-items":
             return self.send_json(200, {"ok": True, "items": load_custom_items()})
+        if self.path == "/api/icons/auto-fetch/status":
+            return self.send_json(200, {"ok": True, **ICONS_JOB})
         if self.path.startswith("/api/icon/"):
             name = urllib.parse.unquote(self.path[len("/api/icon/"):].split("?", 1)[0])
             safe = re.sub(r"[^A-Za-z0-9_\-]", "", name)
@@ -2611,13 +2733,15 @@ class Handler(SimpleHTTPRequestHandler):
         known -= load_removed_icons()
         missing = []
         for i in ids[:2000]:
-            if isinstance(i, str) and i.strip() and i.strip().lower() not in known:
+            if isinstance(i, str) and i.strip() and not any(c in known for c in icon_candidates(i.strip().lower())):
                 missing.append(i.strip())
         return self.send_json(200, {"ok": True, "missing": missing, "missingCount": len(missing)})
 
     def handle_icons_autofetch(self, data):
         if not isinstance(data, dict) or data.get("confirm") is not True:
             return self.send_json(400, {"ok": False, "error": "Auto-fetch requires explicit confirmation"})
+        if ICONS_JOB["running"]:
+            return self.send_json(409, {"ok": False, "error": "Догрузка иконок уже идёт"})
         ids = []
         if isinstance(data.get("ids"), list):
             for i in data["ids"][:5000]:
@@ -2645,63 +2769,20 @@ class Handler(SimpleHTTPRequestHandler):
         missing, seen = [], set()
         for i in ids:
             s = i.strip().lower()
-            if s and s not in known and s not in seen:
+            if s and s not in seen:
                 seen.add(s)
-                missing.append(s)
+                if not any(c in known for c in icon_candidates(s)):
+                    missing.append(s)
         if not missing:
-            return self.send_json(200, {"ok": True, "missing": 0, "fetched": 0, "source": "none",
+            return self.send_json(200, {"ok": True, "started": False, "missing": 0, "fetched": 0, "source": "none",
                                         "note": "Все иконки уже на месте"})
-        cache = icons_dir() / "icons-base.zip.cache"
-        src = None
-        if cache.is_file() and cache.stat().st_size > 10 * 1024 * 1024:
-            src = cache
-        else:
-            url = "https://github.com/" + REPO + "/releases/latest/download/icons.zip"
-            tmp = icons_dir() / "icons-base.zip.tmp"
-            try:
-                req = urllib.request.Request(url, headers={"User-Agent": "MIDWAYEconomyControl/" + VERSION})
-                with urllib.request.urlopen(req, timeout=60) as r, open(tmp, "wb") as f:
-                    total = 0
-                    while True:
-                        chunk = r.read(262144)
-                        if not chunk:
-                            break
-                        total += len(chunk)
-                        if total > 300 * 1024 * 1024:
-                            raise ValueError("База иконок слишком большая (>300 МБ)")
-                        f.write(chunk)
-            except (urllib.error.URLError, OSError, ValueError) as exc:
-                try:
-                    tmp.unlink()
-                except OSError:
-                    pass
-                return self.send_json(502, {"ok": False, "error": "Не удалось скачать базу иконок: " + str(exc)[:220]})
-            if cache.exists():
-                try:
-                    cache.unlink()
-                except OSError:
-                    pass
-            tmp.replace(cache)
-            src = cache
-        fetched = 0
-        try:
-            with zipfile.ZipFile(src) as z:
-                for n in z.namelist():
-                    p = Path(n)
-                    if n.endswith("/") or p.suffix.lower() not in ICON_EXTS or p.stem.lower() not in seen:
-                        continue
-                    data_bytes = z.read(n)
-                    if len(data_bytes) > 2 * 1024 * 1024:
-                        continue
-                    try:
-                        (icons_dir() / (p.stem.lower() + p.suffix.lower())).write_bytes(data_bytes)
-                        fetched += 1
-                    except OSError:
-                        continue
-        except (zipfile.BadZipFile, OSError) as exc:
-            return self.send_json(500, {"ok": False, "error": "База иконок повреждена: " + str(exc)[:200]})
-        return self.send_json(200, {"ok": True, "missing": len(missing), "fetched": fetched,
-                                    "source": "cache" if src == cache else "github"})
+        ICONS_JOB.update(running=True, phase="download", got=0, total=0, fetched=0,
+                         missing=len(missing), error=None, done=False)
+        threading.Thread(target=icons_fetch_job, args=(missing, seen), daemon=True).start()
+        return self.send_json(200, {"ok": True, "started": True, "missing": len(missing)})
+
+    def handle_icons_autofetch_status(self):
+        return self.send_json(200, {"ok": True, **ICONS_JOB})
 
     ZONE_WINDOWS = {}
 
