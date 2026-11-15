@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.27"
+VERSION = "0.8.28"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -647,6 +647,8 @@ def ftp_err_text(exc):
         return "TLS-соединение оборвано сервером во время рукопожатия (частые причины: VPN выключен, порт фильтруется, сервер не отвечает)"
     if isinstance(exc, ssl.SSLError):
         return "Ошибка TLS: " + s[:160]
+    if isinstance(exc, ftplib.error_temp):
+        return "Временная ошибка FTP-сервера: " + s[:160]
     if isinstance(exc, ConnectionRefusedError):
         return "Отказ в соединении — порт закрыт или сервер недоступен"
     if isinstance(exc, TimeoutError) or "timed out" in s:
@@ -655,12 +657,14 @@ def ftp_err_text(exc):
         return "Сетевая ошибка: " + s[:160]
     return type(exc).__name__ + ": " + s[:160]
 
-def connect_ftp(data):
+RETRYABLE_FTP_EXC = (ssl.SSLError, ConnectionError, TimeoutError, EOFError, ftplib.error_temp)
+
+def connect_ftp(data, attempt_start=0):
     errors = []
     host, port = data["host"], int(data.get("port", 21))
     for attempt in range(2):
         try:
-            ftp = FTP_TLS_E(timeout=12, context=SSL_CTX_TLS12 if attempt == 0 else SSL_CTX)
+            ftp = FTP_TLS_E(timeout=12, context=SSL_CTX_TLS12 if (attempt_start + attempt) % 2 == 0 else SSL_CTX)
             ftp.connect(host, port)
             ftp.login(data["username"], data["password"])
             ftp.prot_p()
@@ -1528,7 +1532,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/test", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -2902,190 +2906,41 @@ class Handler(SimpleHTTPRequestHandler):
             bad = [str(it.get("fileName") or "")[:80] or "?" for it in files if not isinstance(it, dict) or not QUEST_NAME_RE.match(str(it.get("fileName") or ""))]
             if bad:
                 return self.send_json(400, {"ok": False, "error": "fileName must be STORY_*.json: " + ", ".join(bad[:5])})
+        if route == "/api/ftp/upload":
+            if data.get("confirm") is not True:
+                return self.send_json(400, {"ok": False, "error": "Upload requires explicit confirmation"})
+            try:
+                raw = base64.b64decode(data.get("content", ""), validate=True)
+            except (ValueError, TypeError):
+                return self.send_json(400, {"ok": False, "error": "content must be valid base64"})
+            if len(raw) > 5 * 1024 * 1024:
+                return self.send_json(413, {"ok": False, "error": "File exceeds 5 MB limit"})
+        if route in ("/api/ftp/download", "/api/ftp/upload", "/api/ftp/inspect"):
+            remote = str(data.get("fileName") or "")
+            if not remote or any(c in remote for c in "\r\n/\\") or remote in (".", ".."):
+                return self.send_json(400, {"ok": False, "error": "A file name (not a path) is required"})
         try:
             ftp, tls = connect_ftp(data)
         except (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
             return self.send_json(502, {"ok": False, "error": str(exc)[:400]})
+        attempt = 0
         try:
-            if route == "/api/ftp/find":
-                query = str(data.get("query") or "").strip().lower()
-                deadline = time.monotonic() + 25
-                results, stats = [], {"dirs": 0, "errors": 0}
-                truncated = [False]
-                def walk(conn, path, depth):
-                    if depth > 5 or stats["dirs"] > 400 or time.monotonic() > deadline:
-                        truncated[0] = True
-                        return
-                    stats["dirs"] += 1
-                    entries = []
-                    try:
-                        for name, facts in conn.mlsd(path):
-                            if name in (".", ".."):
-                                continue
-                            entries.append((name, facts.get("type", "file") == "dir", facts.get("size", "")))
-                    except (ftplib.error_perm, ftplib.error_proto, AttributeError):
-                        try:
-                            for name in conn.nlst(path):
-                                base = name.rstrip("/").rsplit("/", 1)[-1]
-                                if base and base not in (".", ".."):
-                                    entries.append((name, False, ""))
-                        except (ftplib.error_perm, ftplib.error_proto, OSError):
-                            stats["errors"] += 1
-                            return
-                    except OSError:
-                        stats["errors"] += 1
-                        return
-                    for name, is_dir, size in entries:
-                        if time.monotonic() > deadline:
-                            truncated[0] = True
-                            return
-                        base = name.rstrip("/").rsplit("/", 1)[-1]
-                        full = (path.rstrip("/") or "") + "/" + base
-                        if query in base.lower():
-                            results.append({"name": base, "path": full, "dir": path.rstrip("/") or "/", "size": size})
-                            if len(results) >= 60:
-                                truncated[0] = True
-                                return
-                        if is_dir:
-                            walk(conn, full, depth + 1)
-                def do_walk(conn):
-                    walk(conn, data["remotePath"] or "/", 0)
+            while True:
                 try:
-                    do_walk(ftp)
-                except (ssl.SSLError, ConnectionError, TimeoutError, EOFError):
+                    return self.send_json(200, self.ftp_route(route, data, ftp, tls))
+                except RETRYABLE_FTP_EXC as exc:
+                    if attempt >= 2 or (isinstance(exc, ftplib.error_temp) and str(exc).lstrip().startswith("421")):
+                        raise
+                    attempt += 1
                     try:
-                        ftp.close()
+                        ftp.quit()
                     except Exception:
-                        pass
-                    ftp, tls = connect_ftp(data)
-                    deadline = time.monotonic() + 25
-                    stats["dirs"] = 0
-                    do_walk(ftp)
-                return self.send_json(200, {"ok": True, "tls": tls, "query": query, "results": results, "truncated": truncated[0], "stats": stats})
-            if route == "/api/ftp/list":
-                def do_list(ftp, tls):
-                    note = None
-                    target = data["remotePath"]
-                    try:
-                        ftp.cwd(target)
-                        path = target
-                    except ftplib.error_perm as exc:
-                        path = None
-                        for alt in ("/", "."):
-                            try:
-                                ftp.cwd(alt)
-                                path = alt
-                                note = "Папка " + target + " не найдена (" + str(exc)[:120] + "); показан " + ("корень" if path == "/" else "текущая папка") + ". Выберите нужную папку в списке."
-                                break
-                            except ftplib.error_perm:
-                                continue
-                        if path is None:
-                            raise
-                    rows = []
-                    try:
-                        for name, facts in ftp.mlsd():
-                            rows.append({"name": name, "type": facts.get("type", "file"), "size": facts.get("size", ""), "modified": facts.get("modify", "")})
-                    except (ftplib.error_perm, AttributeError):
-                        rows = [{"name": n, "type": "unknown", "size": ""} for n in ftp.nlst()]
-                    return {"ok": True, "tls": tls, "path": path, "note": note, "files": rows}
-                try:
-                    return self.send_json(200, do_list(ftp, tls))
-                except (ssl.SSLError, ConnectionError, TimeoutError, EOFError):
-                    try:
-                        ftp.close()
-                    except Exception:
-                        pass
-                    ftp, tls = connect_ftp(data)
-                    return self.send_json(200, do_list(ftp, tls))
-            rp = data["remotePath"].rstrip("/")
-            if re.match(r"^/server/scum/saved/config/windowsserver/?$", rp, re.IGNORECASE):
-                rp += "/Quests/Override"
-            if route == "/api/ftp/snapshot":
-                names = []
-                try:
-                    for nm, facts in ftp.mlsd(rp):
-                        if nm in (".", "..") or facts.get("type", "file") == "dir":
-                            continue
-                        if nm.startswith("STORY_") and nm.lower().endswith(".json") and QUEST_NAME_RE.match(nm):
-                            names.append(nm)
-                            if len(names) >= 200:
-                                break
-                except (ftplib.error_perm, ftplib.error_proto, AttributeError):
-                    names = []
-                    for nm in ftp.nlst(rp):
-                        base = nm.rstrip("/").rsplit("/", 1)[-1]
-                        if base.startswith("STORY_") and base.lower().endswith(".json") and QUEST_NAME_RE.match(base):
-                            names.append(base)
-                            if len(names) >= 200:
-                                break
-                out_dir = quests_server_dir()
-                saved, errors = [], []
-                for nm in names:
-                    buf = io.BytesIO()
-                    try:
-                        ftp.retrbinary("RETR " + rp + "/" + nm, buf.write)
-                        raw = buf.getvalue()
-                        if len(raw) > 5 * 1024 * 1024:
-                            raise ValueError("File exceeds 5 MB limit")
-                        (out_dir / nm).write_bytes(raw)
-                        saved.append({"fileName": nm, "bytes": len(raw)})
-                    except (ftplib.error_perm, ftplib.error_proto, ValueError) as exc:
-                        errors.append({"fileName": nm, "error": str(exc)[:200]})
-                return self.send_json(200, {"ok": True, "remotePath": rp, "count": len(saved), "saved": saved, "errors": errors})
-            if route == "/api/ftp/upload-batch":
-                files = data["files"]
-                dirs_created = ftp_ensure_dir(ftp, rp)
-                stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-                results, failed = [], []
-                for item in files:
-                    fname = str(item.get("fileName") or "") if isinstance(item, dict) else ""
-                    if not QUEST_NAME_RE.match(fname):
-                        failed.append({"fileName": (fname[:80] or "?"), "error": "fileName must be STORY_*.json"})
-                        continue
-                    try:
-                        raw = base64.b64decode(item.get("content", ""), validate=True)
-                        if len(raw) > 5 * 1024 * 1024:
-                            raise ValueError("File exceeds 5 MB limit")
-                        remote_path = rp + "/" + fname
-                        backup_created = False
                         try:
-                            cur = io.BytesIO()
-                            ftp.retrbinary("RETR " + remote_path, cur.write)
-                            ftp.storbinary("STOR " + remote_path + ".backup-" + stamp, io.BytesIO(cur.getvalue()))
-                            backup_created = True
-                        except ftplib.error_perm:
+                            ftp.close()
+                        except Exception:
                             pass
-                        ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-                        results.append({"fileName": fname, "backupCreated": backup_created, "bytes": len(raw)})
-                    except (ValueError, ftplib.error_perm, ftplib.error_proto) as exc:
-                        failed.append({"fileName": fname, "error": str(exc)[:200]})
-                return self.send_json(200, {"ok": True, "remotePath": rp, "uploaded": len(results), "backups": sum(1 for r in results if r["backupCreated"]), "dirsCreated": dirs_created, "failed": failed, "results": results})
-            remote = data.get("fileName", "")
-            if not remote or any(c in remote for c in "\r\n/\\") or remote in (".", ".."):
-                return self.send_json(400, {"ok": False, "error": "A file name (not a path) is required"})
-            remote_path = data["remotePath"].rstrip("/") + "/" + remote
-            if route == "/api/ftp/download":
-                out = io.BytesIO()
-                ftp.retrbinary("RETR " + remote_path, out.write)
-                return self.send_json(200, {"ok": True, "fileName": remote, "content": base64.b64encode(out.getvalue()).decode("ascii")})
-            if route == "/api/ftp/upload":
-                if data.get("confirm") is not True:
-                    return self.send_json(400, {"ok": False, "error": "Upload requires explicit confirmation"})
-                raw = base64.b64decode(data.get("content", ""), validate=True)
-                if len(raw) > 5 * 1024 * 1024:
-                    return self.send_json(413, {"ok": False, "error": "File exceeds 5 MB limit"})
-                dirs_created = ftp_ensure_dir(ftp, data["remotePath"])
-                backup_created = False
-                backup = io.BytesIO()
-                try:
-                    ftp.retrbinary("RETR " + remote_path, backup.write)
-                    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-                    ftp.storbinary("STOR " + remote_path + ".backup-" + stamp, io.BytesIO(backup.getvalue()))
-                    backup_created = True
-                except ftplib.error_perm:
-                    pass
-                ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-                return self.send_json(200, {"ok": True, "backupCreated": backup_created, "dirsCreated": dirs_created, "fileName": remote})
+                    time.sleep(2.5)
+                    ftp, tls = connect_ftp(data, attempt_start=attempt)
         except (OSError, ValueError) + ftplib.all_errors as exc:
             err = ftp_err_text(exc) if isinstance(exc, (ssl.SSLError, ConnectionError, TimeoutError, EOFError)) else str(exc)[:300]
             return self.send_json(502, {"ok": False, "error": err[:300]})
@@ -3094,6 +2949,236 @@ class Handler(SimpleHTTPRequestHandler):
                 ftp.quit()
             except Exception:
                 ftp.close()
+
+    def ftp_route(self, route, data, ftp, tls):
+        if route == "/api/ftp/find":
+            query = str(data.get("query") or "").strip().lower()
+            deadline = time.monotonic() + 25
+            results, stats = [], {"dirs": 0, "errors": 0}
+            truncated = [False]
+            stack = [[data["remotePath"] or "/", 0]]
+            state = {"tries": 0}
+            def ftp_reconnect():
+                nonlocal ftp, tls
+                state["tries"] += 1
+                if state["tries"] > 4:
+                    raise ftplib.error_temp("421 FTP reconnect limit reached")
+                try:
+                    ftp.quit()
+                except Exception:
+                    try:
+                        ftp.close()
+                    except Exception:
+                        pass
+                time.sleep(2.0)
+                ftp, tls = connect_ftp(data, attempt_start=state["tries"])
+            def list_entries(conn):
+                out = []
+                if path not in (".", ""):
+                    conn.cwd(path)
+                for name, facts in conn.mlsd():
+                    if name in (".", ".."):
+                        continue
+                    out.append((name, facts.get("type", "file") == "dir", facts.get("size", "")))
+                return out
+            def list_entries_nlst(conn):
+                out = []
+                for name in conn.nlst():
+                    base = name.rstrip("/").rsplit("/", 1)[-1]
+                    if base and base not in (".", ".."):
+                        out.append((name, False, ""))
+                return out
+            while stack:
+                path, depth = stack[-1]
+                if depth > 5 or stats["dirs"] > 400 or time.monotonic() > deadline:
+                    truncated[0] = True
+                    break
+                stats["dirs"] += 1
+                try:
+                    entries = list_entries(ftp)
+                except RETRYABLE_FTP_EXC:
+                    ftp_reconnect()
+                    continue
+                except (ftplib.error_perm, ftplib.error_proto, AttributeError):
+                    try:
+                        entries = list_entries_nlst(ftp)
+                    except RETRYABLE_FTP_EXC:
+                        ftp_reconnect()
+                        continue
+                    except (ftplib.error_perm, ftplib.error_proto, OSError):
+                        stats["errors"] += 1
+                        stack.pop()
+                        continue
+                except OSError:
+                    stats["errors"] += 1
+                    stack.pop()
+                    continue
+                stack.pop()
+                for name, is_dir, size in entries:
+                    if time.monotonic() > deadline:
+                        truncated[0] = True
+                        break
+                    base = name.rstrip("/").rsplit("/", 1)[-1]
+                    full = (path.rstrip("/") or "") + "/" + base
+                    if query in base.lower():
+                        results.append({"name": base, "path": full, "dir": path.rstrip("/") or "/", "size": size})
+                        if len(results) >= 60:
+                            truncated[0] = True
+                            break
+                    if is_dir:
+                        stack.append([full, depth + 1])
+                if truncated[0]:
+                    break
+            return {"ok": True, "tls": tls, "query": query, "results": results, "truncated": truncated[0], "stats": stats}
+        if route == "/api/ftp/list":
+            def do_list(ftp, tls):
+                note = None
+                target = data["remotePath"]
+                try:
+                    ftp.cwd(target)
+                    path = target
+                except ftplib.error_perm as exc:
+                    path = None
+                    for alt in ("/", "."):
+                        try:
+                            ftp.cwd(alt)
+                            path = alt
+                            note = "Папка " + target + " не найдена (" + str(exc)[:120] + "); показан " + ("корень" if path == "/" else "текущая папка") + ". Выберите нужную папку в списке."
+                            break
+                        except ftplib.error_perm:
+                            continue
+                    if path is None:
+                        raise
+                rows = []
+                try:
+                    for name, facts in ftp.mlsd():
+                        rows.append({"name": name, "type": facts.get("type", "file"), "size": facts.get("size", ""), "modified": facts.get("modify", "")})
+                except (ftplib.error_perm, AttributeError):
+                    rows = [{"name": n, "type": "unknown", "size": ""} for n in ftp.nlst()]
+                return {"ok": True, "tls": tls, "path": path, "note": note, "files": rows}
+            return do_list(ftp, tls)
+        rp = data["remotePath"].rstrip("/")
+        if re.match(r"^/server/scum/saved/config/windowsserver/?$", rp, re.IGNORECASE):
+            rp += "/Quests/Override"
+        if route == "/api/ftp/snapshot":
+            names = []
+            try:
+                for nm, facts in ftp.mlsd(rp):
+                    if nm in (".", "..") or facts.get("type", "file") == "dir":
+                        continue
+                    if nm.startswith("STORY_") and nm.lower().endswith(".json") and QUEST_NAME_RE.match(nm):
+                        names.append(nm)
+                        if len(names) >= 200:
+                            break
+            except (ftplib.error_perm, ftplib.error_proto, AttributeError):
+                names = []
+                for nm in ftp.nlst(rp):
+                    base = nm.rstrip("/").rsplit("/", 1)[-1]
+                    if base.startswith("STORY_") and base.lower().endswith(".json") and QUEST_NAME_RE.match(base):
+                        names.append(base)
+                        if len(names) >= 200:
+                            break
+            out_dir = quests_server_dir()
+            saved, errors = [], []
+            for nm in names:
+                buf = io.BytesIO()
+                try:
+                    ftp.retrbinary("RETR " + rp + "/" + nm, buf.write)
+                    raw = buf.getvalue()
+                    if len(raw) > 5 * 1024 * 1024:
+                        raise ValueError("File exceeds 5 MB limit")
+                    (out_dir / nm).write_bytes(raw)
+                    saved.append({"fileName": nm, "bytes": len(raw)})
+                except (ftplib.error_perm, ftplib.error_proto, ValueError) as exc:
+                    errors.append({"fileName": nm, "error": str(exc)[:200]})
+            return {"ok": True, "remotePath": rp, "count": len(saved), "saved": saved, "errors": errors}
+        if route == "/api/ftp/upload-batch":
+            files = data["files"]
+            dirs_created = ftp_ensure_dir(ftp, rp)
+            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            results, failed = [], []
+            for item in files:
+                fname = str(item.get("fileName") or "") if isinstance(item, dict) else ""
+                if not QUEST_NAME_RE.match(fname):
+                    failed.append({"fileName": (fname[:80] or "?"), "error": "fileName must be STORY_*.json"})
+                    continue
+                try:
+                    raw = base64.b64decode(item.get("content", ""), validate=True)
+                    if len(raw) > 5 * 1024 * 1024:
+                        raise ValueError("File exceeds 5 MB limit")
+                    remote_path = rp + "/" + fname
+                    backup_created = False
+                    try:
+                        cur = io.BytesIO()
+                        ftp.retrbinary("RETR " + remote_path, cur.write)
+                        ftp.storbinary("STOR " + remote_path + ".backup-" + stamp, io.BytesIO(cur.getvalue()))
+                        backup_created = True
+                    except ftplib.error_perm:
+                        pass
+                    ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
+                    results.append({"fileName": fname, "backupCreated": backup_created, "bytes": len(raw)})
+                except (ValueError, ftplib.error_perm, ftplib.error_proto) as exc:
+                    failed.append({"fileName": fname, "error": str(exc)[:200]})
+            return {"ok": True, "remotePath": rp, "uploaded": len(results), "backups": sum(1 for r in results if r["backupCreated"]), "dirsCreated": dirs_created, "failed": failed, "results": results}
+        remote = str(data.get("fileName") or "")
+        remote_path = data["remotePath"].rstrip("/") + "/" + remote
+        if route == "/api/ftp/download":
+            out = io.BytesIO()
+            ftp.retrbinary("RETR " + remote_path, out.write)
+            return {"ok": True, "fileName": remote, "content": base64.b64encode(out.getvalue()).decode("ascii")}
+        if route == "/api/ftp/upload":
+            raw = base64.b64decode(data.get("content", ""), validate=True)
+            dirs_created = ftp_ensure_dir(ftp, data["remotePath"])
+            backup_created = False
+            backup = io.BytesIO()
+            try:
+                ftp.retrbinary("RETR " + remote_path, backup.write)
+                stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+                ftp.storbinary("STOR " + remote_path + ".backup-" + stamp, io.BytesIO(backup.getvalue()))
+                backup_created = True
+            except ftplib.error_perm:
+                pass
+            ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
+            return {"ok": True, "backupCreated": backup_created, "dirsCreated": dirs_created, "fileName": remote}
+        if route == "/api/ftp/inspect":
+            info = {"ok": True, "tls": tls, "fileName": remote, "path": remote_path}
+            try:
+                info["size"] = ftp.size(remote_path)
+            except ftplib.error_perm:
+                info["size"] = None
+            try:
+                info["modified"] = ftp.voidcmd("MDTM " + remote_path)[4:].strip()
+            except (ftplib.error_perm, ftplib.error_proto):
+                info["modified"] = None
+            digest, total = hashlib.sha256(), [0]
+            def _chunk(buf):
+                total[0] += len(buf)
+                digest.update(buf)
+            ftp.retrbinary("RETR " + remote_path, _chunk)
+            info["bytes"] = total[0]
+            info["sha256"] = digest.hexdigest()
+            expected = str(data.get("expectedSha256") or "").strip().lower()
+            if re.fullmatch(r"[0-9a-f]{64}", expected):
+                info["match"] = info["sha256"] == expected
+            backups = []
+            try:
+                for nm, facts in ftp.mlsd(data["remotePath"] or "/"):
+                    if nm in (".", "..") or facts.get("type", "file") == "dir":
+                        continue
+                    if nm.startswith(remote + ".backup-"):
+                        backups.append({"name": nm, "size": facts.get("size", ""), "modified": facts.get("modify", "")})
+            except (ftplib.error_perm, ftplib.error_proto, AttributeError):
+                try:
+                    for nm in ftp.nlst(data["remotePath"] or "/"):
+                        base = nm.rstrip("/").rsplit("/", 1)[-1]
+                        if base.startswith(remote + ".backup-"):
+                            backups.append({"name": base, "size": "", "modified": ""})
+                except (ftplib.error_perm, ftplib.error_proto):
+                    pass
+            backups.sort(key=lambda x: x["name"])
+            info["backups"] = backups
+            return info
+        raise ValueError("Unknown FTP route")
 
 def make_server(port=None):
     global SERVER_PORT
