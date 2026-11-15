@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.29"
+VERSION = "0.8.30"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -639,7 +639,7 @@ class FTP_E(_EPSVMixin, ftplib.FTP):
 
 def ftp_err_text(exc):
     if isinstance(exc, EOFError):
-        return "Сервер закрыл соединение до FTP-приветствия — проверьте доступность сервера и включён ли VPN"
+        return "Сервер закрыл соединение до FTP-приветствия — у хостинга сработало ограничение числа подключений (антифлуд): подождите 1–2 минуты; также проверьте доступность сервера и VPN"
     s = str(exc)
     if "SHUTDOWN_WHILE_IN_INIT" in s:
         return "Сервер отклонил TLS-сессию канала данных: FileZilla Server 1.x требует возобновления TLS-сессии на data-канале — проверьте настройки TLS вашего FTP-сервера (должен быть разрешён TLS 1.2)"
@@ -658,6 +658,66 @@ def ftp_err_text(exc):
     return type(exc).__name__ + ": " + s[:160]
 
 RETRYABLE_FTP_EXC = (ssl.SSLError, ConnectionError, TimeoutError, EOFError, ftplib.error_temp)
+
+class FTP_CONNECT_EXC(Exception):
+    pass
+
+_FTP_CONNECT_LOCK = threading.Lock()
+_FTP_LAST_CONNECT = [0.0]
+
+def _ftp_rate_limit():
+    with _FTP_CONNECT_LOCK:
+        wait = 2.0 - (time.monotonic() - _FTP_LAST_CONNECT[0])
+        if wait > 0:
+            time.sleep(wait)
+        _FTP_LAST_CONNECT[0] = time.monotonic()
+
+def connect_ftp(data, attempt_start=0):
+    errors = []
+    host, port = data["host"], int(data.get("port", 21))
+    banner_dead = False
+    for attempt in range(2):
+        _ftp_rate_limit()
+        ftp = None
+        try:
+            ftp = FTP_TLS_E(timeout=12, context=SSL_CTX_TLS12 if (attempt_start + attempt) % 2 == 0 else SSL_CTX)
+            ftp.connect(host, port)
+            ftp.login(data["username"], data["password"])
+            ftp.prot_p()
+            return ftp, True
+        except ftplib.error_perm as exc:
+            msg = str(exc).lower()
+            if any(k in msg for k in ("auth", "tls", "ssl")):
+                errors.append("TLS отклонён сервером: " + str(exc)[:160])
+                break
+            raise
+        except (ssl.SSLError, ConnectionError, TimeoutError, OSError, EOFError) as exc:
+            if ftp is not None and ftp.sock is None:
+                banner_dead = True
+            errors.append(ftp_err_text(exc))
+            try:
+                if ftp is not None:
+                    ftp.close()
+            except Exception:
+                pass
+            if attempt == 0:
+                time.sleep(3.0)
+                continue
+            break
+    unique = list(dict.fromkeys(errors))
+    if banner_dead or any("до FTP-приветствия" in e for e in unique):
+        raise FTP_CONNECT_EXC(" | ".join(unique))
+    if unique and not any("TLS отклонён сервером" in e for e in unique):
+        raise FTP_CONNECT_EXC(" | ".join(unique))
+    _ftp_rate_limit()
+    try:
+        ftp = FTP_E(timeout=12)
+        ftp.connect(host, port)
+        ftp.login(data["username"], data["password"])
+        return ftp, False
+    except Exception as exc:
+        errors.append("Plain FTP: " + ftp_err_text(exc))
+        raise ValueError(" | ".join(dict.fromkeys(errors)))
 
 ECON_ROLES = ("Armory", "Barber", "Saloon", "BoatShop", "Hospital", "Mechanic", "Trader", "Hunter", "Master_Hunter")
 ECON_SECTORS = ("A_0", "B_4", "C_2", "Z_3")
@@ -1988,7 +2048,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(400, {"ok": False, "error": "Invalid remote path"})
         try:
             ftp, tls = connect_ftp(data)
-        except (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
+        except (FTP_CONNECT_EXC,) + (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
             return self.send_json(502, {"ok": False, "error": str(exc)[:400]})
         deadline = time.monotonic() + 600
         try:
@@ -2113,7 +2173,7 @@ class Handler(SimpleHTTPRequestHandler):
                                         "error": "Нечего публиковать: " + ("; ".join(s["reason"] for s in skipped)[:200] or "правок нет")})
         try:
             ftp, tls = connect_ftp(data)
-        except (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
+        except (FTP_CONNECT_EXC,) + (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
             return self.send_json(502, {"ok": False, "error": str(exc)[:400]})
         try:
             rp0 = data["remotePath"].rstrip("/")
@@ -2534,7 +2594,7 @@ class Handler(SimpleHTTPRequestHandler):
         deadline = time.monotonic() + 22
         try:
             ftp, tls = connect_ftp(data)
-        except (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
+        except (FTP_CONNECT_EXC,) + (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
             return self.send_json(502, {"ok": False, "error": str(exc)[:400]})
         def walk(path, depth):
             nonlocal downloaded
@@ -3086,15 +3146,20 @@ class Handler(SimpleHTTPRequestHandler):
             remote = str(data.get("fileName") or "")
             if not remote or any(c in remote for c in "\r\n/\\") or remote in (".", ".."):
                 return self.send_json(400, {"ok": False, "error": "A file name (not a path) is required"})
-        try:
-            ftp, tls = connect_ftp(data)
-        except (ValueError, ftplib.error_perm, ftplib.error_proto, OSError) as exc:
-            return self.send_json(502, {"ok": False, "error": str(exc)[:400]})
         attempt = 0
+        ftp, tls = None, False
         try:
             while True:
                 try:
+                    if ftp is None:
+                        ftp, tls = connect_ftp(data)
                     return self.send_json(200, self.ftp_route(route, data, ftp, tls))
+                except FTP_CONNECT_EXC:
+                    if attempt >= 2:
+                        raise
+                    attempt += 1
+                    ftp, tls = None, False
+                    time.sleep(2.5)
                 except RETRYABLE_FTP_EXC as exc:
                     if attempt >= 2 or (isinstance(exc, ftplib.error_temp) and str(exc).lstrip().startswith("421")):
                         raise
@@ -3106,16 +3171,20 @@ class Handler(SimpleHTTPRequestHandler):
                             ftp.close()
                         except Exception:
                             pass
+                    ftp, tls = None, False
                     time.sleep(2.5)
-                    ftp, tls = connect_ftp(data, attempt_start=attempt)
-        except (OSError, ValueError) + ftplib.all_errors as exc:
-            err = ftp_err_text(exc) if isinstance(exc, (ssl.SSLError, ConnectionError, TimeoutError, EOFError)) else str(exc)[:300]
-            return self.send_json(502, {"ok": False, "error": err[:300]})
+        except (FTP_CONNECT_EXC,) + (OSError, ValueError) + ftplib.all_errors as exc:
+            if isinstance(exc, FTP_CONNECT_EXC):
+                err = "Подключение не удалось после нескольких попыток: " + str(exc)
+            else:
+                err = ftp_err_text(exc) if isinstance(exc, (ssl.SSLError, ConnectionError, TimeoutError, EOFError)) else str(exc)[:300]
+            return self.send_json(502, {"ok": False, "error": err[:400]})
         finally:
-            try:
-                ftp.quit()
-            except Exception:
-                ftp.close()
+            if ftp is not None:
+                try:
+                    ftp.quit()
+                except Exception:
+                    ftp.close()
 
     def ftp_route(self, route, data, ftp, tls):
         if route == "/api/ftp/find":
