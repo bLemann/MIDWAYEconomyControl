@@ -133,6 +133,31 @@ $('#delta-current').onclick=()=>{let v=$('#mass-delta').value.trim();if(!doc||!s
 $('#delta-sector').onclick=()=>{let v=$('#mass-delta').value.trim();if(!doc)return toast('Сначала импортируйте файл');let names=traderSectors()[selectedSector]||[];if(!names.length)return toast('В секторе нет торговцев');if(v===''||!okNum(v))return toast('Введите множитель числом, например -1 или 2.0');applyMass(names,{'delta-price':v})};
 $('#mass-reset-current').onclick=async()=>{if(!doc||!selected)return toast('Выберите торговца');if(!(await askConfirm('Сброс значений','Все поля «'+selected+'» получат -1 / default.')))return;applyMass([selected],{...DEFS})};
 
+let bulkList=[];
+function bulkRows(){let cat=$('#bulk-cat').value;let rows=(doc&&doc.traders&&doc.traders[selected])||[];return rows.map((r,idx)=>({r,idx,code:rowCode(r),cat:rowCategory(rowCode(r))})).filter(x=>x.code&&(cat==='all'||x.cat===cat))}
+function bulkCalc(f,old){let mode=$('#bulk-mode').value,v=$('#bulk-value').value.trim().replace(',','.'),num=parseNum(v);
+if(mode==='reset')return{to:'-1'};
+if(mode==='set')return num===null?{skip:'введите число'}:{to:String(v)};
+let cur=parseNum(old);
+if(cur===null||cur<0)return{skip:'−1/default — нет базовой цены'};
+if(mode==='percent'){if(num===null)return{skip:'введите процент'};return{to:String(Math.round(cur*(1+num/100)))}}
+if(mode==='round'){if(num===null||[10,100,1000].indexOf(num)<0)return{skip:'шаг 10/100/1000'};return{to:String(Math.round(cur/num)*num)}}
+return{skip:'неизвестный режим'}}
+function bulkRefresh(){if(!doc||!selected||!$('#bulk-dialog').open)return;let fields=$('#bulk-field').value==='both'?['base-purchase-price','base-sell-price']:[$('#bulk-field').value];let box=$('#bulk-box');box.innerHTML='';bulkList=[];
+let list=[];bulkRows().forEach(x=>fields.forEach(f=>{let old=String(x.r[f]??'');list.push({r:x.r,idx:x.idx,code:x.code,f,old,calc:bulkCalc(f,old),name:(nameIndex[x.code]||rowName(x.code)||x.code)})}));
+let ch=0,sk=0;
+list.forEach(e=>{let row=document.createElement('label');row.className='bulk-row';let cb=document.createElement('input');cb.type='checkbox';let span=document.createElement('span');span.className='cell-wrap';
+if(e.calc.skip){cb.disabled=true;cb.checked=false;sk++;span.textContent=e.name+' ['+e.code+'] · '+e.f+' — пропуск: '+e.calc.skip;span.style.color='var(--muted)';row.append(cb,span)}
+else{cb.checked=true;ch++;span.textContent=e.name+' ['+e.code+'] · '+e.f+': '+e.old+' → '+e.calc.to;row.append(cb,span)}
+e.cb=cb;bulkList.push(e);box.append(row)});
+$('#bulk-status').textContent=ch||sk?('К изменению: '+ch+' · пропущено: '+sk):'Нет строк под фильтр'}
+$('#bulk-open').onclick=()=>{if(!doc)return toast('Сначала импортируйте документ');if(!selected)return toast('Выберите торговца');$('#bulk-target').textContent='→ '+selected;$('#bulk-cat').innerHTML='<option value="all">Все категории</option>'+catNames().map(c=>'<option>'+c+'</option>').join('');$('#bulk-cat').value='all';$('#bulk-mode').value='set';$('#bulk-value').disabled=false;$('#bulk-value').placeholder='999 или -1';$('#bulk-dialog').showModal();bulkRefresh()};
+$('#bulk-mode').onchange=()=>{let m=$('#bulk-mode').value,inp=$('#bulk-value');inp.disabled=m==='reset';inp.placeholder=m==='set'?'999 или -1':m==='percent'?'20 или -20':m==='round'?'10 / 100 / 1000':'—';bulkRefresh()};
+['bulk-field','bulk-cat'].forEach(id=>$('#'+id).onchange=()=>bulkRefresh());
+$('#bulk-value').oninput=()=>bulkRefresh();
+$('#bulk-close').onclick=()=>$('#bulk-dialog').close();
+$('#bulk-apply').onclick=()=>{if(!doc||!selected)return;let todo=(bulkList||[]).filter(e=>!e.calc.skip&&e.cb&&e.cb.checked);if(!todo.length)return toast('Отметьте хотя бы одну строку');let mode=$('#bulk-mode').value;let lab={set:'задать цену',percent:'±'+$('#bulk-value').value.trim()+'%',round:'округление до '+$('#bulk-value').value.trim(),'reset':'дефолт (−1)'}[mode]||mode;let fld=$('#bulk-field').value==='both'?'обе цены':($('#bulk-field').value==='base-purchase-price'?'покупка':'продажа');snapUndo('массовые цены ('+lab+')');todo.forEach(e=>{e.r[e.f]=e.calc.to});$('#bulk-dialog').close();log('Массовые цены: '+lab+' · '+fld+' → '+todo.length+' значений у '+selected);renderGoods();toast('Изменено значений: '+todo.length)};
+
 $('#goods-search').oninput=()=>renderGoods();
 $('#goods-cat').onchange=()=>renderGoods();
 
@@ -300,6 +325,31 @@ else msg='Нет документа для сравнения — '+msg;
 srvStatus(msg);log('Проверка EconomyOverride.json на сервере: '+msg)}
 catch(e){srvStatus('Ошибка проверки файла');toast('Проверка: '+e.message)}
 finally{btn.disabled=false}};
+
+let valBusy=false;
+$('#val-run').onclick=async()=>{if(!doc)return toast('Сначала импортируйте документ');if(valBusy)return;valBusy=true;let btn=$('#val-run');btn.disabled=true;btn.textContent='ПРОВЕРЯЮ…';
+try{let d=await fetch('/api/economy/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({doc})}).then(r=>r.json());if(!d.ok)return toast(d.error||'Ошибка проверки');renderValReport(d);log('Проверка документа: ошибок '+d.summary.errors+' · предупреждений '+d.summary.warnings+' · инфо '+d.summary.infos)}catch(e){toast('Проверка: '+e.message)}
+finally{valBusy=false;btn.disabled=false;btn.textContent='ПРОВЕРИТЬ ДОКУМЕНТ'}};
+function valRevalidate(){if(!valBusy&&doc)$('#val-run').click()}
+function renderValReport(d){let box=$('#val-report');box.innerHTML='';let s=d.summary||{};
+let head=document.createElement('p');head.className='diff-summary';head.textContent='Торговцев: '+(s.traders||0)+' · строк: '+(s.rows||0)+' · ошибок: '+(s.errors||0)+' · предупреждений: '+(s.warnings||0)+' · инфо: '+(s.infos||0)+(s.unknownIds?' · ID вне каталога: '+s.unknownIds:'')+(s.dupCodes?' · дублей кода: '+s.dupCodes:'')+(s.hiddenRows?' · скрытых строк: '+s.hiddenRows:'')+(s.hugePrices?' · цен ≥1 млрд: '+s.hugePrices:'')+(s.unknownGlobals?' · неизвестных настроек: '+s.unknownGlobals:'');box.append(head);
+if(d.truncated){let p=document.createElement('p');p.className='empty';p.textContent='Показаны первые 400 замечаний — остальные учтены в счётчиках';box.append(p)}
+if(!(d.issues||[]).length){let p=document.createElement('p');p.className='empty';p.textContent='Проблем не найдено';box.append(p);return}
+d.issues.forEach(it=>{let row=document.createElement('div');row.className='file-row';let b=document.createElement('span');b.className='badge '+(it.sev==='error'?'lv-err':it.sev==='warn'?'lv-warn':'lv-info');b.textContent=it.sev==='error'?'ОШИБКА':it.sev==='warn'?'ВНИМ.': 'ИНФО';row.append(b);
+let tx=document.createElement('span');tx.className='cell-wrap';tx.textContent=it.message;tx.style.flex='1';row.append(tx);
+let ctx=[it.trader,it.code?('['+it.code+']'):null,(it.idx!=null)?('строка '+(it.idx+1)):null,(it.field&&it.field!==it.code)?it.field:null].filter(Boolean).join(' · ');
+if(ctx){let sm=document.createElement('small');sm.style.color='var(--muted)';sm.textContent=ctx;row.append(sm)}
+if(it.fix){let fb=document.createElement('button');fb.className='mini';fb.textContent='FIX';
+fb.onclick=()=>{if(!doc)return;let f=it.fix;snapUndo('fix: '+it.cat);
+if(f.type==='rename-trader'){if(doc.traders[f.to]){toast('Торговец «'+f.to+'» уже есть — переименование пропущено');return}let nt={};Object.keys(doc.traders).forEach(k=>{nt[k===it.trader?f.to:k]=doc.traders[k]});doc.traders=nt;if(selected===it.trader)selected=f.to;log('FIX: торговец «'+it.trader+'» → «'+f.to+'»')}
+else if(f.type==='remove-field'){Object.keys(doc.traders).forEach(t=>(doc.traders[t]||[]).forEach(r=>{delete r[f.field]}));log('FIX: удалено поле «'+f.field+'» во всех строках')}
+else if(f.type==='rename-code'){let n=0;Object.keys(doc.traders).forEach(t=>(doc.traders[t]||[]).forEach(r=>{if(rowCode(r)===it.code){r['tradeable-code']=f.to;n++}}));log('FIX: ID «'+it.code+'» → «'+f.to+'» ('+n+' строк)')}
+else if(f.type==='remove-row'){let arr=doc.traders[f.trader];if(arr&&typeof f.idx==='number'&&f.idx<arr.length){arr.splice(f.idx,1);log('FIX: удалён дубль «'+(it.code||'')+'» у '+f.trader)}}
+else if(f.type==='normalize-vis'){let n=0;Object.keys(doc.traders).forEach(t=>(doc.traders[t]||[]).forEach(r=>{if(r[f.field]===f.from){r[f.field]=f.to;n++}}));log('FIX: '+f.field+' «'+f.from+'» → «'+f.to+'» ('+n+' строк)')}
+else if(f.type==='stringify-global'){doc[f.field]=String(doc[f.field]);log('FIX: «'+f.field+'» → строка «'+doc[f.field]+'»')}
+renderAll();valRevalidate()};
+row.append(fb)}
+box.append(row)})}
 $('#ftp-test').onclick=async()=>{let c=ftpCredentials();if(!c.host)return toast('Заполните хост FTP');let btn=$('#ftp-test');btn.disabled=true;$('#ftp-watch-status').textContent='Проверяю подключение…';try{let d=await fetch('/api/ftp/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)}).then(r=>r.json());let box=$('#ftp-files');box.innerHTML='';(d.steps||[]).forEach(s=>{let row=document.createElement('div');row.className='file-row';if(!s.ok)row.style.color='var(--red)';row.textContent=(s.ok?'✓ ':'✗ ')+s.step+' — '+s.detail;box.append(row)});$('#ftp-watch-status').textContent='Тест: '+(d.ok?'подключение работает':'есть проблемы')+' · '+new Date().toLocaleTimeString();toast(d.ok?'Подключение работает':'Есть проблемы — детали в списке файлов')}catch(e){$('#ftp-watch-status').textContent='Ошибка теста';toast('Тест: '+e.message)}finally{btn.disabled=false}};
 let iconAutoBusy=false;
 async function autoIconSync(){let now=Date.now();if(iconAutoBusy||now-iconAutoLast<60000)return;iconAutoLast=now;let ids=[...flatDb().map(x=>x.id),...custom.map(x=>x.id)].filter(Boolean).slice(0,2000);if(!ids.length)return;let miss=null;try{miss=await fetch('/api/icons/missing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids})}).then(r=>r.json())}catch(e){return}if(!miss||!miss.ok||!miss.missingCount)return;let c=ftpCredentials();if(!c.host)return;iconAutoBusy=true;toast('Автозагрузка иконок: не хватает '+miss.missingCount+' — сканирую FTP…');try{let d=await fetch('/api/icons/scan_ftp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...c,ids})}).then(r=>r.json());if(d.ok){if(d.downloaded){iconBust=Date.now();renderGoods();renderCatalog();log('Автозагрузка иконок с FTP: скачано '+d.downloaded)}toast('Автозагрузка иконок: найдено '+Object.keys(d.found||{}).length+' · скачано '+(d.downloaded||0))}}catch(e){}finally{iconAutoBusy=false}}

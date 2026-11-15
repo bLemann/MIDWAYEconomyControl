@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.28"
+VERSION = "0.8.29"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -658,6 +658,23 @@ def ftp_err_text(exc):
     return type(exc).__name__ + ": " + s[:160]
 
 RETRYABLE_FTP_EXC = (ssl.SSLError, ConnectionError, TimeoutError, EOFError, ftplib.error_temp)
+
+ECON_ROLES = ("Armory", "Barber", "Saloon", "BoatShop", "Hospital", "Mechanic", "Trader", "Hunter", "Master_Hunter")
+ECON_SECTORS = ("A_0", "B_4", "C_2", "Z_3")
+ECON_GLOBAL_KEYS = ("economy-reset-time-hours", "prices-randomization-time-hours",
+                    "tradeable-rotation-time-ingame-hours-min", "tradeable-rotation-time-ingame-hours-max",
+                    "tradeable-rotation-time-of-day-min", "tradeable-rotation-time-of-day-max",
+                    "fully-restock-tradeable-hours", "trader-funds-change-rate-per-hour-multiplier",
+                    "prices-subject-to-delta", "prices-subject-to-player-count",
+                    "gold-price-subject-to-global-multiplier", "gold-base-price", "gold-sale-price-modifier",
+                    "gold-price-change-percentage-step", "gold-price-change-per-step", "economy-logging",
+                    "traders-unlimited-funds", "traders-unlimited-stock",
+                    "global-only-after-player-sale-tradeable-availability-enabled", "tradeable-rotation-enabled",
+                    "enable-fame-point-requirement")
+ECON_CODE_FIELDS = ("tradeable-code", "TradeableCode", "tradeableCode", "code", "id", "ID", "class", "ClassName", "className")
+ECON_NUMERIC_FIELDS = ("base-purchase-price", "base-sell-price", "delta-price", "required-famepoints")
+ECON_VIS_FIELDS = ("available-after-sale-only", "can-be-purchased")
+ECON_ALLOWED_KEYS = frozenset(ECON_CODE_FIELDS) | frozenset(ECON_NUMERIC_FIELDS) | frozenset(ECON_VIS_FIELDS)
 
 def connect_ftp(data, attempt_start=0):
     errors = []
@@ -1549,6 +1566,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_update_launch(doc)
         if self.path == "/api/ftp/test":
             return self.handle_ftp_test(doc)
+        if self.path == "/api/economy/validate":
+            return self.handle_economy_validate(doc)
         if self.path == "/api/loot/snapshot":
             return self.handle_loot_snapshot(doc)
         if self.path == "/api/loot/root":
@@ -2886,6 +2905,154 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as exc:
             return self.send_json(500, {"ok": False, "error": str(exc)[:200]})
         return self.send_json(200, {"ok": True})
+
+    def handle_economy_validate(self, data):
+        doc = (data or {}).get("doc")
+        if not isinstance(doc, dict) or not isinstance(doc.get("traders"), dict) or not doc["traders"]:
+            return self.send_json(400, {"ok": False, "error": "doc.traders (object) is required"})
+        issues = []
+        summary = {"errors": 0, "warnings": 0, "infos": 0, "traders": 0, "rows": 0,
+                   "dupCodes": 0, "unknownIds": 0, "hiddenRows": 0, "hugePrices": 0, "unknownGlobals": 0}
+        sev_key = {"error": "errors", "warn": "warnings", "info": "infos"}
+
+        def add(sev, cat, message, **kw):
+            summary[sev_key[sev]] += 1
+            if len(issues) < 400:
+                it = {"sev": sev, "cat": cat, "message": message}
+                it.update({k: v for k, v in kw.items() if v is not None})
+                issues.append(it)
+
+        known = set()
+        try:
+            dbj = json.loads((WEB / "items-db.json").read_text(encoding="utf-8-sig"))
+            for c in dbj.get("categories") or []:
+                for it in c.get("items") or []:
+                    if isinstance(it, dict) and isinstance(it.get("id"), str) and it["id"].strip():
+                        known.add(it["id"].strip())
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
+        for x in load_custom_items():
+            if isinstance(x, dict) and isinstance(x.get("id"), str) and x["id"].strip():
+                known.add(x["id"].strip())
+
+        def squash(s):
+            return re.sub(r"[^a-z0-9]+", "", str(s).lower())
+
+        squash_map, squash_bad = {}, set()
+        for i in sorted(known):
+            q = squash(i)
+            if q in squash_map and squash_map[q] != i:
+                squash_bad.add(q)
+            else:
+                squash_map.setdefault(q, i)
+        for q in squash_bad:
+            squash_map.pop(q, None)
+
+        role_map = {}
+        for r in ECON_ROLES:
+            role_map.setdefault(squash(r), r)
+
+        reported_fields = set()
+        for t, rows in doc["traders"].items():
+            summary["traders"] += 1
+            tname = str(t)
+            if not isinstance(rows, list):
+                add("error", "trader", "Строки торговца «%s»: ожидался массив" % tname, trader=tname)
+                continue
+            m = re.match(r"^([A-Za-z])_(\d+)_(.+)$", tname)
+            if m:
+                sector = m.group(1).upper() + "_" + m.group(2)
+                role = m.group(3)
+                if sector not in ECON_SECTORS:
+                    add("warn", "trader", "Сектор «%s» нестандартный — в SCUM секторы A_0, B_4, C_2, Z_3" % sector, trader=tname)
+                if role not in ECON_ROLES:
+                    fix_role = None
+                    rl = [r for r in ECON_ROLES if r.lower() == role.lower()]
+                    if rl:
+                        fix_role = rl[0]
+                    else:
+                        fix_role = role_map.get(squash(role))
+                    if fix_role:
+                        add("error", "trader", "Роль «%s» не существует — игра проигнорирует такого торговца (MasterHunter ≠ Master_Hunter)" % role, trader=tname,
+                            fix={"type": "rename-trader", "to": sector + "_" + fix_role})
+                    else:
+                        add("error", "trader", "Роль «%s» не существует — игра проигнорирует такого торговца" % role, trader=tname)
+            else:
+                add("warn", "trader", "Имя «%s» не по шаблону SCUM <сектор>_<роль> (например A_0_Armory) — игра проигнорирует такого торговца" % tname, trader=tname)
+            seen = {}
+            for idx, r in enumerate(rows):
+                if not isinstance(r, dict):
+                    add("error", "row", "Строка %d — не объект" % (idx + 1), trader=tname, idx=idx)
+                    continue
+                summary["rows"] += 1
+                code = ""
+                for f in ECON_CODE_FIELDS:
+                    v = r.get(f)
+                    if v is not None and str(v).strip():
+                        code = str(v).strip()
+                        break
+                if not code:
+                    add("error", "row", "Строка %d без tradeable-code" % (idx + 1), trader=tname, idx=idx)
+                    continue
+                if code in seen:
+                    summary["dupCodes"] += 1
+                    add("error", "dup", "Дубль кода «%s» (первый раз — строка %d)" % (code, seen[code] + 1), trader=tname, idx=idx, code=code,
+                        fix={"type": "remove-row", "trader": tname, "idx": idx})
+                else:
+                    seen[code] = idx
+                for k in r.keys():
+                    if k not in ECON_ALLOWED_KEYS and k not in reported_fields:
+                        reported_fields.add(k)
+                        add("warn", "field", "Неизвестное поле «%s» — игра его игнорирует" % k, trader=tname, idx=idx, code=code, field=k,
+                            fix={"type": "remove-field", "field": k})
+                for f in ECON_NUMERIC_FIELDS:
+                    v = r.get(f)
+                    s = "" if v is None else str(v).strip()
+                    if s == "" or s == "-1":
+                        continue
+                    try:
+                        num = float(s)
+                    except ValueError:
+                        add("error", "price", "Нечисловое значение %s = «%s»" % (f, s), trader=tname, idx=idx, code=code, field=f)
+                        continue
+                    if num < 0:
+                        add("warn", "price", "Отрицательное значение %s = %s (дефолта нет — строка может быть проигнорирована)" % (f, s), trader=tname, idx=idx, code=code, field=f)
+                    if num >= 1000000000:
+                        summary["hugePrices"] += 1
+                        add("info", "price", "%s = %s — похоже на «выключенную торговлю»" % (f, s), trader=tname, idx=idx, code=code, field=f)
+                for f in ECON_VIS_FIELDS:
+                    v = r.get(f)
+                    s = "" if v is None else str(v).strip()
+                    if not s:
+                        continue
+                    low = s.lower()
+                    if low not in ("default", "true", "false"):
+                        add("error", "visibility", "%s = «%s» — допустимо default/true/false" % (f, s), trader=tname, idx=idx, code=code, field=f)
+                    elif s != low:
+                        add("warn", "visibility", "%s = «%s» — рекомендуется нижний регистр" % (f, s), trader=tname, idx=idx, code=code, field=f,
+                            fix={"type": "normalize-vis", "field": f, "from": s, "to": low})
+                    if f == "can-be-purchased" and low == "false":
+                        summary["hiddenRows"] += 1
+                if code not in known:
+                    summary["unknownIds"] += 1
+                    cand = squash_map.get(squash(code))
+                    if cand:
+                        add("warn", "unknown-id", "ID «%s» отличается от каталога — возможно, имелся в виду «%s»" % (code, cand), trader=tname, idx=idx, code=code,
+                            fix={"type": "rename-code", "to": cand})
+                    else:
+                        add("info", "unknown-id", "ID «%s» нет в каталоге (UNVERIFIED)" % code, trader=tname, idx=idx, code=code)
+        for k, v in doc.items():
+            if k == "traders":
+                continue
+            if k not in ECON_GLOBAL_KEYS:
+                summary["unknownGlobals"] += 1
+                add("warn", "global", "Неизвестная глобальная настройка «%s» — игра её игнорирует" % k, field=k)
+            elif not isinstance(v, str):
+                add("warn", "global", "Значение «%s» должно быть строкой (сейчас: %s) — SCUM читает только строковые значения" % (k, type(v).__name__), field=k,
+                    fix={"type": "stringify-global", "field": k})
+        return self.send_json(200, {"ok": True, "summary": summary, "issues": issues,
+                                    "issueCount": summary["errors"] + summary["warnings"] + summary["infos"],
+                                    "truncated": len(issues) >= 400})
 
     def handle_ftp(self, route, data):
         required = ("host", "username", "password", "remotePath")

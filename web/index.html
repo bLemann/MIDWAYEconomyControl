@@ -115,6 +115,7 @@
       <button class="btn-dark" id="copy-list">СКОПИРОВАТЬ В…</button>
       <button class="btn-red" id="clear-list">ОЧИСТИТЬ СПИСОК</button>
       <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
+      <button class="btn-red" id="bulk-open">МАССОВОЕ ИЗМЕНЕНИЕ ЦЕН…</button>
       <p class="note">Процент меняет текущие числа строк (строки с −1 «по умолчанию» пропускаются), точное значение перезаписывает все строки. «Скрыт» убирает товар у торговца — строка в таблице подсвечивается серым.</p>
     </aside>
     <div class="center-col">
@@ -161,6 +162,10 @@
   <div class="toolbar"><div><h2>Настройки экономики</h2><p>Глобальные параметры импортированного JSON. Флаги включаются переключателями, значения — полями.</p></div>
   <button class="btn-red" id="save-rules">ПРИМЕНИТЬ В ДОКУМЕНТ</button></div>
   <article class="panel"><div id="rule-fields" class="rule-grid">Импортируйте конфигурацию экономики.</div></article>
+  <article class="panel"><h3>ПРОВЕРКА ДОКУМЕНТА</h3>
+    <div class="preset-row"><button class="btn-green" id="val-run">ПРОВЕРИТЬ ДОКУМЕНТ</button><span class="hint">Имена торговцев (MasterHunter ≠ Master_Hunter), дубли кодов, неизвестные поля и глобальные настройки, нечисловые/отрицательные цены, сверка ID с каталогом — с кнопками FIX.</span></div>
+    <div id="val-report" class="diff-list"><p class="empty">Импортируйте документ и запустите проверку.</p></div>
+  </article>
 </section>
 
 <section class="view tc-only" id="catalog">
@@ -649,6 +654,19 @@
   <div id="copy-box" class="cats-box"></div>
   <p class="note">Дубликаты по ID в целевых списках пропускаются.</p>
   <div class="dlg-foot"><span id="copy-status" class="hint-inline"></span><button type="button" class="btn-green" id="copy-apply">СКОПИРОВАТЬ</button><button type="button" class="btn-dark" id="copy-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="bulk-dialog">
+  <div class="dlg-head"><h3>Массовое изменение цен</h3><span id="bulk-target" class="hint-inline"></span></div>
+  <div class="filters">
+    <label>ПОЛЕ<select id="bulk-field"><option value="base-purchase-price">Цена покупки</option><option value="base-sell-price">Цена продажи</option><option value="both">Обе цены</option></select></label>
+    <label>РЕЖИМ<select id="bulk-mode"><option value="set">Задать цену</option><option value="percent">Изменить на ±%</option><option value="round">Округлить до</option><option value="reset">Вернуть дефолт (−1)</option></select></label>
+    <label id="bulk-value-label">ЗНАЧЕНИЕ<input id="bulk-value" placeholder="999 или -1"></label>
+    <label>КАТЕГОРИЯ<select id="bulk-cat"><option value="all">Все категории</option></select></label>
+  </div>
+  <p class="note">Предпросмотр старое → новое по каждой строке: снимите галочки у позиций, которые менять не нужно. Строки с −1 («по умолчанию») пропускаются в режимах «±%» и «Округлить» — базовой цены нет.</p>
+  <div id="bulk-box" class="cats-box"><p class="empty">Настройте режим — предпросмотр появится здесь.</p></div>
+  <div class="dlg-foot"><span id="bulk-status" class="hint-inline"></span><button type="button" class="btn-green" id="bulk-apply">ПРИМЕНИТЬ К ОТМЕЧЕННЫМ</button><button type="button" class="btn-dark" id="bulk-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <dialog id="ask-dialog">
