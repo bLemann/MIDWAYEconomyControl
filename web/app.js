@@ -218,7 +218,8 @@ let fld=Object.entries(t.fields).map(([f,c])=>fshort(f)+': '+c).join(', ');
 let val=document.createElement('span');val.innerHTML=parts.join(' · ')+(fld?' <span class="hint-inline">('+fld+')</span>':'');
 r.append(nm,val);list.append(r)})}
 
-async function applyDoc(parsed,label,note){let check=await fetch('/api/economy/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(parsed)}).then(r=>r.json()).catch(()=>null);if(check&&!check.ok)return toast(check.issues[0]);if(doc)snapUndo('документ до «'+label+'»');
+async function applyDoc(parsed,label,note){let check=await fetch('/api/economy/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(parsed)}).then(r=>r.json()).catch(()=>null);let errs=(check&&check.ok&&Array.isArray(check.issues))?check.issues.filter(i=>i&&i.sev==='error'):[];
+if(errs.length&&!(await askConfirm('Проверка документа','Валидатор нашёл ошибки: '+errs.length+'\n'+errs.slice(0,3).map(i=>i.message).join('\n')+'\n\nПрименить документ всё равно?')))return;if(doc)snapUndo('документ до «'+label+'»');
 doc=JSON.parse(JSON.stringify(parsed));normalizeRows(doc);originalDoc=JSON.parse(JSON.stringify(doc));selected=Object.keys(doc.traders||{})[0]||null;selectedSector=null;changes=0;updateFlag();renderAll();updateUndoBtn();
 let warn=(check&&Array.isArray(check.warnings)&&check.warnings.length)?' · предупреждение: '+check.warnings[0]+(check.warnings.length>1?' (+'+(check.warnings.length-1)+')':''):'';
 log(label+(note?' ('+note+')':'')+warn);toast(label+(note?' · '+note:'')+warn);autoIconSync().catch(()=>{})}

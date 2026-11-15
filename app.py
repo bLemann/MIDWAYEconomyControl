@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.30"
+VERSION = "0.8.31"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -2968,6 +2968,8 @@ class Handler(SimpleHTTPRequestHandler):
 
     def handle_economy_validate(self, data):
         doc = (data or {}).get("doc")
+        if not (isinstance(doc, dict) and isinstance(doc.get("traders"), dict)):
+            doc = data if isinstance(data, dict) else None
         if not isinstance(doc, dict) or not isinstance(doc.get("traders"), dict) or not doc["traders"]:
             return self.send_json(400, {"ok": False, "error": "doc.traders (object) is required"})
         issues = []
