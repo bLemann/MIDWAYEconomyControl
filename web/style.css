@@ -76,6 +76,10 @@ main{padding:14px 18px 26px;max-width:1700px;margin:0 auto}
 .badge{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.6px;padding:3px 7px;border-radius:3px}
 .badge.base{background:rgba(63,191,90,.15);color:var(--green)}
 .badge.unv{background:rgba(224,176,74,.15);color:var(--amber)}
+.badge.sale-ok{background:rgba(63,191,90,.18);color:var(--green)}
+.badge.sale-after{background:rgba(224,176,74,.18);color:var(--amber)}
+.badge.sale-hidden{background:rgba(223,65,72,.18);color:var(--red)}
+.rule-desc{display:block;font-size:10px;line-height:1.4;color:var(--muted);margin-top:6px;word-break:normal}
 .badge.class-badge{background:rgba(63,191,90,.18);color:var(--green);margin-left:10px}
 .muted-text{color:var(--muted)}
 

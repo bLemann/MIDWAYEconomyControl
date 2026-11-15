@@ -116,6 +116,7 @@
       <button class="btn-red" id="clear-list">ОЧИСТИТЬ СПИСОК</button>
       <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
       <button class="btn-red" id="bulk-open">МАССОВОЕ ИЗМЕНЕНИЕ ЦЕН…</button>
+      <button class="btn-dark" id="veh-open">ТРАНСПОРТ МЕХАНИКА…</button>
       <p class="note">Процент меняет текущие числа строк (строки с −1 «по умолчанию» пропускаются), точное значение перезаписывает все строки. «Скрыт» убирает товар у торговца — строка в таблице подсвечивается серым.</p>
     </aside>
     <div class="center-col">
@@ -137,6 +138,7 @@
           <span>Всего предметов: <b id="st-items">0</b></span>
           <span>Каталог: <b id="st-catalog">0</b></span>
           <span>UNVERIFIED: <b id="st-unv">0</b></span>
+          <span>Продаётся: <b id="st-sale">0</b></span>
           <span id="lg-chg" class="lg" hidden>● изменено: <b>0</b></span>
           <span id="lg-add" class="lg" hidden>● добавлено: <b>0</b></span>
           <span>Изменений: <b id="change-total">0</b></span>
@@ -646,7 +648,7 @@
   <div class="dlg-head"><h3>Добавить товары по категориям</h3><span id="cats-target" class="hint-inline"></span></div>
   <div id="cats-box" class="cats-box"></div>
   <p class="note">Для стандартных торговцев показаны только категории их ассортимента в SCUM (для нестандартных — все категории). Счётчики учитывают уже имеющиеся у торговца ID: будут добавлены только новые записи.</p>
-  <div class="dlg-foot"><span id="cats-status" class="hint-inline"></span><button type="button" class="btn-green" id="cats-apply">ДОБАВИТЬ ВЫБРАННЫЕ</button><button type="button" class="btn-dark" id="cats-close">ЗАКРЫТЬ</button></div>
+  <div class="dlg-foot"><span id="cats-status" class="hint-inline"></span><button type="button" class="btn-dark" id="cats-all">ВЫБРАТЬ ВСЁ</button><button type="button" class="btn-dark" id="cats-none">СНЯТЬ</button><button type="button" class="btn-green" id="cats-add-all">ДОБАВИТЬ ВСЁ</button><button type="button" class="btn-green" id="cats-apply">ДОБАВИТЬ ВЫБРАННЫЕ</button><button type="button" class="btn-red" id="cats-remove">УБРАТЬ КАТЕГОРИЮ У ТОРГОВЦА</button><button type="button" class="btn-dark" id="cats-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <dialog id="copy-dialog">
@@ -654,6 +656,18 @@
   <div id="copy-box" class="cats-box"></div>
   <p class="note">Дубликаты по ID в целевых списках пропускаются.</p>
   <div class="dlg-foot"><span id="copy-status" class="hint-inline"></span><button type="button" class="btn-green" id="copy-apply">СКОПИРОВАТЬ</button><button type="button" class="btn-dark" id="copy-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="veh-dialog">
+  <div class="dlg-head"><h3>Транспорт торговца-Механика</h3><span id="veh-target" class="hint-inline"></span></div>
+  <small class="sec-cap">ТРАНСПОРТ В СПИСКЕ ТОРГОВЦА — скрыть / после продажи / удалить</small>
+  <div id="veh-box" class="cats-box"></div>
+  <div class="filters"><select id="veh-add-select" class="grow"></select><button class="btn-dark" id="veh-add">ДОБАВИТЬ ТРАНСПОРТ</button></div>
+  <small class="sec-cap">ЛИМИТЫ ТРАНСПОРТА В МИРЕ · СЕКЦИЯ limited-vehicles</small>
+  <p class="note">По документации SCUM: «vehicle-group» — группа транспорта, «vehicle-group-max-amount» — максимум экземпляров этой группы в мире; −1 убирает лимит (безлимитная продажа). Полный безлимит склада всех товаров — «Безлимитный склад трейдеров» во вкладке НАСТРОЙКИ. Изменения вступают в силу после перезапуска сервера.</p>
+  <div id="veh-lim-box" class="cats-box"></div>
+  <div class="filters"><input id="veh-group" placeholder="группа (напр. SUV)" class="grow"><input id="veh-max" placeholder="макс. в мире (−1 = безлимит)" style="max-width:220px"><button class="btn-dark" id="veh-lim-add">ДОБАВИТЬ ГРУППУ</button><button class="btn-red" id="veh-unlimited">ВСЁ БЕЗЛИМИТ (−1)</button></div>
+  <div class="dlg-foot"><span id="veh-status" class="hint-inline"></span><button type="button" class="btn-dark" id="veh-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <dialog id="bulk-dialog">
