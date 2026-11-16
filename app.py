@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.39"
+VERSION = "0.8.40"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -345,6 +345,28 @@ def server_files_dir():
     d = data_dir() / "server-files"
     d.mkdir(parents=True, exist_ok=True)
     return d
+
+def save_local_snapshot(remote_name, raw):
+    try:
+        safe = re.sub(r"[^\w\-.]", "_", str(remote_name)).strip("._") or "file"
+        if len(safe) > 96:
+            safe = safe[:96]
+        d = server_files_dir() / "snapshots" / safe
+        d.mkdir(parents=True, exist_ok=True)
+        now = datetime.now(timezone.utc)
+        stamp = now.strftime("%Y%m%dT%H%M%S") + f"{now.microsecond // 1000:03d}Z"
+        path = d / (stamp + "_" + safe)
+        path.write_bytes(raw)
+        snaps = sorted(p for p in d.iterdir() if p.is_file())
+        for old in snaps[:-10]:
+            try:
+                old.unlink()
+            except OSError:
+                pass
+        return str(path)
+    except Exception as exc:
+        print("Local snapshot failed for", remote_name, ":", exc)
+        return None
 
 def icon_candidates(item_id):
     s = str(item_id).lower()
@@ -3382,18 +3404,20 @@ class Handler(SimpleHTTPRequestHandler):
                         raise ValueError("File exceeds 5 MB limit")
                     remote_path = rp + "/" + fname
                     backup_created = False
+                    snapshot_path = None
                     try:
                         cur = io.BytesIO()
                         ftp.retrbinary("RETR " + remote_path, cur.write)
+                        snapshot_path = save_local_snapshot(fname, cur.getvalue())
                         ftp.storbinary("STOR " + remote_path + ".backup-" + stamp, io.BytesIO(cur.getvalue()))
                         backup_created = True
                     except ftplib.error_perm:
                         pass
                     ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-                    results.append({"fileName": fname, "backupCreated": backup_created, "bytes": len(raw)})
+                    results.append({"fileName": fname, "backupCreated": backup_created, "localSnapshot": snapshot_path, "bytes": len(raw)})
                 except (ValueError, ftplib.error_perm, ftplib.error_proto) as exc:
                     failed.append({"fileName": fname, "error": str(exc)[:200]})
-            return {"ok": True, "remotePath": rp, "uploaded": len(results), "backups": sum(1 for r in results if r["backupCreated"]), "dirsCreated": dirs_created, "failed": failed, "results": results}
+            return {"ok": True, "remotePath": rp, "uploaded": len(results), "backups": sum(1 for r in results if r["backupCreated"]), "snapshots": sum(1 for r in results if r["localSnapshot"]), "dirsCreated": dirs_created, "failed": failed, "results": results}
         remote = str(data.get("fileName") or "")
         remote_path = data["remotePath"].rstrip("/") + "/" + remote
         if route == "/api/ftp/download":
@@ -3404,16 +3428,18 @@ class Handler(SimpleHTTPRequestHandler):
             raw = base64.b64decode(data.get("content", ""), validate=True)
             dirs_created = ftp_ensure_dir(ftp, data["remotePath"])
             backup_created = False
+            snapshot_path = None
             backup = io.BytesIO()
             try:
                 ftp.retrbinary("RETR " + remote_path, backup.write)
+                snapshot_path = save_local_snapshot(remote, backup.getvalue())
                 stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
                 ftp.storbinary("STOR " + remote_path + ".backup-" + stamp, io.BytesIO(backup.getvalue()))
                 backup_created = True
             except ftplib.error_perm:
                 pass
             ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-            return {"ok": True, "backupCreated": backup_created, "dirsCreated": dirs_created, "fileName": remote}
+            return {"ok": True, "backupCreated": backup_created, "localSnapshot": snapshot_path, "dirsCreated": dirs_created, "fileName": remote}
         if route == "/api/ftp/inspect":
             info = {"ok": True, "tls": tls, "fileName": remote, "path": remote_path}
             try:
