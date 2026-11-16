@@ -12294,47 +12294,58 @@
     },
     {
      "id": "SidecarBike_Brakelight_Item",
-     "name": "Sidecar Bike Brake Light"
+     "name": "Мотоцикл с коляской: стоп-сигнал",
+     "name_en": "Sidecar Bike Brake Light"
     },
     {
      "id": "SidecarBike_Fender_Front_Item",
-     "name": "Sidecar Bike Fender Front"
+     "name": "Мотоцикл с коляской: переднее крыло",
+     "name_en": "Sidecar Bike Fender Front"
     },
     {
      "id": "SidecarBike_Fender_Rear_Item",
-     "name": "Sidecar Bike Fender Rear"
+     "name": "Мотоцикл с коляской: заднее крыло",
+     "name_en": "Sidecar Bike Fender Rear"
     },
     {
      "id": "SidecarBike_Fender_Sidecar_Item",
-     "name": "Sidecar Bike Fender Sidecar"
+     "name": "Мотоцикл с коляской: крыло коляски",
+     "name_en": "Sidecar Bike Fender Sidecar"
     },
     {
      "id": "SidecarBike_Headlight_Item",
-     "name": "Sidecar Bike Headlight"
+     "name": "Мотоцикл с коляской: фара",
+     "name_en": "Sidecar Bike Headlight"
     },
     {
      "id": "SidecarBike_Seat_Back_Item",
-     "name": "Sidecar Bike Seat Back"
+     "name": "Мотоцикл с коляской: заднее сиденье",
+     "name_en": "Sidecar Bike Seat Back"
     },
     {
      "id": "SidecarBike_Seat_Front_Item",
-     "name": "Sidecar Bike Seat Front"
+     "name": "Мотоцикл с коляской: переднее сиденье",
+     "name_en": "Sidecar Bike Seat Front"
     },
     {
      "id": "SidecarBike_Sidecar_Brakelight_Item",
-     "name": "Sidecar Bike Sidecar Brake Light"
+     "name": "Коляска мотоцикла: стоп-сигнал",
+     "name_en": "Sidecar Bike Sidecar Brake Light"
     },
     {
      "id": "SidecarBike_Sidecar_Headlight_Item",
-     "name": "Sidecar Bike Sidecar Headlight"
+     "name": "Коляска мотоцикла: фара",
+     "name_en": "Sidecar Bike Sidecar Headlight"
     },
     {
      "id": "SidecarBike_Sidecar_WeaponStation_Item",
-     "name": "Sidecar Bike Sidecar Weapon Station"
+     "name": "Коляска мотоцикла: крепление для оружия",
+     "name_en": "Sidecar Bike Sidecar Weapon Station"
     },
     {
      "id": "SidecarBike_Wheel_4x16_Item",
-     "name": "Sidecar Bike Wheel"
+     "name": "Мотоцикл с коляской: колесо",
+     "name_en": "Sidecar Bike Wheel"
     },
     {
      "id": "SportBike_Body_Street_Item",
@@ -12382,83 +12393,103 @@
     },
     {
      "id": "Tractor_Body_Left_ArmorHeavy_Item",
-     "name": "Tractor Body Armor Heavy Left"
+     "name": "Трактор: тяжёлая броня корпуса (лево)",
+     "name_en": "Tractor Body Armor Heavy Left"
     },
     {
      "id": "Tractor_Body_Left_Brakelight_Item",
-     "name": "Tractor Brake Light Left"
+     "name": "Трактор: стоп-сигнал левый",
+     "name_en": "Tractor Brake Light Left"
     },
     {
      "id": "Tractor_Body_Left_Item",
-     "name": "Tractor Body Left"
+     "name": "Трактор: корпус левый",
+     "name_en": "Tractor Body Left"
     },
     {
      "id": "Tractor_Body_Right_ArmorHeavy_Item",
-     "name": "Tractor Body Armor Heavy Right"
+     "name": "Трактор: тяжёлая броня корпуса (право)",
+     "name_en": "Tractor Body Armor Heavy Right"
     },
     {
      "id": "Tractor_Body_Right_Brakelight_Item",
-     "name": "Tractor Brake Light Right"
+     "name": "Трактор: стоп-сигнал правый",
+     "name_en": "Tractor Brake Light Right"
     },
     {
      "id": "Tractor_Body_Right_Item",
-     "name": "Tractor Body Right"
+     "name": "Трактор: корпус правый",
+     "name_en": "Tractor Body Right"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Back_Item",
-     "name": "Tractor Body Armor Heavy Top Back"
+     "name": "Трактор: тяжёлая броня верх (зад)",
+     "name_en": "Tractor Body Armor Heavy Top Back"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Front_Item",
-     "name": "Tractor Body Armor Heavy Top Front"
+     "name": "Трактор: тяжёлая броня верх (перед)",
+     "name_en": "Tractor Body Armor Heavy Top Front"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Left_Item",
-     "name": "Tractor Body Armor Heavy Top Left"
+     "name": "Трактор: тяжёлая броня верх (лево)",
+     "name_en": "Tractor Body Armor Heavy Top Left"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Right_Item",
-     "name": "Tractor Body Armor Heavy Top Right"
+     "name": "Трактор: тяжёлая броня верх (право)",
+     "name_en": "Tractor Body Armor Heavy Top Right"
     },
     {
      "id": "Tractor_Body_Top_Door_Left_Item",
-     "name": "Tractor Door Left"
+     "name": "Трактор: дверь левая",
+     "name_en": "Tractor Door Left"
     },
     {
      "id": "Tractor_Body_Top_Door_Right_Item",
-     "name": "Tractor Door Right"
+     "name": "Трактор: дверь правая",
+     "name_en": "Tractor Door Right"
     },
     {
      "id": "Tractor_Door_Hood_Headlight_Left_Item",
-     "name": "Tractor Headlight Left"
+     "name": "Трактор: фара левая",
+     "name_en": "Tractor Headlight Left"
     },
     {
      "id": "Tractor_Door_Hood_Headlight_Right_Item",
-     "name": "Tractor Headlight Right"
+     "name": "Трактор: фара правая",
+     "name_en": "Tractor Headlight Right"
     },
     {
      "id": "Tractor_Door_Hood_Item",
-     "name": "Tractor Hood"
+     "name": "Трактор: капот",
+     "name_en": "Tractor Hood"
     },
     {
      "id": "Tractor_Door_Left_ArmorHeavy_Item",
-     "name": "Tractor Door Armor Heavy Left"
+     "name": "Трактор: броня двери левая",
+     "name_en": "Tractor Door Armor Heavy Left"
     },
     {
      "id": "Tractor_Door_Right_ArmorHeavy_Item",
-     "name": "Tractor Door Armor Heavy Right"
+     "name": "Трактор: броня двери правая",
+     "name_en": "Tractor Door Armor Heavy Right"
     },
     {
      "id": "Tractor_Engine_Alternator_Item",
-     "name": "Tractor Alternator"
+     "name": "Трактор: генератор",
+     "name_en": "Tractor Alternator"
     },
     {
      "id": "Tractor_Seat_Driver_Item",
-     "name": "Tractor Driver Seat"
+     "name": "Трактор: сиденье водителя",
+     "name_en": "Tractor Driver Seat"
     },
     {
      "id": "Tractor_WheelArmorHeavy_Front_Item",
-     "name": "Tractor Wheel Armor Heavy Front"
+     "name": "Трактор: тяжёлая броня колеса (перед)",
+     "name_en": "Tractor Wheel Armor Heavy Front"
     },
     {
      "id": "Wheel_155_R65_Item",
@@ -12660,6 +12691,26 @@
     {
      "id": "BPC_WolfsWagen",
      "name": "Вольфсваген"
+    },
+    {
+     "id": "SidecarBike",
+     "name": "Мотоцикл с коляской"
+    },
+    {
+     "id": "Tractor",
+     "name": "Трактор"
+    },
+    {
+     "id": "SUV",
+     "name": "Внедорожник (SUV)"
+    },
+    {
+     "id": "M865",
+     "name": "Грузовик M865"
+    },
+    {
+     "id": "Mule",
+     "name": "Мул (вездеход)"
     }
    ]
   },
