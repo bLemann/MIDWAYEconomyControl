@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.36"
+VERSION = "0.8.37"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -735,6 +735,18 @@ ECON_CODE_FIELDS = ("tradeable-code", "TradeableCode", "tradeableCode", "code", 
 ECON_NUMERIC_FIELDS = ("base-purchase-price", "base-sell-price", "delta-price", "required-famepoints")
 ECON_VIS_FIELDS = ("available-after-sale-only", "can-be-purchased")
 ECON_ALLOWED_KEYS = frozenset(ECON_CODE_FIELDS) | frozenset(ECON_NUMERIC_FIELDS) | frozenset(ECON_VIS_FIELDS)
+ECON_ASSORT = {
+    "Armory": ("Оружие — Пистолеты", "Оружие — Винтовки", "Оружие — Дробовики", "Оружие — Магазины", "Оружие — Обвес и оптика", "Оружие — Детали", "Оружие — Краски", "Патроны"),
+    "Hunter": ("Оружие — Луки и стрелы", "Оружие — Холодное оружие", "Оружие — Ловушки", "Одежда — Колчаны"),
+    "Master_Hunter": ("Оружие — Луки и стрелы", "Оружие — Холодное оружие", "Оружие — Ловушки", "Одежда — Колчаны"),
+    "BoatShop": ("Рыбалка — Крючки", "Рыбалка — Удочки", "Рыбалка — Поплавки", "Рыбалка — Лески", "Рыбалка — Прочее", "Рыбалка — Рыба", "Транспорт — Транспортные средства"),
+    "Saloon": ("Еда и напитки — Напитки", "Еда и напитки — Упакованная еда", "Еда и напитки — Консервы", "Еда и напитки — Прочее"),
+    "Hospital": ("Медицина",),
+    "Mechanic": ("Транспорт — Запчасти", "Транспорт — Услуги механика", "Транспорт — Транспортные средства", "Инструменты"),
+    "Trader": ("Инструменты", "Материалы", "Разное"),
+    "Barber": (),
+}
+ECON_BOATSHOP_FOOD = frozenset(["Pike_Fillet", "Amur_Steak", "Carp_Steak", "Catfish_Fillet", "Catfish_Steak", "FishFreshwater", "Monkfish_Steak", "Pike_Steak", "SeaWaterFish", "Tuna_Steak", "Amur_Fillet", "Amur_Fillet_Salted", "Amur_Steak_Salted", "Bass_Fillet", "Bass_Fillet_Salted", "Bleak_Fillet", "Bleak_Fillet_Salted", "Carp_Fillet", "Carp_Fillet_Salted", "Carp_Steak_Salted", "Catfish_Fillet_Salted", "Catfish_Steak_Salted", "Chub_Fillet", "Chub_Fillet_Salted", "Dentex_Fillet", "Dentex_Fillet_Salted", "EuropeanBass_Fillet", "EuropeanBass_Fillet_Salted", "Monkfish_Fillet", "Monkfish_Fillet_Salted", "Monkfish_Steak_Salted", "Orata_Fillet", "Orata_Fillet_Salted", "Pike_Fillet_Salted", "Pike_Steak_Salted", "Ruffe_Fillet", "Ruffe_Fillet_Salted", "Sardine_Fillet", "Sardine_Fillet_Salted", "Scorpionfish_Fillet", "Scorpionfish_Fillet_Salted", "Tuna_Fillet", "Tuna_Fillet_Salted", "Tuna_Steak_Salted"])
 
 def connect_ftp(data, attempt_start=0):
     errors = []
@@ -2974,7 +2986,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(400, {"ok": False, "error": "doc.traders (object) is required"})
         issues = []
         summary = {"errors": 0, "warnings": 0, "infos": 0, "traders": 0, "rows": 0,
-                   "dupCodes": 0, "unknownIds": 0, "hiddenRows": 0, "hugePrices": 0, "unknownGlobals": 0}
+                   "dupCodes": 0, "unknownIds": 0, "hiddenRows": 0, "hugePrices": 0, "unknownGlobals": 0,
+                   "offAssortment": 0}
         sev_key = {"error": "errors", "warn": "warnings", "info": "infos"}
 
         def add(sev, cat, message, **kw):
@@ -2985,12 +2998,14 @@ class Handler(SimpleHTTPRequestHandler):
                 issues.append(it)
 
         known = set()
+        dbCat = {}
         try:
             dbj = json.loads((WEB / "items-db.json").read_text(encoding="utf-8-sig"))
             for c in dbj.get("categories") or []:
                 for it in c.get("items") or []:
                     if isinstance(it, dict) and isinstance(it.get("id"), str) and it["id"].strip():
                         known.add(it["id"].strip())
+                        dbCat[it["id"].strip()] = c.get("name") or "Разное"
         except (OSError, json.JSONDecodeError, ValueError):
             pass
         for x in load_custom_items():
@@ -3015,6 +3030,8 @@ class Handler(SimpleHTTPRequestHandler):
             role_map.setdefault(squash(r), r)
 
         reported_fields = set()
+        off_samples = {}
+        off_counts = {}
         for t, rows in doc["traders"].items():
             summary["traders"] += 1
             tname = str(t)
@@ -3022,6 +3039,7 @@ class Handler(SimpleHTTPRequestHandler):
                 add("error", "trader", "Строки торговца «%s»: ожидался массив" % tname, trader=tname)
                 continue
             m = re.match(r"^([A-Za-z])_(\d+)_(.+)$", tname)
+            role_known = False
             if m:
                 sector = m.group(1).upper() + "_" + m.group(2)
                 role = m.group(3)
@@ -3039,6 +3057,7 @@ class Handler(SimpleHTTPRequestHandler):
                             fix={"type": "rename-trader", "to": sector + "_" + fix_role})
                     else:
                         add("error", "trader", "Роль «%s» не существует — игра проигнорирует такого торговца" % role, trader=tname)
+                role_known = role in ECON_ASSORT
             else:
                 add("warn", "trader", "Имя «%s» не по шаблону SCUM <сектор>_<роль> (например A_0_Armory) — игра проигнорирует такого торговца" % tname, trader=tname)
             seen = {}
@@ -3095,6 +3114,12 @@ class Handler(SimpleHTTPRequestHandler):
                             fix={"type": "normalize-vis", "field": f, "from": s, "to": low})
                     if f == "can-be-purchased" and low == "false":
                         summary["hiddenRows"] += 1
+                cat_row = dbCat.get(code, "—")
+                if role_known and cat_row not in ECON_ASSORT[role] and not (role == "BoatShop" and code in ECON_BOATSHOP_FOOD):
+                    summary["offAssortment"] += 1
+                    off_counts[tname] = off_counts.get(tname, 0) + 1
+                    if off_counts[tname] <= 4:
+                        off_samples.setdefault(tname, []).append(code + (" (" + cat_row + ")" if cat_row != "—" else " (нет в базе)"))
                 if code not in known:
                     summary["unknownIds"] += 1
                     cand = squash_map.get(squash(code))
@@ -3103,6 +3128,8 @@ class Handler(SimpleHTTPRequestHandler):
                             fix={"type": "rename-code", "to": cand})
                     else:
                         add("info", "unknown-id", "ID «%s» нет в каталоге (UNVERIFIED)" % code, trader=tname, idx=idx, code=code)
+            if role_known and off_counts.get(tname):
+                add("warn", "assortment", "Вне ассортимента роли %s: %d строк — по документации SCUM торговец редактирует только свои дефолтные товары, такие строки игра может игнорировать. Например: %s" % (role, off_counts[tname], "; ".join(off_samples.get(tname, []))))
         for k, v in doc.items():
             if k == "traders":
                 continue
