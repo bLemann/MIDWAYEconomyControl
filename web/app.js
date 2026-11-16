@@ -217,22 +217,25 @@ $('#veh-lim-add').onclick=()=>{if(!doc)return;let g=$('#veh-group').value.trim()
 $('#veh-unlimited').onclick=()=>{if(!doc)return;if(!Array.isArray(doc['limited-vehicles'])||!doc['limited-vehicles'].length)return toast('Секция limited-vehicles пуста — сначала добавьте группы');snapUndo('безлимит транспорта');doc['limited-vehicles'].forEach(g=>g['vehicle-group-max-amount']=-1);log('limited-vehicles: все группы — безлимит (−1)');vehRender()};
 $('#veh-close').onclick=()=>$('#veh-dialog').close();
 
-$('#sec-open').onclick=()=>{if(!doc)return toast('Сначала импортируйте документ');let names=traderSectors()[selectedSector]||[];if(!names.length)return toast('Выберите сектор в списке слева');$('#sec-target').textContent='источник: '+sectorLabel(selectedSector)+' ('+names.length+' торговцев, строк: '+names.reduce((a,n)=>a+((doc.traders[n]||[]).length),0)+')';$('#sec-status').textContent='';$('#sec-dialog').showModal()};
+function secOpen(mode){if(!doc)return toast('Сначала импортируйте документ');let srcTrader=mode==='trader';if(srcTrader&&!selected)return toast('Выберите торговца');document.querySelectorAll('input[name=sec-src]').forEach(r=>r.checked=(r.value===mode));let names=srcTrader?[selected]:traderSectors()[selectedSector]||[];if(!names.length)return toast(srcTrader?'Выберите торговца':'Выберите сектор в списке слева');let rowsN=names.reduce((a,n)=>a+((doc.traders[n]||[]).length),0);$('#sec-target').textContent='источник: '+(srcTrader?selected:('сектор '+sectorLabel(selectedSector)))+' · торговцев: '+names.length+' · строк: '+rowsN;$('#sec-status').textContent='';$('#sec-dialog').showModal()}
+$('#sec-open').onclick=()=>secOpen('sector');
+$('#tsec-open').onclick=()=>secOpen('trader');
 $('#sec-close').onclick=()=>$('#sec-dialog').close();
 $('#sec-apply').onclick=async()=>{if(!doc)return;let fields=[...document.querySelectorAll('#sec-fields input:checked')].map(i=>i.value);if(!fields.length)return toast('Отметьте хотя бы одно поле для копирования');
 let tgt=document.querySelector('input[name=sec-tgt]:checked').value;let addM=$('#sec-addmissing').checked;
-let srcNames=traderSectors()[selectedSector]||[];let srcMap=new Map();srcNames.forEach(n=>(doc.traders[n]||[]).forEach(r=>{let c=rowCode(r);if(c&&!srcMap.has(c))srcMap.set(c,r)}));
-if(!srcMap.size)return toast('В выбранном секторе нет строк');
+let srcMode=document.querySelector('input[name=sec-src]:checked').value;let srcNames=srcMode==='trader'?[selected]:traderSectors()[selectedSector]||[];
+let srcMap=new Map();srcNames.forEach(n=>(doc.traders[n]||[]).forEach(r=>{let c=rowCode(r);if(c&&!srcMap.has(c))srcMap.set(c,r)}));
+if(!srcMap.size)return toast('В источнике нет строк');
 let srcRoles=new Set(srcNames.map(x=>parseTrader(x).role));let targets=[];
-Object.entries(traderSectors()).forEach(([s,names])=>{if(s===selectedSector)return;names.forEach(n=>{if(tgt==='role'&&!srcRoles.has(parseTrader(n).role))return;targets.push(n)})});
+Object.entries(traderSectors()).forEach(([s,names])=>{names.forEach(n=>{if(srcNames.includes(n))return;if(tgt==='role'&&!srcRoles.has(parseTrader(n).role))return;targets.push(n)})});
 if(!targets.length)return toast('Нет целевых торговцев');
-if(!(await askConfirm('Цены сектора → все сектора','Обновить цены у '+targets.length+' торговцев?\nКодов в источнике: '+srcMap.size+' · полей: '+fields.map(fshort).join(', ')+(addM?'\nОтсутствующие коды будут ДОБАВЛЕНЫ в цели целиком (строкой источника).':'')+'\nДействие можно отменить кнопкой отмены.')))return;
-snapUndo('цены сектора → все сектора');let upd=0,add=0;
+if(!(await askConfirm('Применить цены ко всем секторам','Источник: '+(srcMode==='trader'?selected:('сектор '+sectorLabel(selectedSector)))+'\nОбновить цены у '+targets.length+' торговцев?\nКодов в источнике: '+srcMap.size+' · полей: '+fields.map(fshort).join(', ')+(addM?'\nОтсутствующие коды будут ДОБАВЛЕНЫ в цели целиком (строкой источника).':'')+'\nДействие можно отменить кнопкой отмены.')))return;
+snapUndo('цены → все сектора');let upd=0,add=0;
 targets.forEach(n=>{let rows=doc.traders[n]||[];let have=new Set(rows.map(r=>rowCode(r)));
 rows.forEach(r=>{let c=rowCode(r);let sr=srcMap.get(c);if(!sr)return;fields.forEach(f=>{r[f]=sr[f]});upd++});
 if(addM)srcMap.forEach((sr,c)=>{if(have.has(c))return;let row={...DEFS,'tradeable-code':c};fields.forEach(f=>{row[f]=sr[f]});rows.push(row);have.add(c);add++});
 doc.traders[n]=rows});
-$('#sec-dialog').close();log('Цены сектора '+sectorLabel(selectedSector)+' → все сектора ('+targets.length+' торговцев): обновлено '+upd+', добавлено '+add+' — поля: '+fields.map(fshort).join(', '));renderGoods();toast('Обновлено: '+upd+' · добавлено: '+add)};
+$('#sec-dialog').close();log('Цены ('+(srcMode==='trader'?selected:('сектор '+sectorLabel(selectedSector))+')')+' → все сектора ('+targets.length+' торговцев): обновлено '+upd+', добавлено '+add+' — поля: '+fields.map(fshort).join(', '));renderGoods();toast('Обновлено: '+upd+' · добавлено: '+add)};
 
 const CUR_IDS=['Copper_Coins','Money_Bill_10','Money_Bill_50','Money_Bill_100'];
 $('#cur-open').onclick=()=>{if(!doc)return toast('Сначала импортируйте документ');if(!selected)return toast('Выберите торговца');$('#cur-target').textContent='→ '+selected;curRender();$('#cur-dialog').showModal()};

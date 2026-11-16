@@ -118,6 +118,7 @@
       <button class="btn-red" id="bulk-open">МАССОВОЕ ИЗМЕНЕНИЕ ЦЕН…</button>
       <button class="btn-dark" id="veh-open">ТРАНСПОРТ МЕХАНИКА…</button>
       <button class="btn-dark" id="sec-open">ЦЕНЫ СЕКТОРА → ВСЕ СЕКТОРА…</button>
+      <button class="btn-red" id="tsec-open">ЦЕНЫ ЭТОГО ТОРГОВЦА → ВСЕ СЕКТОРА…</button>
       <button class="btn-dark" id="cur-open">ВАЛЮТА / МОНЕТЫ…</button>
       <p class="note">Процент меняет текущие числа строк (строки с −1 «по умолчанию» пропускаются), точное значение перезаписывает все строки. «Скрыт» убирает товар у торговца — строка в таблице подсвечивается серым.</p>
     </aside>
@@ -673,7 +674,12 @@
 </dialog>
 
 <dialog id="sec-dialog">
-  <div class="dlg-head"><h3>Цены сектора → все сектора</h3><span id="sec-target" class="hint-inline"></span></div>
+  <div class="dlg-head"><h3>Применить цены ко всем секторам</h3><span id="sec-target" class="hint-inline"></span></div>
+  <small class="sec-cap">ИСТОЧНИК</small>
+  <div class="filters">
+    <label><input type="radio" name="sec-src" value="trader" checked>текущий торговец</label>
+    <label><input type="radio" name="sec-src" value="sector">весь выбранный сектор</label>
+  </div>
   <small class="sec-cap">ЧТО КОПИРОВАТЬ</small>
   <div class="filters" id="sec-fields">
     <label><input type="checkbox" value="base-purchase-price" checked>покупка</label>

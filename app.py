@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.34"
+VERSION = "0.8.35"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -3070,12 +3070,12 @@ class Handler(SimpleHTTPRequestHandler):
                 for f in ECON_NUMERIC_FIELDS:
                     v = r.get(f)
                     s = "" if v is None else str(v).strip()
-                    if s == "" or s == "-1":
-                        continue
                     try:
                         num = float(s)
                     except ValueError:
                         add("error", "price", "Нечисловое значение %s = «%s»" % (f, s), trader=tname, idx=idx, code=code, field=f)
+                        continue
+                    if num == -1:
                         continue
                     if num < 0:
                         add("warn", "price", "Отрицательное значение %s = %s (дефолта нет — строка может быть проигнорирована)" % (f, s), trader=tname, idx=idx, code=code, field=f)
