@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.35"
+VERSION = "0.8.36"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -730,7 +730,7 @@ ECON_GLOBAL_KEYS = ("economy-reset-time-hours", "prices-randomization-time-hours
                     "gold-price-change-percentage-step", "gold-price-change-per-step", "economy-logging",
                     "traders-unlimited-funds", "traders-unlimited-stock",
                     "global-only-after-player-sale-tradeable-availability-enabled", "tradeable-rotation-enabled",
-                    "enable-fame-point-requirement")
+                    "enable-fame-point-requirement", "limited-vehicles")
 ECON_CODE_FIELDS = ("tradeable-code", "TradeableCode", "tradeableCode", "code", "id", "ID", "class", "ClassName", "className")
 ECON_NUMERIC_FIELDS = ("base-purchase-price", "base-sell-price", "delta-price", "required-famepoints")
 ECON_VIS_FIELDS = ("available-after-sale-only", "can-be-purchased")
@@ -3109,6 +3109,15 @@ class Handler(SimpleHTTPRequestHandler):
             if k not in ECON_GLOBAL_KEYS:
                 summary["unknownGlobals"] += 1
                 add("warn", "global", "Неизвестная глобальная настройка «%s» — игра её игнорирует" % k, field=k)
+            elif k == "limited-vehicles":
+                if not isinstance(v, list):
+                    add("warn", "global", "Секция limited-vehicles должна быть массивом групп транспорта", field=k)
+                else:
+                    for gi, g in enumerate(v):
+                        if not isinstance(g, dict) or not str(g.get("vehicle-group") or "").strip():
+                            add("warn", "global", "limited-vehicles[%d]: отсутствует vehicle-group" % gi, field=k)
+                        elif not isinstance(g.get("vehicle-group-max-amount"), (int, float)) or isinstance(g.get("vehicle-group-max-amount"), bool):
+                            add("warn", "global", "limited-vehicles[%d] (%s): vehicle-group-max-amount должен быть числом (−1 = безлимит)" % (gi, g.get("vehicle-group")), field=k)
             elif not isinstance(v, str):
                 add("warn", "global", "Значение «%s» должно быть строкой (сейчас: %s) — SCUM читает только строковые значения" % (k, type(v).__name__), field=k,
                     fix={"type": "stringify-global", "field": k})
