@@ -117,6 +117,8 @@
       <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
       <button class="btn-red" id="bulk-open">МАССОВОЕ ИЗМЕНЕНИЕ ЦЕН…</button>
       <button class="btn-dark" id="veh-open">ТРАНСПОРТ МЕХАНИКА…</button>
+      <button class="btn-dark" id="sec-open">ЦЕНЫ СЕКТОРА → ВСЕ СЕКТОРА…</button>
+      <button class="btn-dark" id="cur-open">ВАЛЮТА / МОНЕТЫ…</button>
       <p class="note">Процент меняет текущие числа строк (строки с −1 «по умолчанию» пропускаются), точное значение перезаписывает все строки. «Скрыт» убирает товар у торговца — строка в таблице подсвечивается серым.</p>
     </aside>
     <div class="center-col">
@@ -214,7 +216,7 @@
     </article>
     <article class="panel"><h3>ПРЕСЕТЫ ЭКОНОМИКИ</h3>
       <div class="preset-row"><input id="preset-name" placeholder="Имя пресета"><button class="btn-dark" id="preset-save">СОХРАНИТЬ</button></div>
-      <div class="preset-row"><button class="btn-dark" id="preset-import-btn">ИМПОРТ ПРЕСЕТА ФАЙЛОМ</button><input id="preset-import" type="file" accept=".json" hidden></div>
+      <div class="preset-row"><button class="btn-dark" id="preset-import-btn">ИМПОРТ ПРЕСЕТА → В РЕДАКТОР</button><input id="preset-import" type="file" accept=".json" hidden></div>
       <div id="preset-list" class="preset-list"><p class="empty">Пресетов пока нет</p></div>
       <p class="hint">Пресеты хранятся локально в data\presets рядом с приложением. ЭКСПОРТ сохраняет файл .json — передайте его другому пользователю, ИМПОРТ добавляет такой файл в список.</p>
     </article>
@@ -647,7 +649,7 @@
 <dialog id="cats-dialog">
   <div class="dlg-head"><h3>Добавить товары по категориям</h3><span id="cats-target" class="hint-inline"></span></div>
   <div id="cats-box" class="cats-box"></div>
-  <p class="note">Для стандартных торговцев показаны только категории их ассортимента в SCUM (для нестандартных — все категории). Счётчики учитывают уже имеющиеся у торговца ID: будут добавлены только новые записи.</p>
+  <p class="note">Для стандартных торговцев показаны категории их ассортимента в SCUM (для нестандартных — все). Кнопка «ЗАПИСИ» раскрывает конкретные товары категории — можно отметить категорию целиком или отдельные позиции. «УБРАТЬ КАТЕГОРИЮ У ТОРГОВЦА» удаляет отмеченные категории (или отдельные товары) из его списка.</p>
   <div class="dlg-foot"><span id="cats-status" class="hint-inline"></span><button type="button" class="btn-dark" id="cats-all">ВЫБРАТЬ ВСЁ</button><button type="button" class="btn-dark" id="cats-none">СНЯТЬ</button><button type="button" class="btn-green" id="cats-add-all">ДОБАВИТЬ ВСЁ</button><button type="button" class="btn-green" id="cats-apply">ДОБАВИТЬ ВЫБРАННЫЕ</button><button type="button" class="btn-red" id="cats-remove">УБРАТЬ КАТЕГОРИЮ У ТОРГОВЦА</button><button type="button" class="btn-dark" id="cats-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
@@ -668,6 +670,32 @@
   <div id="veh-lim-box" class="cats-box"></div>
   <div class="filters"><input id="veh-group" placeholder="группа (напр. SUV)" class="grow"><input id="veh-max" placeholder="макс. в мире (−1 = безлимит)" style="max-width:220px"><button class="btn-dark" id="veh-lim-add">ДОБАВИТЬ ГРУППУ</button><button class="btn-red" id="veh-unlimited">ВСЁ БЕЗЛИМИТ (−1)</button></div>
   <div class="dlg-foot"><span id="veh-status" class="hint-inline"></span><button type="button" class="btn-dark" id="veh-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="sec-dialog">
+  <div class="dlg-head"><h3>Цены сектора → все сектора</h3><span id="sec-target" class="hint-inline"></span></div>
+  <small class="sec-cap">ЧТО КОПИРОВАТЬ</small>
+  <div class="filters" id="sec-fields">
+    <label><input type="checkbox" value="base-purchase-price" checked>покупка</label>
+    <label><input type="checkbox" value="base-sell-price" checked>продажа</label>
+    <label><input type="checkbox" value="delta-price" checked>множитель</label>
+    <label><input type="checkbox" value="required-famepoints">очки славы</label>
+  </div>
+  <small class="sec-cap">КУДА</small>
+  <div class="filters">
+    <label><input type="radio" name="sec-tgt" value="role" checked>та же роль в других секторах</label>
+    <label><input type="radio" name="sec-tgt" value="all">все торговцы всех секторов</label>
+  </div>
+  <label class="filters" style="justify-content:flex-start"><input type="checkbox" id="sec-addmissing">добавлять отсутствующие товары в цели (целиком строку источника)</label>
+  <p class="note">Источник — все торговцы выбранного сектора. У целей обновляются цены тех же кодов товаров; −1 копируется как есть (−1 = дефолт игры).</p>
+  <div class="dlg-foot"><span id="sec-status" class="hint-inline"></span><button type="button" class="btn-green" id="sec-apply">ПРИМЕНИТЬ</button><button type="button" class="btn-dark" id="sec-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="cur-dialog">
+  <div class="dlg-head"><h3>Валюта / монеты у торговца</h3><span id="cur-target" class="hint-inline"></span></div>
+  <p class="note">Расчётная валюта в SCUM всегда одна — деньги торговца (курс золота настраивают ключи «gold-base-price» и «gold-sale-price-modifier» во вкладке НАСТРОЙКИ; сам формат EconomyOverride выбор расчётной валюты не предусматривает). Но можно добавить монеты и купюры как ТОВАР: торговец будет продавать их игрокам по заданной цене — так игроки смогут «покупать валюту».</p>
+  <div id="cur-box" class="cats-box"></div>
+  <div class="dlg-foot"><span id="cur-status" class="hint-inline"></span><button type="button" class="btn-dark" id="cur-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <dialog id="bulk-dialog">
