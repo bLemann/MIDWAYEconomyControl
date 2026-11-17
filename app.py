@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.51"
+VERSION = "0.8.52"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -72,6 +72,20 @@ def ss_db():
         _SS_DB_CACHE["mtime"] = None
         _SS_DB_CACHE["data"] = {"groups": [], "keys": {}}
     return _SS_DB_CACHE["data"]
+
+USERS_PERMS = ["SetGodMode", "GodMode"]
+
+USERS_KINDS = {
+    "admin": {"file": "AdminUsers.ini", "perms": True},
+    "serveradmin": {"file": "ServerSettingsAdminUsers.ini", "perms": True},
+    "banned": {"file": "BannedUsers.ini", "perms": False},
+    "whitelist": {"file": "WhitelistedUsers.ini", "perms": False},
+    "silenced": {"file": "SilencedUsers.ini", "perms": False},
+    "exclusive": {"file": "ExclusiveUsers.ini", "perms": False},
+}
+
+USERS_ID_RE = re.compile(r"^7656119\d{10}$")
+USERS_PERM_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
 
 def ftp_ensure_dir(ftp, path):
     parts = [p for p in path.replace("\\", "/").split("/") if p not in ("", ".")]
@@ -1786,7 +1800,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/users/parse", "/api/users/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -1811,6 +1825,10 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_serversettings_parse(doc)
         if self.path == "/api/serversettings/serialize":
             return self.handle_serversettings_serialize(doc)
+        if self.path == "/api/users/parse":
+            return self.handle_users_parse(doc)
+        if self.path == "/api/users/serialize":
+            return self.handle_users_serialize(doc)
         if self.path == "/api/loot/snapshot":
             return self.handle_loot_snapshot(doc)
         if self.path == "/api/loot/root":
@@ -3435,6 +3453,133 @@ class Handler(SimpleHTTPRequestHandler):
             raw = text.encode(enc)
         except UnicodeEncodeError:
             raw = text.encode("utf-8", errors="replace")
+        return self.send_json(200, {
+            "ok": True, "content": base64.b64encode(raw).decode("ascii"),
+            "size": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+        })
+
+    def handle_users_parse(self, data):
+        data = data or {}
+        kind = data.get("kind")
+        if kind not in USERS_KINDS:
+            return self.send_json(400, {"ok": False, "error": "kind must be one of: %s" % ", ".join(sorted(USERS_KINDS))})
+        meta = USERS_KINDS[kind]
+        content = str(data.get("content") or "")
+        try:
+            raw = base64.b64decode(content, validate=True)
+        except (ValueError, TypeError):
+            return self.send_json(400, {"ok": False, "error": "content (base64) is required"})
+        if len(raw) > 256 * 1024:
+            return self.send_json(413, {"ok": False, "error": "File too large (max 256 KB)"})
+        if not raw:
+            return self.send_json(200, {
+                "ok": True, "kind": kind, "file": meta["file"], "perms": meta["perms"],
+                "eol": "crlf", "trailingN": 0, "emptyFile": True, "entries": [],
+                "counts": {"entries": 0, "withPerms": 0, "unknownPerms": 0},
+                "permsCatalog": USERS_PERMS,
+            })
+        if raw.startswith(b"\xef\xbb\xbf"):
+            return self.send_json(400, {"ok": False, "error": "Unsupported layout: UTF-8 BOM is not expected"})
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return self.send_json(400, {"ok": False, "error": "Unsupported encoding: expected plain ASCII/UTF-8 (SteamID64 lines)"})
+        eol = "crlf" if "\r\n" in text else ("lf" if "\n" in text else "crlf")
+        nl = "\r\n" if eol == "crlf" else "\n"
+        parts = text.split(nl)
+        trailing_n = 0
+        while parts and parts[-1] == "":
+            parts.pop()
+            trailing_n += 1
+        if trailing_n > 4:
+            return self.send_json(400, {"ok": False, "error": "Unsupported layout (too many trailing empty lines)"})
+        entries = []
+        seen = set()
+        unknown_perms = 0
+        with_perms = 0
+        plain_re = re.compile(r"^(7656119\d{10})$")
+        perms_re = re.compile(r"^(7656119\d{10})\[([A-Za-z][A-Za-z0-9_]*(?:,[A-Za-z][A-Za-z0-9_]*)*)\]$")
+        for line in parts:
+            if line == "":
+                return self.send_json(400, {"ok": False, "error": "Unsupported layout (empty line in the middle of %s)" % meta["file"]})
+            m = plain_re.match(line)
+            if m:
+                steam_id = m.group(1)
+                perms = None
+            else:
+                if not meta["perms"]:
+                    return self.send_json(400, {"ok": False, "error": "Unsupported layout (%s: permissions in [brackets] are not expected, line: %s)" % (meta["file"], line[:60])})
+                m2 = perms_re.match(line)
+                if not m2:
+                    return self.send_json(400, {"ok": False, "error": "Unsupported layout (bad line: %s) — expected SteamID64 or SteamID64[Perm,Perm]" % line[:60]})
+                steam_id = m2.group(1)
+                perms = m2.group(2).split(",")
+                if len(set(perms)) != len(perms):
+                    return self.send_json(400, {"ok": False, "error": "Duplicate permission on line: %s" % line[:60]})
+                if any(p not in USERS_PERMS for p in perms):
+                    unknown_perms += sum(1 for p in perms if p not in USERS_PERMS)
+                with_perms += 1
+            if steam_id in seen:
+                return self.send_json(400, {"ok": False, "error": "Duplicate SteamID64: %s" % steam_id})
+            seen.add(steam_id)
+            entries.append({
+                "steamId": steam_id,
+                "permissions": perms,
+                "allPermsKnown": bool(perms is None or all(p in USERS_PERMS for p in perms)),
+            })
+        return self.send_json(200, {
+            "ok": True, "kind": kind, "file": meta["file"], "perms": meta["perms"],
+            "eol": eol, "trailingN": trailing_n, "emptyFile": False, "entries": entries,
+            "counts": {"entries": len(entries), "withPerms": with_perms, "unknownPerms": unknown_perms},
+            "permsCatalog": USERS_PERMS,
+        })
+
+    def handle_users_serialize(self, data):
+        data = data or {}
+        kind = data.get("kind")
+        if kind not in USERS_KINDS:
+            return self.send_json(400, {"ok": False, "error": "kind must be one of: %s" % ", ".join(sorted(USERS_KINDS))})
+        meta = USERS_KINDS[kind]
+        eol = data.get("eol")
+        if eol not in ("crlf", "lf"):
+            return self.send_json(400, {"ok": False, "error": "eol must be 'crlf' or 'lf'"})
+        try:
+            trailing_n = int(data.get("trailingN"))
+        except (TypeError, ValueError):
+            return self.send_json(400, {"ok": False, "error": "trailingN (int) is required"})
+        if not 0 <= trailing_n <= 4:
+            return self.send_json(400, {"ok": False, "error": "trailingN out of range"})
+        entries = data.get("entries")
+        if not isinstance(entries, list) or len(entries) > 5000:
+            return self.send_json(400, {"ok": False, "error": "entries (list, max 5000) is required"})
+        nl = "\r\n" if eol == "crlf" else "\n"
+        lines = []
+        seen = set()
+        for entry in entries:
+            if not isinstance(entry, dict):
+                return self.send_json(400, {"ok": False, "error": "Bad entry (not an object)"})
+            steam_id = entry.get("steamId")
+            if not isinstance(steam_id, str) or not USERS_ID_RE.match(steam_id):
+                return self.send_json(400, {"ok": False, "error": "Bad SteamID64 (17 digits, starts with 7656119): %s" % str(steam_id)[:40]})
+            if steam_id in seen:
+                return self.send_json(400, {"ok": False, "error": "Duplicate SteamID64: %s" % steam_id})
+            seen.add(steam_id)
+            perms = entry.get("permissions")
+            if perms is None:
+                lines.append(steam_id)
+                continue
+            if not meta["perms"]:
+                return self.send_json(400, {"ok": False, "error": "%s: permissions are not allowed for this list" % meta["file"]})
+            if not isinstance(perms, list) or not perms or len(perms) > 32:
+                return self.send_json(400, {"ok": False, "error": "Bad permissions for %s (non-empty list, max 32)" % steam_id})
+            for p in perms:
+                if not isinstance(p, str) or not USERS_PERM_RE.match(p):
+                    return self.send_json(400, {"ok": False, "error": "Bad permission name for %s: %s" % (steam_id, str(p)[:60])})
+            if len(set(perms)) != len(perms):
+                return self.send_json(400, {"ok": False, "error": "Duplicate permissions for %s" % steam_id})
+            lines.append("%s[%s]" % (steam_id, ",".join(perms)))
+        text = nl.join(lines + [""] * trailing_n)
+        raw = text.encode("utf-8")
         return self.send_json(200, {
             "ok": True, "content": base64.b64encode(raw).decode("ascii"),
             "size": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),

@@ -18,6 +18,7 @@
     <button class="profile" id="prof-q"><i class="p-ico">Q</i><span>SCUM QUEST CONFIGURATOR<small>Quest.json</small></span></button>
     <button class="profile" id="prof-l"><i class="p-ico">L</i><span>SCUM LOOT CONFIGURATOR<small>LootBP · VANILLA DB</small></span></button>
     <button class="profile" id="prof-ss"><i class="p-ico">SS</i><span>SERVER SETTINGS<small>ServerSettings.ini</small></span></button>
+    <button class="profile" id="prof-us"><i class="p-ico">U</i><span>USERS &amp; BANS<small>AdminUsers · BannedUsers</small></span></button>
     <button class="profile soon" disabled><i class="p-ico">S</i><span>SCUM SKILL EDITOR<small>Character.sqlite · скоро</small></span></button>
   </nav>
   <div class="top-right">
@@ -66,6 +67,7 @@
     <button class="tab q-only" data-view="q-export">ЭКСПОРТ</button>
     <button class="tab l-only active" data-view="l-browse">БАЗА ЛУТА</button>
     <button class="tab ss-only active" data-view="ss-edit">НАСТРОЙКИ СЕРВЕРА</button>
+    <button class="tab us-only active" data-view="us-edit">СПИСКИ ИГРОКОВ</button>
   </div>
   <div class="tabs-side">
     <button class="tab side tc-only" data-view="catalog">КАТАЛОГ</button>
@@ -673,6 +675,34 @@
   </div>
 </section>
 
+<section class="view us-only" id="us-edit">
+  <div class="toolbar">
+    <div><h2>Списки игроков · Steam-ID файлы</h2><p>Шесть списков сервера: администраторы (с правами в [скобках]), баны, вайтлист, муты, эксклюзив. Формат: один SteamID64 на строку.</p></div>
+    <input id="us-search" placeholder="Поиск по SteamID64" spellcheck="false">
+    <button class="btn-dark" id="us-diff" disabled>ИЗМЕНЕНИЯ (0)</button>
+    <button class="btn-dark" id="us-reset" disabled>СБРОСИТЬ ВСЁ</button>
+    <button class="btn-green" id="us-upload" disabled>ВЫГРАЗИТЬ НА СЕРВЕР</button>
+    <button class="btn-green" id="us-download">СКАЧАТЬ С СЕРВЕРА</button>
+    <button class="btn-dark" id="us-new" title="Создать локально пустой файл (выгрузить на сервер можно без скачивания)">НОВЫЙ (ПУСТОЙ)</button>
+  </div>
+  <article class="panel srv-panel"><h3>СЕРВЕР · СПИСКИ STEAM-ID</h3>
+    <div class="srv-row"><span id="us-status" class="hint">Файл ещё не загружен — нажмите «СКАЧАТЬ С СЕРВЕРА» (используется FTP-профиль из вкладки «FTP / ФАЙЛЫ»)</span></div>
+    <div id="us-warn" class="us-warn" hidden></div>
+    <p class="note"><b>⚠ Списки применяются при запуске сервера.</b> Баны сервер читает из BannedUsers.ini при старте; состав администраторов тоже вступает в силу после перезапуска. Правки в AdminUsers.ini: строка «76561198…» = полный админ-доступ; «76561198…[SetGodMode]» = только указанные права (SetGodMode — может включать режим бога, GodMode — сразу в нём). Неизвестные игре права просто игнорируются. Перед выгрузкой создаётся .backup-копия и локальный снапшот.</p>
+  </article>
+  <div class="ss-layout">
+    <aside class="ss-groups" id="us-files"></aside>
+    <article class="panel ss-main">
+      <form class="us-addrow" id="us-add-form">
+        <input id="us-add-id" placeholder="SteamID64 (17 цифр, 7656119…)" spellcheck="false" maxlength="17">
+        <span id="us-add-perms" class="us-perms"></span>
+        <button class="btn-green" type="submit">ДОБАВИТЬ</button>
+      </form>
+      <div class="ss-wrap"><table class="ss-t"><thead><tr><th>STEAMID64</th><th id="us-perm-col">ПРАВА</th><th></th></tr></thead><tbody id="us-tbody"></tbody></table></div>
+    </article>
+  </div>
+</section>
+
 <footer>MIDWAY ECONOMY CONTROL · BY LEMANN <span>TRADER CONFIG · ECONOMYOVERRIDE.JSON · LOCAL TOOL</span></footer>
 </main>
 
@@ -952,6 +982,12 @@
   <div class="dlg-head"><h3>ИЗМЕНЕНИЯ SERVERSETTINGS.INI</h3><span class="hint-inline" id="ss-diff-count"></span></div>
   <div id="ss-diff-body" class="ss-diff-body"></div>
   <div class="dlg-foot"><span class="hint-inline">Сбросить отдельную строку можно кнопкой ↩ в таблице</span><button type="button" class="btn-dark" id="ss-diff-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="us-diff-dialog">
+  <div class="dlg-head"><h3>ИЗМЕНЕНИЯ СПИСКОВ ИГРОКОВ</h3><span class="hint-inline" id="us-diff-count"></span></div>
+  <div id="us-diff-body" class="ss-diff-body"></div>
+  <div class="dlg-foot"><span class="hint-inline">Сбросить отдельную строку можно кнопкой ↩ в таблице</span><button type="button" class="btn-dark" id="us-diff-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <div id="toast"></div>

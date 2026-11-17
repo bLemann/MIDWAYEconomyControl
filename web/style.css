@@ -513,3 +513,25 @@ body:not(.mod-ss) .ss-only{display:none!important}
 .ss-diff-body{max-height:60vh;overflow:auto;min-width:560px}
 .ss-dt .ss-old{color:var(--muted);font-family:var(--mono);font-size:11px;word-break:break-all}
 .ss-dt .ss-new{color:var(--green);font-family:var(--mono);font-size:11px;word-break:break-all}
+
+/* ===== USERS & BANS MODULE (U) ===== */
+body:not(.mod-us) .us-only{display:none!important}
+.us-addrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.us-addrow input[type=text],.us-addrow input:not([type]),.us-addrow input[type=checkbox]{accent-color:var(--amber)}
+.us-addrow #us-add-id{background:#10131a;border:1px solid var(--line2);border-radius:3px;color:#e7ecf3;font-family:var(--mono);font-size:11px;padding:5px 8px;width:240px}
+.us-addrow #us-add-id:focus{outline:none;border-color:var(--amber)}
+.us-perms{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.us-perm{display:inline-flex;gap:4px;align-items:center;font-family:var(--mono);font-size:11px;color:#c7d0dc;cursor:pointer;user-select:none}
+.us-addrow #us-add-perm-custom{background:#10131a;border:1px solid var(--line2);border-radius:3px;color:#e7ecf3;font-family:var(--mono);font-size:11px;padding:5px 8px;width:220px}
+.us-addrow #us-add-perm-custom:focus{outline:none;border-color:var(--amber)}
+.us-permcell{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.us-permtoggle{background:#141821;border:1px solid var(--line2);border-radius:3px;color:var(--muted);font-family:var(--mono);font-size:10px;padding:2px 7px;cursor:pointer}
+.us-permtoggle:hover{border-color:var(--amber)}
+.us-permtoggle.on{background:#1f2531;border-color:var(--amber);color:var(--amber)}
+.us-permunk{background:#4a3a17;color:#ffd98a;border-radius:3px;padding:2px 6px;font-family:var(--mono);font-size:10px}
+.us-fulladmin{color:var(--green);font-size:10px;letter-spacing:.5px}
+.us-id{font-family:var(--mono)}
+.us-del{margin-left:4px;color:#ff8a8a}
+.us-warn{background:rgba(178,58,58,.12);border:1px solid rgba(178,58,58,.5);border-radius:4px;color:#ffb3b3;font-size:11px;padding:8px 10px;margin:8px 0}
+.us-diffcap{font-family:var(--mono);font-size:11px;color:var(--amber);margin:10px 0 4px}
+.us-diffcap:first-child{margin-top:0}

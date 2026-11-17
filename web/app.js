@@ -550,7 +550,7 @@ async function extCheck(){
  }catch(e){}
 }
 $('#ext-close').onclick=()=>{$('#ext-banner').hidden=true;extDismissedMdtm=extLastMdtm};
-$('#ext-download').onclick=()=>{if(qModule||lModule||ssModule)setModule('tc');$('#ext-banner').hidden=true;extDismissedMdtm=null;$('#srv-download').click()};
+$('#ext-download').onclick=()=>{if(qModule||lModule||ssModule||usModule)setModule('tc');$('#ext-banner').hidden=true;extDismissedMdtm=null;$('#srv-download').click()};
 setTimeout(extCheck,1500);
 setInterval(extCheck,60*1000);
 window.addEventListener('focus',()=>extCheck());
@@ -561,18 +561,19 @@ const Q_NPCS=['GeneralGoods','Doctor','Armorer','Mechanic'];
 const Q_TYPES=['Elimination','Fetch'];
 const Q_TIER_REWARD={1:{money:[1000,5000],fame:[10,20]},2:{money:[2000,3500],fame:[15,20]},3:{money:[5000,7500],fame:[25,30]}};
 const Q_NAME_RE=/^STORY_[A-Za-z0-9_\-]{1,96}\.json$/;
-let qModule=false,lModule=false,ssModule=false,ssData=null,ssVals={},ssOrig={},ssGroups=[],ssCur=null,qQuests=[],qDoc=null,qName=null,qDirty=false,qDiff=null;
+let qModule=false,lModule=false,ssModule=false,usModule=false,ssData=null,ssVals={},ssOrig={},ssGroups=[],ssCur=null,qQuests=[],qDoc=null,qName=null,qDirty=false,qDiff=null;
 
-function qFlag(){let f=$('#changes-flag');if(qModule){if(qDirty){f.hidden=false;f.textContent='● Есть изменения'}else f.hidden=true}else if(ssModule){let n=ssChanged();if(n>0){f.hidden=false;f.textContent='● Есть изменения · '+n}else f.hidden=true}else{if(changes>0){f.hidden=false;f.textContent='● Есть изменения · '+changes}else f.hidden=true}}
-function setModule(m){qModule=(m==='q');lModule=(m==='l');ssModule=(m==='ss');document.body.classList.toggle('mod-q',qModule);document.body.classList.toggle('mod-l',lModule);document.body.classList.toggle('mod-ss',ssModule);
-$('#prof-tc').classList.toggle('active',m==='tc');$('#prof-q').classList.toggle('active',qModule);$('#prof-l').classList.toggle('active',lModule);$('#prof-ss').classList.toggle('active',ssModule);
-$('#import').textContent=qModule?'← ИМПОРТ ФАЙЛОВ':'← ИМПОРТ ФАЙЛА';$('#import').hidden=lModule||ssModule;
-if(qModule)qRefresh().then(()=>go('q-editor'));else if(lModule){go('l-browse');lootInit()}else if(ssModule){go('ss-edit');ssInit()}else go('items');
-qFlag()}
-$('#prof-tc').onclick=()=>{if(qModule||lModule||ssModule)setModule('tc')};
+function qFlag(){let f=$('#changes-flag');if(qModule){if(qDirty){f.hidden=false;f.textContent='● Есть изменения'}else f.hidden=true}else if(usModule){let n=usChangedAll();if(n>0){f.hidden=false;f.textContent='● Есть изменения · '+n}else f.hidden=true}else if(ssModule){let n=ssChanged();if(n>0){f.hidden=false;f.textContent='● Есть изменения · '+n}else f.hidden=true}else{if(changes>0){f.hidden=false;f.textContent='● Есть изменения · '+changes}else f.hidden=true}}
+function setModule(m){qModule=(m==='q');lModule=(m==='l');ssModule=(m==='ss');usModule=(m==='us');document.body.classList.toggle('mod-q',qModule);document.body.classList.toggle('mod-l',lModule);document.body.classList.toggle('mod-ss',ssModule);document.body.classList.toggle('mod-us',usModule);
+ $('#prof-tc').classList.toggle('active',m==='tc');$('#prof-q').classList.toggle('active',qModule);$('#prof-l').classList.toggle('active',lModule);$('#prof-ss').classList.toggle('active',ssModule);$('#prof-us').classList.toggle('active',usModule);
+ $('#import').textContent=qModule?'← ИМПОРТ ФАЙЛОВ':'← ИМПОРТ ФАЙЛА';$('#import').hidden=lModule||ssModule||usModule;
+ if(qModule)qRefresh().then(()=>go('q-editor'));else if(lModule){go('l-browse');lootInit()}else if(ssModule){go('ss-edit');ssInit()}else if(usModule){go('us-edit');usInit()}else go('items');
+ qFlag()}
+$('#prof-tc').onclick=()=>{if(qModule||lModule||ssModule||usModule)setModule('tc')};
 $('#prof-q').onclick=()=>{if(!qModule)setModule('q')};
 $('#prof-l').onclick=()=>{if(!lModule)setModule('l')};
 $('#prof-ss').onclick=()=>{if(!ssModule)setModule('ss')};
+$('#prof-us').onclick=()=>{if(!usModule)setModule('us')};
 
 function qClone(o){return JSON.parse(JSON.stringify(o))}
 function qTemplate(){return{AssociatedNPC:'GeneralGoods',Tier:1,Title:'Новый квест | New Quest',Description:'RU: \nEN: ',TimeLimitHours:24.0,RewardPool:[{CurrencyNormal:1000,Fame:10}],Conditions:[{TrackingCaption:'Цель | Goal',SequenceIndex:0,CanBeAutoCompleted:true,Type:'Elimination',TargetCharacters:['Puppet'],Amount:1}]}}
@@ -1781,5 +1782,189 @@ $('#ss-upload').onclick=async()=>{
   ssStatus('Выгружено на '+c.host+' · изменённых параметров: '+n);
   toast('ServerSettings.ini выгружен ('+n+' изменений)');
   showUploadReport(d,(c.remotePath||'/')+'/ServerSettings.ini')
- }catch(e){ssStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
+  }catch(e){ssStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
+  finally{btn.disabled=false}};
+
+/* ===== USERS & BANS MODULE (U) ===== */
+const US_KINDS=[
+ {k:'admin',f:'AdminUsers.ini',label:'АДМИНЫ',perm:true,hint:'Администраторы сервера: без прав в [скобках] — полный доступ'},
+ {k:'serveradmin',f:'ServerSettingsAdminUsers.ini',label:'SS-АДМИНЫ',perm:true,hint:'Кому разрешено менять настройки сервера'},
+ {k:'banned',f:'BannedUsers.ini',label:'БАНЫ',perm:false,hint:'Заблокированные игроки — сервер читает список при старте'},
+ {k:'whitelist',f:'WhitelistedUsers.ini',label:'ВАЙТЛИСТ',perm:false,hint:'Разрешённые к входу при включённом фильтре в ServerSettings'},
+ {k:'silenced',f:'SilencedUsers.ini',label:'МУТЫ',perm:false,hint:'Заглушённые в чате игроки'},
+ {k:'exclusive',f:'ExclusiveUsers.ini',label:'ЭКСКЛЮЗИВ',perm:false,hint:'⚠ ОПАСНО: непустой список пускает ТОЛЬКО перечисленных'}];
+const US_ID_RE=/^7656119\d{10}$/;
+const US_PERM_RE=/^[A-Za-z][A-Za-z0-9_]{0,63}$/;
+const US_PERM_HINT={SetGodMode:'может включить режим бога',GodMode:'заходит сразу в режиме бога'};
+let usDocs={},usCur='admin',usSearchT=null,usAddChecks={};
+function usKind(){return US_KINDS.find(x=>x.k===usCur)}
+function usDoc(){return usDocs[usCur]||null}
+function usClone(o){return JSON.parse(JSON.stringify(o))}
+function usDocChanged(d){if(!d)return 0;let n=0;const L=Math.max(d.vals.length,d.orig.length);for(let i=0;i<L;i++){if(JSON.stringify(d.vals[i])!==JSON.stringify(d.orig[i]))n++}return n}
+function usChangedAll(){let n=0;US_KINDS.forEach(x=>{if(usDocs[x.k])n+=usDocChanged(usDocs[x.k])});return n}
+function usStatus(s){$('#us-status').textContent=s+' · '+new Date().toLocaleTimeString()}
+function usInit(){if(!usCur||!US_KINDS.some(x=>x.k===usCur))usCur='admin';usRender()}
+function usRenderTop(){let d=usDoc(),n=usChangedAll(),ch=d?usDocChanged(d):0;
+ $('#us-diff').disabled=!n;$('#us-diff').textContent='ИЗМЕНЕНИЯ ('+n+')';
+ $('#us-reset').disabled=!ch;$('#us-upload').disabled=!ch;qFlag()}
+function usRenderFiles(){
+ let box=$('#us-files');box.innerHTML='';
+ US_KINDS.forEach(x=>{
+  let d=usDocs[x.k],cnt=d?d.vals.length:null,ch=d?usDocChanged(d):0;
+  let b=document.createElement('button');b.className='ss-gbtn'+(usCur===x.k?' active':'');b.title=x.hint+' · '+x.f;
+  let nm=document.createElement('span');nm.textContent=x.label;
+  let c=document.createElement('span');c.className='cnt';c.textContent=cnt==null?'не загружен':cnt+(ch?' · Δ'+ch:'');
+  b.append(nm,c);b.onclick=()=>{usCur=x.k;usRender()};box.append(b)})}
+function usRenderAddRow(){
+ let kd=usKind(),box=$('#us-add-perms');box.innerHTML='';usAddChecks={};
+ if(kd&&kd.perm){
+  (usDoc()&&usDoc().data.permsCatalog||['SetGodMode','GodMode']).forEach(p=>{
+   let l=document.createElement('label');l.className='us-perm';l.title=US_PERM_HINT[p]||'право администратора';
+   let cb=document.createElement('input');cb.type='checkbox';usAddChecks[p]=cb;
+   l.append(cb,document.createTextNode(' '+p));box.append(l)});
+  let inp=document.createElement('input');inp.id='us-add-perm-custom';inp.placeholder='свои права через запятую';inp.spellcheck=false;
+  box.append(inp)}
+ $('#us-perm-col').style.display=(kd&&kd.perm)?'':'none'}
+function usPermCell(e,kd){
+ let td=document.createElement('td');td.className='ss-val us-permcell';
+ if(!kd.perm){td.textContent='—';return td}
+ let cur=(e.permissions||[]).slice();
+ (usDoc().data.permsCatalog||[]).forEach(p=>{
+  let b=document.createElement('button');b.type='button';
+  let on=cur.includes(p);b.className='us-permtoggle'+(on?' on':'');b.textContent=p;
+  b.title=(US_PERM_HINT[p]||'право администратора')+' — клик включает/выключает';
+  b.onclick=()=>{let ps=(e.permissions||[]).slice();let i=ps.indexOf(p);if(i>=0)ps.splice(i,1);else ps.push(p);
+   e.permissions=ps.length?ps:null;e.allPermsKnown=ps.every(x=>usDoc().data.permsCatalog.includes(x));usRender()};
+  td.append(b)});
+ cur.filter(p=>!(usDoc().data.permsCatalog||[]).includes(p)).forEach(p=>{
+  let s=document.createElement('span');s.className='us-permunk';s.textContent=p;s.title='Право не из известного каталога — оставлено как есть';td.append(s)});
+ if(!cur.length){let s=document.createElement('span');s.className='us-fulladmin';s.textContent='полный доступ';td.append(s)}
+ return td}
+function usRenderRows(){
+ let tb=$('#us-tbody');let wrap=document.querySelector('#us-edit .ss-wrap');let st=wrap?wrap.scrollTop:0;tb.innerHTML='';
+ let kd=usKind(),d=usDoc();
+ if(!kd)return;
+ if(!d){tb.innerHTML='<tr><td colspan="3" class="empty">Файл не загружен — «СКАЧАТЬ С СЕРВЕРА» или «НОВЫЙ (ПУСТОЙ)»</td></tr>';return}
+ let q=$('#us-search').value.trim().toLowerCase();
+ let orig=d.orig,vals=d.vals,shown=0;
+ vals.forEach((e,i)=>{
+  if(q&&!e.steamId.toLowerCase().includes(q))return;
+  shown++;
+  let changed=JSON.stringify(e)!==JSON.stringify(orig[i]);
+  let tr=document.createElement('tr');if(changed)tr.className='ss-changed';
+  let td1=document.createElement('td');td1.className='ss-key us-id';td1.textContent=e.steamId;
+  if(d.data.perms&&e.permissions&&!e.allPermsKnown){let b=document.createElement('span');b.className='ss-badge-unknown';b.textContent='НЕИЗВ. ПРАВО';td1.append(b)}
+  tr.append(td1,usPermCell(e,kd));
+  let td3=document.createElement('td');td3.className='ss-act';
+  let rb=document.createElement('button');rb.className='btn-dark ss-rowreset';rb.textContent='↩';rb.title='Вернуть исходную строку';rb.disabled=!changed;
+  rb.onclick=()=>{if(orig[i])d.vals[i]=usClone(orig[i]);else d.vals.splice(i,1);usRender()};
+  let del=document.createElement('button');del.className='btn-dark ss-rowreset us-del';del.textContent='✕';del.title='Удалить строку';
+  del.onclick=()=>{d.vals.splice(i,1);usRender()};
+  td3.append(rb,del);tr.append(td3);tb.append(tr)});
+ if(!shown)tb.innerHTML='<tr><td colspan="3" class="empty">'+(d.vals.length?'Ничего не найдено':'Список пуст')+'</td></tr>';
+ if(wrap)wrap.scrollTop=st}
+function usRender(){usRenderFiles();usRenderAddRow();usRenderRows();usRenderWarn();usRenderTop()}
+function usRenderWarn(){
+ let w=$('#us-warn'),kd=usKind();
+ if(kd&&kd.k==='exclusive'){let d=usDoc();w.hidden=false;
+  w.textContent='⚠ ExclusiveUsers.ini: если список НЕПУСТОЙ, на сервер пускают ТОЛЬКО этих игроков — все остальные, включая админов, получат отказ. Убедитесь, что понимаете последствия.'+(d&&d.vals.length?' В списке сейчас: '+d.vals.length+'.':' Файл сейчас пуст/не загружен.')}
+ else w.hidden=true}
+function usValidate(){
+ let errs=[];let kd=usKind(),d=usDoc();if(!kd||!d)return errs;
+ let seen=new Set();
+ d.vals.forEach((e,i)=>{
+  if(!US_ID_RE.test(e.steamId))errs.push('строка '+(i+1)+': SteamID64 из 17 цифр (7656119…)');
+  if(seen.has(e.steamId))errs.push('дубликат '+e.steamId);seen.add(e.steamId);
+  if(e.permissions){e.permissions.forEach(p=>{if(!US_PERM_RE.test(p))errs.push(e.steamId+': подозрительное право «'+p+'»')})}});
+ return errs}
+$('#us-add-form').onsubmit=e=>{
+ e.preventDefault();
+ let kd=usKind(),d=usDoc();
+ if(!kd)return toast('Выберите файл списка');
+ if(!d)return toast('Сначала скачайте файл или создайте «НОВЫЙ (ПУСТОЙ)»');
+ let id=$('#us-add-id').value.trim();
+ if(!US_ID_RE.test(id))return toast('SteamID64: 17 цифр, начинается с 7656119');
+ if(d.vals.some(x=>x.steamId===id))return toast('Такой SteamID64 уже есть в списке');
+ let perms=null;
+ if(kd.perm){
+  let ps=(d.data.permsCatalog||[]).filter(p=>usAddChecks[p]&&usAddChecks[p].checked);
+  ($('#us-add-perm-custom')&&$('#us-add-perm-custom').value||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(p=>{if(!ps.includes(p))ps.push(p)});
+  if(ps.length)perms=ps}
+ d.vals.push({steamId:id,permissions:perms,allPermsKnown:perms?perms.every(p=>(d.data.permsCatalog||[]).includes(p)):true});
+ $('#us-add-id').value='';if($('#us-add-perm-custom'))$('#us-add-perm-custom').value='';
+ usRender();toast('Добавлено: '+id)};
+$('#us-search').oninput=()=>{clearTimeout(usSearchT);usSearchT=setTimeout(usRenderRows,200)};
+$('#us-new').onclick=async()=>{
+ let kd=usKind();if(!kd)return;
+ let old=usDocs[kd.k];
+ if(old&&usDocChanged(old)&&!(await askConfirm('Незахваченные изменения','В «'+kd.f+'» есть изменения ('+usDocChanged(old)+'), они будут заменены пустым списком. Продолжить?')))return;
+ usDocs[kd.k]={data:{ok:true,kind:kd.k,file:kd.f,perms:kd.perm,eol:'crlf',trailingN:0,emptyFile:true,entries:[],counts:{entries:0,withPerms:0,unknownPerms:0},permsCatalog:['SetGodMode','GodMode']},vals:[],orig:[]};
+ usStatus(kd.f+': создан локально пустой список — выгрузите на сервер, чтобы создать файл');
+ usRender();toast(kd.f+': пустой список создан')};
+$('#us-download').onclick=async()=>{
+ let kd=usKind();if(!kd)return;
+ let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
+ let old=usDocs[kd.k];
+ if(old&&usDocChanged(old)&&!(await askConfirm('Незахваченные изменения','В «'+kd.f+'» есть изменения ('+usDocChanged(old)+'), не выгруженные на сервер — при загрузке свежего файла они пропадут. Продолжить?')))return;
+ let btn=$('#us-download');btn.disabled=true;usStatus('Скачиваю '+kd.f+'…');
+ try{
+  let d=await ftpRequest('/api/ftp/download',{fileName:kd.f,remotePath:c.remotePath||'/'});
+  try{await fetch('/api/snapshots/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileName:kd.f,content:d.content})})}catch(e){}
+  let pr=await fetch('/api/users/parse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:d.content,kind:kd.k})}).then(r=>r.json());
+  if(!pr.ok)throw new Error(pr.error||'Файл не распознан');
+  usDocs[kd.k]={data:pr,vals:usClone(pr.entries),orig:usClone(pr.entries)};
+  $('#us-search').value='';
+  usStatus(kd.f+': загружено записей '+(pr.counts.entries)+(pr.counts.unknownPerms?' · неизвестных прав: '+pr.counts.unknownPerms:'')+' · локальный снапшот сохранён');
+  usRender();toast(kd.f+' загружен ('+pr.counts.entries+' записей)')
+ }catch(e){usStatus('Ошибка скачивания '+kd.f);toast(kd.f+': '+e.message+(String(e.message).includes('не найден')||String(e.message).toLowerCase().includes('not found')?' — файла ещё нет на сервере? Создайте «НОВЫЙ (ПУСТОЙ)»':''))}
+ finally{btn.disabled=false}};
+$('#us-reset').onclick=async()=>{
+ let kd=usKind(),d=usDoc();if(!kd||!d||!usDocChanged(d))return;
+ if(!(await askConfirm('Сброс изменений','Вернуть все '+usDocChanged(d)+' изменённых строк «'+kd.f+'» к значениям из скачанного файла?')))return;
+ d.vals=usClone(d.orig);usRender();toast('Изменения сброшены')};
+$('#us-diff').onclick=()=>{
+ let box=$('#us-diff-body');box.innerHTML='';let total=0;
+ US_KINDS.forEach(x=>{
+  let d=usDocs[x.k];if(!d||!usDocChanged(d))return;
+  let cap=document.createElement('p');cap.className='us-diffcap';cap.textContent=x.f;box.append(cap);
+  let rows=document.createElement('table');rows.className='ss-t ss-dt';
+  let thead=document.createElement('thead');let hr=document.createElement('tr');
+  ['STEAMID64','БЫЛО','СТАНЕТ'].forEach(h=>{let th=document.createElement('th');th.textContent=h;hr.append(th)});
+  thead.append(hr);rows.append(thead);
+  let tb=document.createElement('tbody');
+  const fmt=e=>!e?'(нет строки)':e.steamId+(e.permissions&&e.permissions.length?'['+e.permissions.join(',')+']':'');
+  const L=Math.max(d.vals.length,d.orig.length);
+  for(let i=0;i<L;i++){
+   let a=d.orig[i],b=d.vals[i];
+   if(JSON.stringify(a)===JSON.stringify(b))continue;total++;
+   let tr=document.createElement('tr');
+   let k=document.createElement('td');k.className='ss-key';k.textContent=(a||b).steamId;
+   let o=document.createElement('td');o.className='ss-old';o.textContent=fmt(a);
+   let n=document.createElement('td');n.className='ss-new';n.textContent=fmt(b);
+   tr.append(k,o,n);tb.append(tr)}
+  rows.append(tb);box.append(rows)});
+ $('#us-diff-count').textContent=total+' из всех загруженных списков';
+ if(!total)box.innerHTML='<p class="empty">Нет изменений</p>';
+ $('#us-diff-dialog').showModal()};
+$('#us-diff-close').onclick=()=>$('#us-diff-dialog').close();
+$('#us-upload').onclick=async()=>{
+ let kd=usKind(),d=usDoc();
+ if(!kd)return;if(!d)return toast('Сначала скачайте файл или создайте «НОВЫЙ (ПУСТОЙ)»');
+ let n=usDocChanged(d);if(!n)return toast('Нет изменений');
+ let errs=usValidate();if(errs.length)return toast('Проверка: '+errs.slice(0,3).join('; ')+(errs.length>3?' … (всего '+errs.length+')':''));
+ let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
+ let btn=$('#us-upload');btn.disabled=true;
+ try{
+  let payload={kind:kd.k,eol:d.data.eol,trailingN:d.data.trailingN,
+   entries:d.vals.map(e=>({steamId:e.steamId,permissions:e.permissions||null}))};
+  let sz=await fetch('/api/users/serialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json());
+  if(!sz.ok)throw new Error(sz.error||'Сериализация не удалась');
+  let warn=kd.k==='exclusive'?'\n\n⚠ ExclusiveUsers: непустой список заблокирует вход всем, кроме перечисленных!':'';
+  if(!(await askConfirm('Выгрузка '+kd.f,'Изменено строк: '+n+'. Файл будет записан в '+(c.remotePath||'/')+'/'+kd.f+', существующий сохранится как .backup-метка на сервере.'+warn+'\n\nСписки применяются при следующем запуске сервера. Выгрузить?')))return;
+  let r=await ftpRequest('/api/ftp/upload',{fileName:kd.f,content:sz.content,confirm:true});
+  d.orig=usClone(d.vals);usRender();
+  usStatus('Выгружено на '+c.host+' · изменённых строк: '+n);
+  toast(kd.f+' выгружен ('+n+' изменений)');
+  showUploadReport(r,(c.remotePath||'/')+'/'+kd.f)
+ }catch(e){usStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
  finally{btn.disabled=false}};
