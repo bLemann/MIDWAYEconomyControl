@@ -115,6 +115,7 @@
       <button class="btn-dark" id="copy-list">СКОПИРОВАТЬ В…</button>
       <button class="btn-red" id="clear-list">ОЧИСТИТЬ СПИСОК</button>
       <button class="btn-dark" id="mass-reset-current">СБРОСИТЬ ЗНАЧЕНИЯ (−1 / DEFAULT)</button>
+      <button class="btn-dark" id="strip-rows">УБРАТЬ СТРОКИ-ЗАГЛУШКИ (−1/DEFAULT)</button>
       <button class="btn-red" id="bulk-open">МАССОВОЕ ИЗМЕНЕНИЕ ЦЕН…</button>
       <button class="btn-dark" id="veh-open">ТРАНСПОРТ МЕХАНИКА…</button>
       <button class="btn-dark" id="sec-open">ЦЕНЫ СЕКТОРА → ВСЕ СЕКТОРА…</button>
@@ -164,7 +165,7 @@
 </section>
 
 <section class="view tc-only" id="settings">
-  <div class="toolbar"><div><h2>Настройки экономики</h2><p>Глобальные параметры импортированного JSON. Флаги включаются переключателями, значения — полями.</p></div>
+  <div class="toolbar"><div><h2>Настройки экономики</h2><p>Все 21 известная игре глобальная настройка (справочник SCUM 1.3.3.4): присутствующие в файле — с их значениями, отсутствующие — с дефолтом игры. ★ ГЛАВНЫЙ — четыре ключа, которые реально меняют ощущение экономики. «Убрать строки-заглушки» вычищает товары, где все поля −1/default (игра их игнорирует, файл только тяжелее). Значения пишутся строками, −1 = «дефолт игры».</p></div>
   <button class="btn-red" id="save-rules">ПРИМЕНИТЬ В ДОКУМЕНТ</button></div>
   <article class="panel"><div id="rule-fields" class="rule-grid">Импортируйте конфигурацию экономики.</div></article>
   <article class="panel"><h3>ПРОВЕРКА ДОКУМЕНТА</h3>

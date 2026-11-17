@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.41"
+VERSION = "0.8.42"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -3203,6 +3203,18 @@ class Handler(SimpleHTTPRequestHandler):
             elif not isinstance(v, str):
                 add("warn", "global", "Значение «%s» должно быть строкой (сейчас: %s) — SCUM читает только строковые значения" % (k, type(v).__name__), field=k,
                     fix={"type": "stringify-global", "field": k})
+        def _gnum(key):
+            if key not in doc:
+                return None
+            try:
+                return float(doc.get(key))
+            except (TypeError, ValueError):
+                return None
+        for lo, hi, what in (("tradeable-rotation-time-ingame-hours-min", "tradeable-rotation-time-ingame-hours-max", "интервал ротации (игровые часы)"),
+                             ("tradeable-rotation-time-of-day-min", "tradeable-rotation-time-of-day-max", "время суток ротации")):
+            a, b = _gnum(lo), _gnum(hi)
+            if a is not None and b is not None and b < a:
+                add("warn", "global", "Ротация: максимум меньше минимума (%s: %s < %s) — сервер выбирает значение между ними, поведение непредсказуемо" % (what, b, a), field=hi)
         return self.send_json(200, {"ok": True, "summary": summary, "issues": issues,
                                     "issueCount": summary["errors"] + summary["warnings"] + summary["infos"],
                                     "truncated": len(issues) >= 400})
