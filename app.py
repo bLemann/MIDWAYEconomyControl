@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.43"
+VERSION = "0.8.44"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -317,6 +317,7 @@ def icons_dir():
     return d
 
 ICON_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
+ICON_MIME = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif", ".bmp": "image/bmp"}
 ICON_URL_TYPES = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif", "image/bmp": ".bmp"}
 ITEM_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{1,120}$")
 ICON_ALIAS_RES = (
@@ -1625,7 +1626,7 @@ class Handler(SimpleHTTPRequestHandler):
             body, ext = read_icon_bytes(safe)
             if not body:
                 return self.send_json(404, {"ok": False, "error": "Icon not found"})
-            ctype = mimetypes.types_map.get(ext, "application/octet-stream")
+            ctype = ICON_MIME.get(ext) or mimetypes.types_map.get(ext, "application/octet-stream")
             self.send_response(200)
             self.send_header("Content-Type", ctype)
             self.send_header("Content-Length", str(len(body)))
