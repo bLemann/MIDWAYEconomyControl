@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.50"
+VERSION = "0.8.51"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -386,6 +386,41 @@ def save_local_snapshot(remote_name, raw):
     except Exception as exc:
         print("Local snapshot failed for", remote_name, ":", exc)
         return None
+
+def watch_path():
+    return server_files_dir() / "watch.json"
+
+def watch_load():
+    try:
+        st = json.loads(watch_path().read_text(encoding="utf-8"))
+        return st if isinstance(st, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+def watch_save(st):
+    try:
+        watch_path().write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
+    except OSError:
+        pass
+
+def watch_key(data, remote):
+    return str(data.get("host") or "").strip().lower() + "|" + str(remote)
+
+def watch_update(data, remote, sha256=None, size=None, mdtm=None):
+    try:
+        st = watch_load()
+        e = st.get(watch_key(data, remote)) or {}
+        if sha256 is not None:
+            e["sha256"] = sha256
+        if size is not None:
+            e["size"] = int(size)
+        if mdtm is not None:
+            e["mdtm"] = str(mdtm)
+        e["at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        st[watch_key(data, remote)] = e
+        watch_save(st)
+    except Exception:
+        pass
 
 def icon_candidates(item_id):
     s = str(item_id).lower()
@@ -1751,7 +1786,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -3664,7 +3699,7 @@ class Handler(SimpleHTTPRequestHandler):
             data["content"] = base64.b64encode(raw).decode("ascii")
             data["restoredFrom"] = str(snap_path)
             route = "/api/ftp/upload"
-        if route in ("/api/ftp/download", "/api/ftp/upload", "/api/ftp/inspect"):
+        if route in ("/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/inspect"):
             remote = str(data.get("fileName") or "")
             if not remote or any(c in remote for c in "\r\n/\\") or remote in (".", ".."):
                 return self.send_json(400, {"ok": False, "error": "A file name (not a path) is required"})
@@ -3885,7 +3920,37 @@ class Handler(SimpleHTTPRequestHandler):
         if route == "/api/ftp/download":
             out = io.BytesIO()
             ftp.retrbinary("RETR " + remote_path, out.write)
-            return {"ok": True, "fileName": remote, "content": base64.b64encode(out.getvalue()).decode("ascii")}
+            raw = out.getvalue()
+            mdtm = None
+            try:
+                mdtm = ftp.voidcmd("MDTM " + remote_path)[4:].strip()
+            except (ftplib.error_perm, ftplib.error_proto):
+                pass
+            watch_update(data, remote, sha256=hashlib.sha256(raw).hexdigest(), size=len(raw), mdtm=mdtm)
+            return {"ok": True, "fileName": remote, "content": base64.b64encode(raw).decode("ascii")}
+        if route == "/api/ftp/stat":
+            info = {"ok": True, "fileName": remote}
+            try:
+                info["size"] = ftp.size(remote_path)
+            except (ftplib.error_perm, ftplib.error_proto):
+                info["size"] = None
+            try:
+                info["mdtm"] = ftp.voidcmd("MDTM " + remote_path)[4:].strip()
+            except (ftplib.error_perm, ftplib.error_proto):
+                info["mdtm"] = None
+            base = watch_load().get(watch_key(data, remote))
+            info["baseline"] = base
+            info["changed"] = None
+            if base:
+                changed = False
+                if base.get("size") is not None and info["size"] is not None and int(base["size"]) != int(info["size"]):
+                    changed = True
+                if base.get("mdtm") and info["mdtm"] and str(base["mdtm"]) != str(info["mdtm"]):
+                    changed = True
+                if info["size"] is None and info["mdtm"] is None:
+                    changed = None
+                info["changed"] = changed
+            return info
         if route == "/api/ftp/upload":
             raw = base64.b64decode(data.get("content", ""), validate=True)
             dirs_created = ftp_ensure_dir(ftp, data["remotePath"])
@@ -3954,6 +4019,10 @@ class Handler(SimpleHTTPRequestHandler):
                         report["summary"] = {"traders": traders_n, "rows": rows_n, "stubs": stubs_n, "nocodes": nocodes_n, "hidden": hidden_n}
                 except (ValueError, UnicodeDecodeError, AttributeError):
                     pass
+            watch_update(data, remote,
+                         sha256=report.get("sha256Remote") or report.get("sha256Sent"),
+                         size=report.get("bytesRemote") if report.get("bytesRemote") is not None else report.get("bytesSent"),
+                         mdtm=report.get("mdtm"))
             return {"ok": True, "backupCreated": backup_created, "localSnapshot": snapshot_path, "dirsCreated": dirs_created, "fileName": remote, "restoredFrom": data.get("restoredFrom"), "report": report}
         if route == "/api/ftp/inspect":
             info = {"ok": True, "tls": tls, "fileName": remote, "path": remote_path}

@@ -408,11 +408,11 @@ $('#srv-download').onclick=async()=>{let c=ftpCredentials();if(!c.host)return to
 try{let d=await ftpRequest('/api/ftp/download',{fileName:'EconomyOverride.json',remotePath:c.remotePath||'/'});
 try{await fetch('/api/snapshots/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileName:'EconomyOverride.json',content:d.content})})}catch(e){}
 let bytes=Uint8Array.from(atob(d.content),ch=>ch.charCodeAt(0));let parsed=JSON.parse(new TextDecoder().decode(bytes));let norm=normalizeImport(parsed);if(!norm.doc)throw new Error('формат файла не распознан: '+(norm.note||''));
-srvStatus('Скачано с '+c.host+' · снапшот в data\\server-files');await applyDoc(norm.doc,'Загружено с сервера','снапшот в data\\server-files')}
+ srvStatus('Скачано с '+c.host+' · снапшот в data\\server-files');await applyDoc(norm.doc,'Загружено с сервера','снапшот в data\\server-files');extCheck()}
 catch(e){srvStatus('Ошибка скачивания');toast('Сервер: '+e.message)}
 finally{btn.disabled=false}};
 $('#srv-upload').onclick=async()=>{if(!doc)return toast('Сначала импортируйте документ');let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');if(!(await askConfirm('Выгрузка на сервер','Отправить текущий документ как EconomyOverride.json в '+(c.remotePath||'/')+'? Существующий файл будет скопирован в .backup-метку. Отсутствующие папки будут созданы.')))return;let btn=$('#srv-upload');btn.disabled=true;
-try{let d=await pushDocToServer(c);srvStatus('Документ выгружен на сервер (backup='+(d.backupCreated?'создан':'нет')+(d.dirsCreated&&d.dirsCreated.length?', папки: '+d.dirsCreated.join(', '):'')+(d.localSnapshot?', снапшот сохранён':'')+')');toast((d.backupCreated?'Документ выгружен, резервная копия создана':'Документ выгружен (новый файл)')+' → '+(c.remotePath||'/')+'/EconomyOverride.json');showUploadReport(d,(c.remotePath||'/')+'/EconomyOverride.json');ftpGo(c.remotePath||'/').catch(()=>{})}
+try{let d=await pushDocToServer(c);srvStatus('Документ выгружен на сервер (backup='+(d.backupCreated?'создан':'нет')+(d.dirsCreated&&d.dirsCreated.length?', папки: '+d.dirsCreated.join(', '):'')+(d.localSnapshot?', снапшот сохранён':'')+')');toast((d.backupCreated?'Документ выгружен, резервная копия создана':'Документ выгружен (новый файл)')+' → '+(c.remotePath||'/')+'/EconomyOverride.json');showUploadReport(d,(c.remotePath||'/')+'/EconomyOverride.json');ftpGo(c.remotePath||'/').catch(()=>{});extCheck()}
 catch(e){srvStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
  finally{btn.disabled=false}};
 
@@ -534,6 +534,26 @@ $('#notes-launch').onclick=()=>$('#upd-launch').click();
 updateCheck();
 fetch('/api/update/progress').then(r=>r.json()).then(d=>{if(d.ok&&(d.running||(d.done&&d.dl_ok))){updDismissed=false;$('#upd-version').textContent='v'+(d.version||'—');$('#update-banner').hidden=false;if(d.done&&d.dl_ok){updPath=d.path;$('#upd-info').textContent='Загружено: '+d.path+' · SHA256 '+String(d.sha256).slice(0,16)+'…';$('#upd-launch').hidden=false}else if(d.running){updLatest=updLatest||{latest:d.version};updPollStart()}}}).catch(()=>{});
 setInterval(()=>updateCheck(false),30*60*1000);
+
+/* ===== ВНЕШНИЕ ИЗМЕНЕНИЯ ФАЙЛА НА СЕРВЕРЕ (бэклог 4) ===== */
+let extDismissedMdtm=null,extLastMdtm=null;
+async function extCheck(){
+ if(!$('#ftp-host').value.trim())return;
+ try{
+  let d=await ftpRequest('/api/ftp/stat',{fileName:'EconomyOverride.json'});
+  if(d.changed===true){
+   extLastMdtm=d.mdtm;
+   let bsha=String((d.baseline||{}).sha256||'').slice(0,12);
+   $('#ext-info').textContent='EconomyOverride.json · '+(fmtMdtm(d.mdtm)||'—')+' · '+(d.size==null?'—':d.size.toLocaleString('ru-RU'))+' байт — отличается от последнего состояния, виденного приложением'+(bsha?' (наш SHA-256: '+bsha+'…)':'');
+   if(extDismissedMdtm!==d.mdtm)$('#ext-banner').hidden=false;
+  }else{$('#ext-banner').hidden=true;extDismissedMdtm=null;extLastMdtm=null}
+ }catch(e){}
+}
+$('#ext-close').onclick=()=>{$('#ext-banner').hidden=true;extDismissedMdtm=extLastMdtm};
+$('#ext-download').onclick=()=>{if(qModule||lModule||ssModule)setModule('tc');$('#ext-banner').hidden=true;extDismissedMdtm=null;$('#srv-download').click()};
+setTimeout(extCheck,1500);
+setInterval(extCheck,60*1000);
+window.addEventListener('focus',()=>extCheck());
 window.addEventListener('beforeunload',()=>{$('#ftp-pass').value='';if(ftpWatchTimer)clearInterval(ftpWatchTimer)});
 
 /* ===== QUEST MODULE (Q) ===== */
