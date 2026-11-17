@@ -1,8 +1,8 @@
 {
  "meta": {
   "name": "SCUM полный каталог предметов",
-  "version": "1.4.0",
-  "note": "Источники: scum.wiki.gg Item IDs (базовые 1256), SCUM Admin Helper — встроенный каталог 2342 ID (UNVERIFIED, иконки из его ресурсов). Проверяйте на своём билде игры. | +535 ID из живого файла сервера (услуг механика ServiceBP_*: 367, транспортных средств BPC_*: 9, прочего: 159) | +Русификация v1.4.0: RU-имена из игровой локализации SCUM (pakchunk0 ru-RU Game.locres, выравнивание en/ru потоков)",
+  "version": "1.5.0",
+  "note": "Источники: scum.wiki.gg Item IDs (базовые 1256), SCUM Admin Helper — встроенный каталог 2342 ID (UNVERIFIED, иконки из его ресурсов). Проверяйте на своём билде игры. | +535 ID из живого файла сервера (услуг механика ServiceBP_*: 367, транспортных средств BPC_*: 9, прочего: 159) | +Русификация v1.4.0: RU-имена из игровой локализации SCUM (pakchunk0 ru-RU Game.locres, выравнивание en/ru потоков) | +v1.5.0: канонические EN-имена из игрового манифеста локализации (Game.manifest, pakchunk0, 1117 ID сверено), +310 RU-переводов по каноническим именам, +68 новых предметов из игровых файлов; аудит DP-словаря: 38 ложных переводов сброшено в EN, 271 заменено на точные пары по каноническим именам",
   "sources": [
    "https://scum.wiki.gg/wiki/Item_IDs",
    "https://scum.wiki.gg/wiki/Item_IDs/Full_List",
@@ -89,7 +89,8 @@
     },
     {
      "id": "1H_Hunter",
-     "name": "Hunter"
+     "name": "Hunter",
+     "name_en": "Hunter"
     },
     {
      "id": "1H_Improvised_Hammer",
@@ -213,8 +214,8 @@
     },
     {
      "id": "2H_Pitchfork_Bent",
-     "name": "Вилы",
-     "name_en": "Pitchfork"
+     "name": "Вилы с изгибом",
+     "name_en": "Bent Pitchfork"
     },
     {
      "id": "1H_Scalpel",
@@ -233,7 +234,8 @@
     },
     {
      "id": "2H_Shovel_02",
-     "name": "Shovel"
+     "name": "Shovel",
+     "name_en": "Shovel"
     },
     {
      "id": "1H_Shuriken",
@@ -262,13 +264,13 @@
     },
     {
      "id": "2H_Tang_Dao_Black_Dragon",
-     "name": "Тан-дао",
-     "name_en": "Tang Dao"
+     "name": "Тан-дао «Чёрный дракон»",
+     "name_en": "Tang Dao Black Dragon"
     },
     {
      "id": "2H_Tang_Dao_Damascus",
-     "name": "Тан-дао",
-     "name_en": "Tang Dao"
+     "name": "Тан-дао из дамасской стали",
+     "name_en": "Tang Dao Damascus"
     },
     {
      "id": "1H_Wooden_Club",
@@ -295,11 +297,13 @@
     },
     {
      "id": "Wushu_Spear_Metal",
-     "name": "Wushu Spear"
+     "name": "Копьё для ушу (металлическое)",
+     "name_en": "Wushu Spear Metal"
     },
     {
      "id": "Wushu_Spear_Wooden",
-     "name": "Wushu Spear"
+     "name": "Копьё для ушу (деревянное)",
+     "name_en": "Wushu Spear Wooden"
     },
     {
      "id": "1H_Beam_Dildo",
@@ -332,7 +336,8 @@
     },
     {
      "id": "1H_Little_Spade",
-     "name": "Little Spade"
+     "name": "Заступ",
+     "name_en": "Small Spade"
     },
     {
      "id": "1H_Medieval_Sword",
@@ -355,7 +360,8 @@
     },
     {
      "id": "1H_Pipe_Wrench",
-     "name": "Wrench Pipe"
+     "name": "Трубный ключ",
+     "name_en": "Pipe Wrench"
     },
     {
      "id": "1H_Small_Axe",
@@ -365,7 +371,7 @@
     {
      "id": "1H_Traynors_Axe",
      "name": "Топор Трейнора",
-     "name_en": "Traynor's Axe"
+     "name_en": "Traynor’s Axe"
     },
     {
      "id": "2H_Baseball_Bat_Blaze",
@@ -413,12 +419,13 @@
     },
     {
      "id": "MetalDetector",
-     "name": "Metal Detector"
+     "name": "Metal Detector",
+     "name_en": "Metal Detector"
     },
     {
      "id": "Sledgehammer",
-     "name": "Т — тяж. броня для кузова (лев.)",
-     "name_en": "Sledge Hammer"
+     "name": "Sledgehammer",
+     "name_en": "Sledgehammer"
     },
     {
      "id": "1H_Brass_knuckles",
@@ -430,7 +437,8 @@
     },
     {
      "id": "1H_Improvised_metal_knife",
-     "name": "Самодельный металлический нож"
+     "name": "Металлический нож",
+     "name_en": "Metal Knife"
     },
     {
      "id": "1H_RaymondCruz_Knife",
@@ -442,35 +450,43 @@
     },
     {
      "id": "1H_Wooden_club",
-     "name": "Деревянная дубина"
+     "name": "Деревянная дубина",
+     "name_en": "Wooden Club"
     },
     {
      "id": "1H_Wooden_club_with_spikes",
-     "name": "Дубина с шипами"
+     "name": "Деревянная дубина с гвоздями",
+     "name_en": "Wooden Club With Nails"
     },
     {
      "id": "1H_Wooden_club_with_wire",
-     "name": "Дубина с проволокой"
+     "name": "Дубина с проволокой",
+     "name_en": "Wire Wooden Club"
     },
     {
      "id": "2H_Baseball_Bat_with_spikes",
-     "name": "Бейсбольная бита с шипами"
+     "name": "Бейсбольная бита с гвоздями",
+     "name_en": "Baseball Bat with Nails"
     },
     {
      "id": "2H_Baseball_Bat_with_wire",
-     "name": "Бейсбольная бита с проволокой"
+     "name": "Бейсбольная бита с проволокой",
+     "name_en": "Wire Baseball Bat"
     },
     {
      "id": "2H_Improvised_metal_shovel",
-     "name": "Самодельная металлическая лопата"
+     "name": "Самодельный металлоискатель",
+     "name_en": "Improvised Metal Shovel"
     },
     {
      "id": "2H_Improvised_shovel",
-     "name": "Самодельная лопата"
+     "name": "Самодельная лопата",
+     "name_en": "Improvised Shovel"
     },
     {
      "id": "2H_La_Hacha_Axe",
-     "name": "Топор \"La Hacha\""
+     "name": "«Эль Топор»",
+     "name_en": "La Hatcha Axe"
     }
    ]
   },
@@ -539,11 +555,13 @@
     },
     {
      "id": "Bundle_Of_Metal_Tips",
-     "name": "Bundle_Of_Metal_Tips"
+     "name": "Bundle_Of_Metal_Tips",
+     "name_en": "Metal Tips"
     },
     {
      "id": "Bundle_Of_Stone_Tips",
-     "name": "Bundle_Of_Stone_Tips"
+     "name": "Каменные наконечники",
+     "name_en": "Stone Tips"
     },
     {
      "id": "Event_Carbon_Arrow",
@@ -552,13 +570,13 @@
     },
     {
      "id": "Explosive_Arrow_Carbon",
-     "name": "Карбоновая взрывная стрела",
-     "name_en": "Carbon Explosive Arrow"
+     "name": "Взрывная карбоновая стрела",
+     "name_en": "Explosive Carbon Arrow"
     },
     {
      "id": "Carbon_Arrow",
      "name": "Карбоновая стрела",
-     "name_en": "Carbon_Arrow"
+     "name_en": "Carbon Arrow"
     },
     {
      "id": "BPC_Recurve_Bow_50",
@@ -601,17 +619,18 @@
     },
     {
      "id": "Dildo_Arrow",
-     "name": "Dildo Arrow"
+     "name": "Деревянная стрела с наконечником-фаллоимитатором",
+     "name_en": "Dildo Wooden Arrow"
     },
     {
      "id": "BP_Ammo_Crossbow_Bolt_Dildo",
-     "name": "Кросс. мотоцикл — щиток (передн.)",
+     "name": "Dildo Crossbow Bolt",
      "name_en": "Dildo Crossbow Bolt"
     },
     {
      "id": "Explosive_Arrow",
-     "name": "Сигнальная ракета (синяя)",
-     "name_en": "Explosive Arrow"
+     "name": "Взрывная деревянная стрела",
+     "name_en": "Explosive Wooden Arrow"
     },
     {
      "id": "BP_Ammo_Crossbow_Bolt_Explosive",
@@ -640,7 +659,7 @@
     },
     {
      "id": "BP_Bow_Improvised_Stabilizer",
-     "name": "«Лайка» — тяж. броня для кузова (лев.)",
+     "name": "Improvised Bow Stabiliser",
      "name_en": "Improvised Bow Stabiliser"
     },
     {
@@ -660,8 +679,8 @@
     },
     {
      "id": "Explosive_Arrow_Metal",
-     "name": "Сандалии на среднем каблуке",
-     "name_en": "Metal Explosive Arrow"
+     "name": "Взрывная металлическая стрела",
+     "name_en": "Explosive Metal Arrow"
     },
     {
      "id": "BP_Ammo_Crossbow_Bolt_WoodenMetalTip",
@@ -708,18 +727,18 @@
     },
     {
      "id": "Wooden_ArrowFeathers",
-     "name": "Деревянная стрела с перьями",
-     "name_en": "Wooden Arrow Feathers"
+     "name": "Деревянная стрела с оперением",
+     "name_en": "Fletched Wooden Arrow"
     },
     {
      "id": "Wooden_ArrowMetalTip",
-     "name": "Стрела с металлическим наконечником",
-     "name_en": "Wooden Arrow Metal Tip"
+     "name": "Деревянная стрела с металлическим наконечником",
+     "name_en": "Metal Tip Wooden Arrow"
     },
     {
      "id": "Wooden_ArrowStoneTip",
-     "name": "Стрела с каменным наконечником",
-     "name_en": "Wooden Arrow Stone Tip"
+     "name": "Деревянная стрела с каменным наконечником",
+     "name_en": "Stone Tip Wooden Arrow"
     },
     {
      "id": "BP_Ammo_Crossbow_Bolt_Wooden",
@@ -729,7 +748,7 @@
     {
      "id": "Improvised_Bow_25",
      "name": "Самодельный лук 25#",
-     "name_en": "Improvised Bow 25"
+     "name_en": "Improvised Bow 25#"
     },
     {
      "id": "Manchu_Bow_50",
@@ -739,7 +758,7 @@
     {
      "id": "Recurve_Bow_50",
      "name": "Кобра 50#",
-     "name_en": "Cobra 50"
+     "name_en": "Cobra 50#"
     },
     {
      "id": "Takedown_Bow",
@@ -748,8 +767,8 @@
     },
     {
      "id": "Weapon_BlackHawk_Crossbow",
-     "name": "Арбалет «Чёрный ястреб»",
-     "name_en": "BlackHawk Crossbow"
+     "name": "Прицел арбалета «Чёрный ястреб»",
+     "name_en": "Blackhawk Crossbow"
     },
     {
      "id": "Weapon_Improvised_AutoCrossbow",
@@ -816,7 +835,7 @@
     },
     {
      "id": "Weapon_BayRifferBlock21",
-     "name": "Block 21 Бэя Риффера",
+     "name": "Block 21 Бэя Риффера",
      "name_en": "Bay Riffer Block21"
     },
     {
@@ -826,7 +845,8 @@
     },
     {
      "id": "Weapon_DEagle_50",
-     "name": "Desert Eagle .50"
+     "name": "Desert Eagle .50",
+     "name_en": "DEagle 50"
     },
     {
      "id": "Weapon_DEagle_50Gold",
@@ -839,15 +859,18 @@
     },
     {
      "id": "Weapon_HS9",
-     "name": "HS9"
+     "name": "HS9",
+     "name_en": "HS-9"
     },
     {
      "id": "Weapon_Improvised_Handgun",
-     "name": "Improvised Handgun .50"
+     "name": "Самодельный пистолет",
+     "name_en": "Improvised Handgun"
     },
     {
      "id": "Weapon_Judge44",
-     "name": "Judge 44"
+     "name": "Judge 44",
+     "name_en": "Judge 44"
     },
     {
      "id": "Weapon_Krueger",
@@ -875,7 +898,8 @@
     },
     {
      "id": "Weapon_M9",
-     "name": "Tec01 M9 Black"
+     "name": "Tec01 M9 Black",
+     "name_en": "TEC01 M9"
     },
     {
      "id": "Weapon_M9_Silver",
@@ -926,7 +950,7 @@
     },
     {
      "id": "BP_Magazine_Block21",
-     "name": "Магазин для Block 21",
+     "name": "Магазин для Block 21",
      "name_en": "Block 21 Magazine"
     },
     {
@@ -995,7 +1019,8 @@
     },
     {
      "id": "Magazine_AS_Val",
-     "name": "AS Val Magazine"
+     "name": "Магазин для АС «Вал» / ВСС",
+     "name_en": "AS Val/VSS Magazine"
     },
     {
      "id": "Magazine_AutoCrossbow",
@@ -1013,12 +1038,13 @@
     },
     {
      "id": "Magazine_Block21",
-     "name": "Магазин для Block 21",
+     "name": "Магазин для Block 21",
      "name_en": "Block 21 Magazine"
     },
     {
      "id": "Magazine_CarbonHunter",
-     "name": "Carbon Hunter Magazine"
+     "name": "Carbon Hunter Magazine",
+     "name_en": "Carbon Hunter Magazine"
     },
     {
      "id": "Magazine_Clip_SKS",
@@ -1026,7 +1052,8 @@
     },
     {
      "id": "Magazine_DEagle_50",
-     "name": "Desert Eagle .50mm Magazine"
+     "name": "Desert Eagle .50mm Magazine",
+     "name_en": "DEagle .50 Magazine"
     },
     {
      "id": "Magazine_HS9",
@@ -1080,7 +1107,7 @@
     {
      "id": "Magazine_RPK",
      "name": "Сексуальные короткие шорты",
-     "name_en": "RPK-74 Magazine"
+     "name_en": "RPK Magazine"
     },
     {
      "id": "Magazine_SCAR_DMR",
@@ -1089,11 +1116,13 @@
     },
     {
      "id": "Magazine_SF19",
-     "name": "SF19 Magazine"
+     "name": "Магазин для HS SF19",
+     "name_en": "HS SF19 Magazine"
     },
     {
      "id": "Magazine_SVD_Dragunov",
-     "name": "SVD Magazine"
+     "name": "SVD Magazine",
+     "name_en": "SVD Magazine"
     },
     {
      "id": "Magazine_TommyGun",
@@ -1102,13 +1131,13 @@
     },
     {
      "id": "Magazine_UMP45",
-     "name": "«Волксваген» — дверь (задн. лев.)",
+     "name": "UMP 45 Magazine",
      "name_en": "UMP 45 Magazine"
     },
     {
      "id": "Magazine_VHS2",
-     "name": "«Волксваген» — дверь (пер. лев.)",
-     "name_en": "VHS2 Magazine"
+     "name": "VHS Magazine",
+     "name_en": "VHS Magazine"
     }
    ]
   },
@@ -1125,23 +1154,28 @@
     },
     {
      "id": "12_Gauge_Birdshot",
-     "name": "20x 12 Gauge Birdshot Cartridge"
+     "name": "Патрон мелкой дроби 12-го калибра",
+     "name_en": "12 Gauge Birdshot Cartridge"
     },
     {
      "id": "12_Gauge_Birdshot_Ammobox",
-     "name": "12_Gauge_Birdshot_Ammobox"
+     "name": "Коробка патронов мелкой дроби для ружья",
+     "name_en": "Birdshot Shotgun Ammunition Box"
     },
     {
      "id": "12_Gauge_Buckshot",
-     "name": "20x 12 Gauge Buckshot Cartridge"
+     "name": "Патрон крупной дроби 12-го калибра",
+     "name_en": "12 Gauge Buckshot Cartridge"
     },
     {
      "id": "12_Gauge_Buckshot_Ammobox",
-     "name": "12_Gauge_Buckshot_Ammobox"
+     "name": "Коробка патронов крупной дроби для ружья",
+     "name_en": "Buckshot Shotgun Ammunition Box"
     },
     {
      "id": "12_Gauge_Buckshot_Crafted",
-     "name": "20x 12 Gauge Buckshot Crafted Cartridge"
+     "name": "Патрон крупной дроби 12-го калибра (самодельный)",
+     "name_en": "12 Gauge Buckshot Improvised Cartridge"
     },
     {
      "id": "12_Gauge_FlareCartridge_5pcs",
@@ -1154,7 +1188,8 @@
     },
     {
      "id": "12_Gauge_Slug_Ammobox",
-     "name": "12_Gauge_Slug_Ammobox"
+     "name": "Коробка патронов «жакан» для ружья",
+     "name_en": "Slugs Shotgun Ammunition Box"
     },
     {
      "id": "Ammo_Crossbow_Bolt_C",
@@ -1167,13 +1202,13 @@
     },
     {
      "id": "Ammo_Crossbow_Bolt_Dildo",
-     "name": "Кросс. мотоцикл — щиток (передн.)",
-     "name_en": "Dildo Crossbow Bolt"
+     "name": "Dildo Wooden Crossbow Bolt",
+     "name_en": "Dildo Wooden Crossbow Bolt"
     },
     {
      "id": "Ammo_Crossbow_Bolt_Explosive",
-     "name": "Сигнальная ракета (зелёная)",
-     "name_en": "Explosive Crossbow Bolt"
+     "name": "Взрывной деревянный арбалетный болт",
+     "name_en": "Explosive Wooden Crossbow Bolt"
     },
     {
      "id": "Ammo_Crossbow_Bolt_Metal",
@@ -1238,7 +1273,7 @@
     },
     {
      "id": "Cal45_AmmoboxClosed",
-     "name": "Коробка патронов .45 ACP",
+     "name": "Коробка патронов .45 ACP",
      "name_en": ".45 ACP Ammunition Box"
     },
     {
@@ -1255,34 +1290,38 @@
     },
     {
      "id": "Cal7_62x39mm_Ammobox_Closed",
-     "name": "Коробка патронов 7,62x39 мм",
+     "name": "Коробка патронов 7,62x39 мм",
      "name_en": "7.62x39mm Ammunition Box"
     },
     {
      "id": "Cal7_62x54mmR_AmmoboxClosed_Closed",
-     "name": "Коробка патронов 7,62x54 мм R",
+     "name": "Коробка патронов 7,62x54 мм R",
      "name_en": "7.62x54mmR Ammunition Box"
     },
     {
      "id": "Cal_22",
-     "name": "20x .22 Bullet"
+     "name": "Патрон .22",
+     "name_en": ".22 Ammo"
     },
     {
      "id": "Cal_22_Ammobox",
-     "name": "Кошмар мясника",
-     "name_en": "Cal_22_Ammobox"
+     "name": "Коробка патронов .22",
+     "name_en": ".22 Ammunition Box"
     },
     {
      "id": "Cal_22_Ammobox_TR",
-     "name": "20x .22 TR Ammobox"
+     "name": "Коробка трассирующих патронов .22",
+     "name_en": ".22 Tracer Ammunition Box"
     },
     {
      "id": "Cal_22_Crafted",
-     "name": "20x .22 CR Bullet"
+     "name": "Патрон .22 (самодельный)",
+     "name_en": ".22 Crafted Ammo"
     },
     {
      "id": "Cal_22_TR",
-     "name": "20x .22 TR Bullet"
+     "name": "Патрон .22 (трассирующий)",
+     "name_en": ".22 Tracer Ammo"
     },
     {
      "id": "Cal_30-06",
@@ -1322,47 +1361,58 @@
     },
     {
      "id": "Cal_308",
-     "name": "20x .308 Bullet"
+     "name": "Патрон .308",
+     "name_en": ".308 Ammo"
     },
     {
      "id": "Cal_308_Ammobox",
-     "name": "20x .308 Ammobox"
+     "name": "Коробка патронов .308",
+     "name_en": ".308 Ammunition Box"
     },
     {
      "id": "Cal_308_Ammobox_AP",
-     "name": "20x .308 AP Ammobox"
+     "name": "Коробка бронебойных патронов .308",
+     "name_en": ".308 AP Ammunition Box"
     },
     {
      "id": "Cal_308_Ammobox_TR",
-     "name": "20x .308 TR Ammobox"
+     "name": "Коробка трассирующих патронов .308",
+     "name_en": ".308 TR Ammunition Box"
     },
     {
      "id": "Cal_308_AP",
-     "name": "20x .308 AP Bullet"
+     "name": "Патрон .308 (бронебойный)",
+     "name_en": ".308 AP Ammo"
     },
     {
      "id": "Cal_308_AP_CR",
-     "name": "20x .308 AP CR Bullet"
+     "name": "Патрон .308 (бронебойный, самодельный)",
+     "name_en": ".308 AP Crafted Ammo"
     },
     {
      "id": "Cal_308_Crafted",
-     "name": "20x .308 CR Bullet"
+     "name": "Патрон .308 (самодельный)",
+     "name_en": ".308 Crafted Ammo"
     },
     {
      "id": "Cal_308_TR",
-     "name": "20x .308 TR Bullet"
+     "name": "Патрон .308 (трассирующий)",
+     "name_en": ".308 TR Ammo"
     },
     {
      "id": "Cal_338",
-     "name": "20x .338 Bullet"
+     "name": "Патрон .338",
+     "name_en": ".338 Ammo"
     },
     {
      "id": "Cal_338_Ammobox",
-     "name": "20x .338 Ammobox"
+     "name": "Коробка патронов .338",
+     "name_en": ".338 Ammunition Box"
     },
     {
      "id": "Cal_338_Ammobox_AP",
-     "name": "20x .338 AP Ammobox"
+     "name": "Коробка бронебойных патронов .338",
+     "name_en": ".338 AP Ammunition Box"
     },
     {
      "id": "Cal_338_Ammobox_TR",
@@ -1370,19 +1420,23 @@
     },
     {
      "id": "Cal_338_AP",
-     "name": "20x .338 AP Bullet"
+     "name": "Патрон .338 (бронебойный)",
+     "name_en": ".338 AP Ammo"
     },
     {
      "id": "Cal_338_AP_CR",
-     "name": "20x .338 AP CR Bullet"
+     "name": "Патрон .338 (бронебойный, самодельный)",
+     "name_en": ".338 AP Crafted Ammo"
     },
     {
      "id": "Cal_338_Crafted",
-     "name": "20x .338 CR Bullet"
+     "name": "Патрон .338 (самодельный)",
+     "name_en": ".338 Crafted Ammo"
     },
     {
      "id": "Cal_338_TR",
-     "name": "20x .338 TR Bullet"
+     "name": "Патрон .338 (трассирующий)",
+     "name_en": ".338 TR Ammo"
     },
     {
      "id": "Cal_357_1pcs",
@@ -1394,72 +1448,88 @@
     },
     {
      "id": "Cal_357_Ammobox",
-     "name": "30x .357 Ammobox"
+     "name": "Коробка патронов .357",
+     "name_en": ".357 Ammunition Box"
     },
     {
      "id": "Cal_357_Ammobox_AP",
-     "name": "30x .357 AP Ammobox"
+     "name": "Коробка бронебойных патронов .357",
+     "name_en": ".357 Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_357_Ammobox_Closed",
-     "name": "Коробка патронов .357",
+     "name": "Коробка патронов .357",
      "name_en": ".357 Ammunition Box"
     },
     {
      "id": "Cal_357_Ammobox_TR",
-     "name": "30x .357 TR Ammobox"
+     "name": "Коробка трассирующих патронов .357",
+     "name_en": ".357 Tracer Ammunition Box"
     },
     {
      "id": "Cal_357_Viper",
-     "name": "20x .357 Bullet"
+     "name": "Патрон .357",
+     "name_en": ".357 Ammo"
     },
     {
      "id": "Cal_357_Viper_AP",
-     "name": "20x .357 AP Bullet"
+     "name": "Патрон .357 (бронебойный)",
+     "name_en": ".357 AP Ammo"
     },
     {
      "id": "Cal_357_Viper_AP_CR",
-     "name": "20x .357 AP CR Bullet"
+     "name": "Патрон .357 (бронебойный, самодельный)",
+     "name_en": ".357 AP Crafted Ammo"
     },
     {
      "id": "Cal_357_Viper_Crafted",
-     "name": "20x .357 CR Bullet"
+     "name": "Патрон .357 (самодельный)",
+     "name_en": ".357 Crafted Ammo"
     },
     {
      "id": "Cal_357_Viper_TR",
-     "name": "20x .357 TR Bullet"
+     "name": "Патрон .357 (трассирующий)",
+     "name_en": ".357 Tracer Ammo"
     },
     {
      "id": "Cal_38",
-     "name": "20x .38 Bullet"
+     "name": "Патрон .38",
+     "name_en": ".38 Ammo"
     },
     {
      "id": "Cal_38_Ammobox",
-     "name": "30x .38 Ammobox"
+     "name": "Коробка патронов .38",
+     "name_en": ".38 Ammunition Box"
     },
     {
      "id": "Cal_38_Ammobox_AP",
-     "name": "30x .38 AP Ammobox"
+     "name": "Коробка бронебойных патронов .38",
+     "name_en": ".38 Ammunition Box Armor Piercing Rounds"
     },
     {
      "id": "Cal_38_Ammobox_TR",
-     "name": "30x .38 TR Ammobox"
+     "name": "Коробка трассирующих патронов .38",
+     "name_en": ".38 Ammunition Box Tracer Rounds"
     },
     {
      "id": "Cal_38_AP",
-     "name": "20x .38 AP Bullet"
+     "name": "Патрон .38 (бронебойный)",
+     "name_en": ".38 AP Ammo"
     },
     {
      "id": "Cal_38_AP_CR",
-     "name": "20x .38 AP CR Bullet"
+     "name": "Патрон .38 (бронебойный, самодельный)",
+     "name_en": ".38 AP Crafted Ammo"
     },
     {
      "id": "Cal_38_Crafted",
-     "name": "20x .38 CR Bullet"
+     "name": "Патрон .38 (самодельный)",
+     "name_en": ".38 Crafted Ammo"
     },
     {
      "id": "Cal_38_TR",
-     "name": "20x .38 TR Bullet"
+     "name": "Патрон .38 (трассирующий)",
+     "name_en": ".38 TR Ammo"
     },
     {
      "id": "Cal_40_OG-7V",
@@ -1473,24 +1543,28 @@
     },
     {
      "id": "Cal_40x46",
-     "name": "Граната 40x46",
+     "name": "Граната 40x46",
      "name_en": "40x46 Grenade"
     },
     {
      "id": "Cal_44_Viper",
-     "name": "20x .44 Bullet"
+     "name": "Патрон .44",
+     "name_en": ".44 Ammo"
     },
     {
      "id": "Cal_44_Viper_Ammobox",
-     "name": "30x .44 Ammobox"
+     "name": "Коробка патронов .44",
+     "name_en": ".44 Ammunition Box"
     },
     {
      "id": "Cal_44_Viper_Ammobox_AP",
-     "name": "30x .44 AP Ammobox"
+     "name": "Коробка бронебойных патронов .44",
+     "name_en": ".44 Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_44_Viper_Ammobox_TR",
-     "name": "30x .44 TR Ammobox"
+     "name": "Коробка трассирующих патронов .44",
+     "name_en": ".44 Tracer Ammunition Box"
     },
     {
      "id": "Cal_44_Viper_AP",
@@ -1498,19 +1572,23 @@
     },
     {
      "id": "Cal_44_Viper_AP_CR",
-     "name": "20x .44 AP CR Bullet"
+     "name": "Патрон .44 (бронебойный, самодельный)",
+     "name_en": ".44 AP Crafted Ammo"
     },
     {
      "id": "Cal_44_Viper_Crafted",
-     "name": "20x .44 CR Bullet"
+     "name": "Патрон .44 (самодельный)",
+     "name_en": ".44 Crafted Ammo"
     },
     {
      "id": "Cal_44_Viper_TR",
-     "name": "20x .44 TR Bullet"
+     "name": "Патрон .44 (трассирующий)",
+     "name_en": ".44 Tracer Ammo"
     },
     {
      "id": "Cal_45",
-     "name": "30x .45 Bullet"
+     "name": "Патрон .45 ACP",
+     "name_en": ".45 ACP Ammo"
     },
     {
      "id": "Cal_45_Ammobox",
@@ -1522,11 +1600,13 @@
     },
     {
      "id": "Cal_45_AP",
-     "name": "30x .45 AP Bullet"
+     "name": "Патрон .45 ACP (бронебойный)",
+     "name_en": ".45 ACP Armor Piercing Ammo"
     },
     {
      "id": "Cal_45_AP_Ammobox",
-     "name": "30x .45 AP Ammobox"
+     "name": "Коробка бронебойных патронов .45 ACP",
+     "name_en": ".45 ACP Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_45_AP_CR",
@@ -1534,46 +1614,53 @@
     },
     {
      "id": "Cal_45_Crafted",
-     "name": "30x .45 CR Bullet"
+     "name": "Патрон .45 ACP (самодельный)",
+     "name_en": ".45 ACP Crafted Ammo"
     },
     {
      "id": "Cal_45_TR",
-     "name": "30x .45 TR Bullet"
+     "name": "Патрон .45 ACP (трассирующий)",
+     "name_en": ".45 ACP Tracer Ammo"
     },
     {
      "id": "Cal_50_AE",
-     "name": "20x .50 AE Bullet"
+     "name": "Патрон .50 АЕ",
+     "name_en": ".50 AE Ammo"
     },
     {
      "id": "Cal_50_AE_1pcs",
-     "name": ".50 АЕ",
+     "name": ".50 АЕ",
      "name_en": ".50 AE"
     },
     {
      "id": "Cal_50_AE_5pcs",
-     "name": ".50 АЕ",
+     "name": ".50 АЕ",
      "name_en": ".50 AE"
     },
     {
      "id": "Cal_50_AE_Ammobox",
-     "name": "30x .50 AE Ammobox"
+     "name": "Коробка патронов .50 АЕ",
+     "name_en": ".50 AE Ammunition Box"
     },
     {
      "id": "Cal_50_AE_Ammobox_Closed",
-     "name": "Коробка патронов .50 АЕ",
+     "name": "Коробка патронов .50 АЕ",
      "name_en": ".50 AE Ammunition Box"
     },
     {
      "id": "Cal_50_AE_Ammobox_TR",
-     "name": "30x .50 AE TR Ammobox"
+     "name": "Коробка трассирующих патронов .50 АЕ",
+     "name_en": ".50 AE Tracer Ammunition Box"
     },
     {
      "id": "Cal_50_AE_AP",
-     "name": "20x .50 AE AP Bullet"
+     "name": "Патрон .50 АЕ (бронебойный)",
+     "name_en": ".50 AE AP Ammo"
     },
     {
      "id": "Cal_50_AE_AP_Ammobox",
-     "name": "30x .50 AE AP Ammobox"
+     "name": "Коробка бронебойных патронов .50 АЕ",
+     "name_en": ".50 AE Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_50_AE_AP_CR",
@@ -1581,16 +1668,18 @@
     },
     {
      "id": "Cal_50_AE_Crafted",
-     "name": "20x .50 AE CR Bullet"
+     "name": "Патрон .50 АЕ (самодельный)",
+     "name_en": ".50 AE Crafted Ammo"
     },
     {
      "id": "Cal_50_AE_TR",
-     "name": "20x .50 AE TR Bullet"
+     "name": "Патрон .50 АЕ (трассирующий)",
+     "name_en": ".50 AE Tracer Ammo"
     },
     {
      "id": "Cal_50BMG",
-     "name": ".50 BMG",
-     "name_en": ".50 BMG"
+     "name": "Патрон .50 BMG",
+     "name_en": ".50 BMG Ammo"
     },
     {
      "id": "Cal_50BMG_Ammobox",
@@ -1602,12 +1691,13 @@
     },
     {
      "id": "Cal_50BMG_AmmoboxClosed",
-     "name": "Коробка патронов .50 BMG",
+     "name": "Коробка патронов .50 BMG",
      "name_en": ".50 BMG Ammunition Box"
     },
     {
      "id": "Cal_50BMG_AP",
-     "name": "5x .50 BMG AP Bullet"
+     "name": "Патрон .50 BMG (бронебойный)",
+     "name_en": ".50 BMG AP Ammo"
     },
     {
      "id": "Cal_50BMG_AP_Ammobox",
@@ -1619,11 +1709,13 @@
     },
     {
      "id": "Cal_50BMG_Crafted",
-     "name": "5x .50 BMG CR Bullet"
+     "name": "Патрон .50 BMG (самодельный)",
+     "name_en": ".50 BMG Crafted Ammo"
     },
     {
      "id": "Cal_50BMG_TR",
-     "name": "5x .50 BMG TR Bullet"
+     "name": "Патрон .50 BMG (трассирующий)",
+     "name_en": ".50 BMG Tracer Ammo"
     },
     {
      "id": "Cal_5_45x39_5_pcs",
@@ -1631,7 +1723,7 @@
     },
     {
      "id": "Cal_5_45x39_AmmoboxClosed",
-     "name": "Коробка патронов 5,45x39 мм",
+     "name": "Коробка патронов 5,45x39 мм",
      "name_en": "5.45x39mm Ammunition Box"
     },
     {
@@ -1644,39 +1736,47 @@
     },
     {
      "id": "Cal_5_45x39mm",
-     "name": "30x 5.45x39mm Bullet"
+     "name": "Патрон 5,45x39 мм",
+     "name_en": "5.45x39mm Ammo"
     },
     {
      "id": "Cal_5_45x39mm_Ammobox",
-     "name": "Cal_5_45x39mm_Ammobox"
+     "name": "Коробка патронов 5,45x39 мм",
+     "name_en": "5.45x39mm Ammunition Box"
     },
     {
      "id": "Cal_5_45x39mm_Ammobox_TR",
-     "name": "30x 5.45x39mm TR Ammobox"
+     "name": "Коробка трассирующих патронов 5,45x39 мм",
+     "name_en": "5.45x39mm Tracer Ammunition Box"
     },
     {
      "id": "Cal_5_45x39mm_AP",
-     "name": "30x 5.45x39mm AP Bullet"
+     "name": "Патрон 5,45x39 мм (бронебойный)",
+     "name_en": "5.45x39mm AP Ammo"
     },
     {
      "id": "Cal_5_45x39mm_AP_Ammobox",
-     "name": "30x 5.45x39mm AP Ammobox"
+     "name": "Коробка бронебойных патронов 5,45x39 мм",
+     "name_en": "5.45x39mm Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_5_45x39mm_AP_CR",
-     "name": "30x 5.45x39mm AP CR Bullet"
+     "name": "Патрон 5,45x39 мм (бронебойный, самодельный)",
+     "name_en": "5.45x39mm AP Crafted Ammo"
     },
     {
      "id": "Cal_5_45x39mm_Crafted",
-     "name": "30x 5.45x39mm CR Bullet"
+     "name": "Патрон 5,45x39 мм (самодельный)",
+     "name_en": "5.45x39mm Crafted Ammo"
     },
     {
      "id": "Cal_5_45x39mm_TR",
-     "name": "30x 5.45x39mm TR Bullet"
+     "name": "Патрон 5,45x39 мм (трассирующий)",
+     "name_en": "5.45x39mm Tracer Ammo"
     },
     {
      "id": "Cal_5_56_CammoboxClosed",
-     "name": "Коробка патронов 5,56x45 мм",
+     "name": "Коробка патронов 5,56x45 мм",
      "name_en": "5.56x45mm Ammunition Box"
     },
     {
@@ -1693,71 +1793,88 @@
     },
     {
      "id": "Cal_5_56x45mm",
-     "name": "30x 5.56x45mm Bullet"
+     "name": "Патрон 5,56x45 мм",
+     "name_en": "5.56x45mm Ammo"
     },
     {
      "id": "Cal_5_56x45mm_Ammobox",
-     "name": "Cal_5_56x45mm_Ammobox"
+     "name": "Коробка патронов 5,56x45 мм",
+     "name_en": "5.56x45mm Ammunition Box"
     },
     {
      "id": "Cal_5_56x45mm_Ammobox_TR",
-     "name": "30x 5.56x45mm TR Ammobox"
+     "name": "Коробка трассирующих патронов 5,56x45 мм",
+     "name_en": "5.56x45mm Tracer Ammunition Box"
     },
     {
      "id": "Cal_5_56x45mm_AP",
-     "name": "30x 5.56x45mm AP Bullet"
+     "name": "Патрон 5,56x45 мм (бронебойный)",
+     "name_en": "5.56x45mm AP Ammo"
     },
     {
      "id": "Cal_5_56x45mm_AP_Ammobox",
-     "name": "30x 5.56x45mm AP Ammobox"
+     "name": "Коробка бронебойных патронов 5,56x45 мм",
+     "name_en": "5.56x45mm Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_5_56x45mm_AP_CR",
-     "name": "30x 5.56x45mm AP CR Bullet"
+     "name": "Патрон 5,56x45 мм (бронебойный, самодельный)",
+     "name_en": "5.56x45mm AP Crafted Ammo"
     },
     {
      "id": "Cal_5_56x45mm_Crafted",
-     "name": "30x 5.56x45mm CR Bullet"
+     "name": "Патрон 5,56x45 мм (самодельный)",
+     "name_en": "5.56x45mm Crafted Ammo"
     },
     {
      "id": "Cal_5_56x45mm_TR",
-     "name": "30x 5.56x45mm TR Bullet"
+     "name": "Патрон 5,56x45 мм (трассирующий)",
+     "name_en": "5.56x45mm Tracer Ammo"
     },
     {
      "id": "Cal_7_62x39mm",
-     "name": "30x 7.62x39mm Bullet"
+     "name": "Патрон 7,62x39 мм",
+     "name_en": "7.62x39mm Ammo"
     },
     {
      "id": "Cal_7_62x39mm_Ammobox",
-     "name": "Cal_7_62x39mm_Ammobox"
+     "name": "Коробка патронов 7,62x39 мм",
+     "name_en": "7.62x39mm Ammunition Box"
     },
     {
      "id": "Cal_7_62x39mm_Ammobox_TR",
-     "name": "30x 7.62x39mm TR Ammobox"
+     "name": "Коробка трассирующих патронов 7,62x39 мм",
+     "name_en": "7.62x39mm Tracer Ammunition Box"
     },
     {
      "id": "Cal_7_62x39mm_AP",
-     "name": "30x 7.62x39mm AP Bullet"
+     "name": "Патрон 7,62x39 мм (бронебойный)",
+     "name_en": "7.62x39mm AP Ammo"
     },
     {
      "id": "Cal_7_62x39mm_AP_Ammobox",
-     "name": "30x 7.62x39mm AP Ammobox"
+     "name": "Коробка бронебойных патронов 7,62x39 мм",
+     "name_en": "7.62x39mm Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_7_62x39mm_AP_CR",
-     "name": "30x 7.62x39mm AP CR Bullet"
+     "name": "Патрон 7,62x39 мм (бронебойный, самодельный)",
+     "name_en": "7.62x39mm AP Crafted Ammo"
     },
     {
      "id": "Cal_7_62x39mm_Crafted",
-     "name": "30x 7.62x39mm CR Bullet"
+     "name": "Патрон 7,62x39 мм (самодельный)",
+     "name_en": "7.62x39mm Crafted Ammo"
     },
     {
      "id": "Cal_7_62x39mm_TR",
-     "name": "30x 7.62x39mm TR Bullet"
+     "name": "Патрон 7,62x39 мм (трассирующий)",
+     "name_en": "7.62x39mm Tracer Ammo"
     },
     {
      "id": "Cal_7_62x54mmR",
-     "name": "7.62x54mmR Bullet"
+     "name": "Патрон 7,62x54 мм R",
+     "name_en": "7.62x54mmR Ammo"
     },
     {
      "id": "Cal_7_62x54mmR_5_Bullets",
@@ -1765,78 +1882,93 @@
     },
     {
      "id": "Cal_7_62x54mmR_Ammobox",
-     "name": "Cal_7_62x54mmR_Ammobox"
+     "name": "Коробка патронов 7,62x54 мм R",
+     "name_en": "7.62x54mmR Ammunition Box"
     },
     {
      "id": "Cal_7_62x54mmR_Ammobox_TR",
-     "name": "20x 7.62x54mmR TR Ammobox"
+     "name": "Коробка трассирующих патронов 7,62x54 мм R",
+     "name_en": "7.62x54mmR Tracer Ammunition Box"
     },
     {
      "id": "Cal_7_62x54mmR_AP",
-     "name": "20x 7.62x54mmR AP Bullet"
+     "name": "Патрон 7,62x54 мм R (бронебойный)",
+     "name_en": "7.62x54mmR AP Ammo"
     },
     {
      "id": "Cal_7_62x54mmR_AP_Ammobox",
-     "name": "20x 7.62x54mmR AP Ammobox"
+     "name": "Коробка бронебойных патронов 7,62x54 мм R",
+     "name_en": "7.62x54mmR Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_7_62x54mmR_AP_CR",
-     "name": "20x 7.62x54mmR AP CR Bullet"
+     "name": "Патрон 7,62x54 мм R (бронебойный, самодельный)",
+     "name_en": "7.62x54mmR AP Crafted Ammo"
     },
     {
      "id": "Cal_7_62x54mmR_Crafted",
-     "name": "20x 7.62x54mmR CR Bullet"
+     "name": "Патрон 7,62x54 мм R (самодельный)",
+     "name_en": "7.62x54mmR Crafted Ammo"
     },
     {
      "id": "Cal_7_62x54mmR_TR",
-     "name": "20x 7.62x54mmR TR Bullet"
+     "name": "Патрон 7,62x54 мм R (трассирующий)",
+     "name_en": "7.62x54mmR Tracer Ammo"
     },
     {
      "id": "Cal_7_92x57mm",
-     "name": "7,92x57 мм",
-     "name_en": "7.92x57mm"
+     "name": "Патрон 7,92x57 мм",
+     "name_en": "7.92x57mm Ammo"
     },
     {
      "id": "Cal_7_92x57mm_5_Bullets",
-     "name": "7,92x57 мм",
+     "name": "7,92x57 мм",
      "name_en": "7.92x57mm"
     },
     {
      "id": "Cal_7_92x57mm_Ammobox",
-     "name": "Cal_7_92x57mm_Ammobox"
+     "name": "Коробка патронов 7,92x57 мм",
+     "name_en": "7.92x57mm Ammunition Box"
     },
     {
      "id": "Cal_7_92x57mm_Ammobox_TR",
-     "name": "20x 7.92x57mm TR Ammobox"
+     "name": "Коробка трассирующих патронов 7,92x57 мм",
+     "name_en": "7.92x57mm Tracer Ammunition Box"
     },
     {
      "id": "Cal_7_92x57mm_AmmoboxClosed",
-     "name": "Коробка патронов 7,92x57 мм",
+     "name": "Коробка патронов 7,92x57 мм",
      "name_en": "7.92x57mm Ammunition Box"
     },
     {
      "id": "Cal_7_92x57mm_AP",
-     "name": "20x 7.92x57mm AP Bullet"
+     "name": "Патрон 7,92x57 мм (бронебойный)",
+     "name_en": "7.92x57mm AP Ammo"
     },
     {
      "id": "Cal_7_92x57mm_AP_Ammobox",
-     "name": "20x 7.92x57mm AP Ammobox"
+     "name": "Коробка бронебойных патронов 7,92x57 мм",
+     "name_en": "7.92x57mm Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_7_92x57mm_AP_CR",
-     "name": "20x 7.92x57mm AP CR Bullet"
+     "name": "Патрон 7,92x57 мм (бронебойный, самодельный)",
+     "name_en": "7.92x57mm AP Crafted Ammo"
     },
     {
      "id": "Cal_7_92x57mm_Crafted",
-     "name": "20x 7.92x57mm CR Bullet"
+     "name": "Патрон 7,92x57 мм (самодельный)",
+     "name_en": "7.92x57mm Crafted Ammo"
     },
     {
      "id": "Cal_7_92x57mm_TR",
-     "name": "20x 7.92x57mm TR Bullet"
+     "name": "Патрон 7,92x57 мм (трассирующий)",
+     "name_en": "7.92x57mm Tracer Ammo"
     },
     {
      "id": "Cal_9mm",
-     "name": "9mm Bullet"
+     "name": "Патрон 9 мм",
+     "name_en": "9mm Ammo"
     },
     {
      "id": "Cal_9mm_5_Bullets",
@@ -1844,11 +1976,13 @@
     },
     {
      "id": "Cal_9mm_Ammobox",
-     "name": "Cal_9mm_Ammobox"
+     "name": "Коробка патронов 9 мм",
+     "name_en": "9mm Ammunition Box"
     },
     {
      "id": "Cal_9mm_Ammobox_TR",
-     "name": "30x 9mm TR Ammobox"
+     "name": "Коробка трассирующих патронов 9 мм",
+     "name_en": "9mm Tracer Ammunition Box"
     },
     {
      "id": "Cal_9mm_AmmoboxClosed",
@@ -1860,27 +1994,33 @@
     },
     {
      "id": "Cal_9mm_AP",
-     "name": "20x 9mm AP Bullet"
+     "name": "Патрон 9 мм (бронебойный)",
+     "name_en": "9mm AP Ammo"
     },
     {
      "id": "Cal_9mm_AP_Ammobox",
-     "name": "Cal_9mm_AP_Ammobox"
+     "name": "Коробка бронебойных патронов 9 мм",
+     "name_en": "9mm Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_9mm_AP_CR",
-     "name": "20x 9mm AP CR Bullet"
+     "name": "Патрон 9 мм (бронебойный, самодельный)",
+     "name_en": "9mm AP Crafted Ammo"
     },
     {
      "id": "Cal_9mm_Crafted",
-     "name": "20x 9mm CR Bullet"
+     "name": "Патрон 9 мм (самодельный)",
+     "name_en": "9mm Crafted Ammo"
     },
     {
      "id": "Cal_9mm_TR",
-     "name": "20x 9mm TR Bullet"
+     "name": "Патрон 9 мм (трассирующий)",
+     "name_en": "9mm Tracer Ammo"
     },
     {
      "id": "Cal_9x39mm",
-     "name": "9x39mm Bullet"
+     "name": "Патрон 9x39 мм",
+     "name_en": "9x39mm Ammo"
     },
     {
      "id": "Cal_9x39mm_5_Bullets",
@@ -1888,41 +2028,48 @@
     },
     {
      "id": "Cal_9x39mm_Ammobox",
-     "name": "Cal_9x39mm_Ammobox"
+     "name": "Коробка патронов 9x39 мм",
+     "name_en": "9x39mm Ammunition Box"
     },
     {
      "id": "Cal_9x39mm_Ammobox_TR",
-     "name": "30x 9x39mm TR Ammobox"
+     "name": "Коробка трассирующих патронов 9x39 мм",
+     "name_en": "9x39mm Tracer Ammunition Box"
     },
     {
      "id": "Cal_9x39mm_AmmoboxClosed",
-     "name": "Коробка патронов 9x39 мм",
+     "name": "Коробка патронов 9x39 мм",
      "name_en": "9x39mm Ammunition Box"
     },
     {
      "id": "Cal_9x39mm_AP",
-     "name": "30x 9x39mm AP Bullet"
+     "name": "Патрон 9x39 мм (бронебойный)",
+     "name_en": "9x39mm AP Ammo"
     },
     {
      "id": "Cal_9x39mm_AP_Ammobox",
-     "name": "30x 9x39mm AP Ammobox"
+     "name": "Коробка бронебойных патронов 9x39 мм",
+     "name_en": "9x39mm Armor Piercing Ammunition Box"
     },
     {
      "id": "Cal_9x39mm_AP_CR",
-     "name": "30x 9x39mm AP CR Bullet"
+     "name": "Патрон 9x39 мм (бронебойный, самодельный)",
+     "name_en": "9x39mm AP Crafted Ammo"
     },
     {
      "id": "Cal_9x39mm_Crafted",
-     "name": "30x 9x39mm CR Bullet"
+     "name": "Патрон 9x39 мм (самодельный)",
+     "name_en": "9x39mm Crafted Ammo"
     },
     {
      "id": "Cal_9x39mm_TR",
-     "name": "30x 9x39mm TR Bullet"
+     "name": "Патрон 9x39 мм (трассирующий)",
+     "name_en": "9x39mm Tracer Ammo"
     },
     {
      "id": "FlareCartridge",
      "name": "Сигнальный патрон",
-     "name_en": "FlareCartridge"
+     "name_en": "Flare Cartridge"
     },
     {
      "id": "12_Gauge_BirdShot",
@@ -1931,6 +2078,16 @@
     {
      "id": "12_Gauge_BirdShot_Ammobox",
      "name": "Коробка патронов 12x70 (мелкая дробь)"
+    },
+    {
+     "id": "Cal_84_AT4_HEAT",
+     "name": "ПГ-7M",
+     "name_en": "PG-7M"
+    },
+    {
+     "id": "Wooden_Arrows_6pc",
+     "name": "Деревянная стрела",
+     "name_en": "Wooden Arrow"
     }
    ]
   },
@@ -2056,12 +2213,12 @@
     },
     {
      "id": "BP_WeaponFlashlight_DesertEagle",
-     "name": "Фонарик для Desert Eagle",
+     "name": "Фонарик для Desert Eagle",
      "name_en": "Desert Eagle Flashlight"
     },
     {
      "id": "BP_WeaponSights_DEagle_RedDot",
-     "name": "Прицел с красной точкой для Desert Eagle",
+     "name": "Прицел с красной точкой для Desert Eagle",
      "name_en": "Desert Eagle Red Dot"
     },
     {
@@ -2129,20 +2286,22 @@
     },
     {
      "id": "WeaponScope_Dragunov",
-     "name": "WeaponScope_Dragunov"
+     "name": "Прицел P-223",
+     "name_en": "P-223 Scope"
     },
     {
      "id": "WeaponScope_POSP",
-     "name": "WeaponScope_POSP"
+     "name": "ПОСП 4x24В",
+     "name_en": "POSP 4x24V"
     },
     {
      "id": "WeaponScope_ZF39",
-     "name": "Прицел ZF39",
+     "name": "Прицел ZF39",
      "name_en": "ZF39"
     },
     {
      "id": "Bow_ImprovisedStabilizer",
-     "name": "«Лайка» — тяж. броня для кузова (лев.)",
+     "name": "Improvised Bow Stabiliser",
      "name_en": "Improvised Bow Stabiliser"
     },
     {
@@ -2158,7 +2317,7 @@
     {
      "id": "BowSilencer_SlipOn",
      "name": "Камуфляжная мягкая шапка",
-     "name_en": "Slip-On Bow Silencer"
+     "name_en": "Slip-on bow silencer"
     },
     {
      "id": "CompoundBowSight_3_Pin",
@@ -2166,11 +2325,13 @@
     },
     {
      "id": "CompoundBowSight_5_Pin",
-     "name": "Compound Bow Sight 5 pin"
+     "name": "Прицел для блочного лука",
+     "name_en": "Compound Bow Sight"
     },
     {
      "id": "DW715_Rail",
-     "name": "Viper 357 Rail"
+     "name": "Планка для Viper M357",
+     "name_en": "Viper M357 Rail"
     },
     {
      "id": "ImprovisedFlashlight",
@@ -2198,7 +2359,8 @@
     },
     {
      "id": "M1911_Rail",
-     "name": "M1911 Rail"
+     "name": "M1911 Rail",
+     "name_en": "M1911 Rail"
     },
     {
      "id": "M1_Bayonet",
@@ -2217,7 +2379,7 @@
     {
      "id": "MP5_Rail_Short",
      "name": "Планка для MP5",
-     "name_en": "MP5 Rail"
+     "name_en": "MP5 rail"
     },
     {
      "id": "P17_Bayonet",
@@ -2226,7 +2388,8 @@
     },
     {
      "id": "ScopeRail_AK47",
-     "name": "RIS Adapter"
+     "name": "RIS Adapter",
+     "name_en": "RIS Adapter"
     },
     {
      "id": "SKS_Bayonet",
@@ -2263,7 +2426,7 @@
     },
     {
      "id": "WeaponCharm_Candy_Cane",
-     "name": "Коробка .30-06 (трасс.)",
+     "name": "Коробка .30-06 (трасс.)",
      "name_en": "Candy Cane Charm"
     },
     {
@@ -2309,7 +2472,7 @@
     },
     {
      "id": "WeaponCharm_PirateCat",
-     "name": "«Бычара» — тяж. броня для кузова (прав.)",
+     "name": "Pirate Cat Charm",
      "name_en": "Pirate Cat Charm"
     },
     {
@@ -2324,7 +2487,7 @@
     },
     {
      "id": "WeaponCharm_Skull",
-     "name": "Запчасти для SCAR DMR",
+     "name": "Запчасти для SCAR DMR",
      "name_en": "Skull Charm"
     },
     {
@@ -2367,12 +2530,12 @@
     },
     {
      "id": "WeaponFlashlight_AS_Val",
-     "name": "Фонарик для АС «Вал» / ВСС",
+     "name": "Фонарик для АС «Вал» / ВСС",
      "name_en": "AS Val/VSS Flashlight"
     },
     {
      "id": "WeaponFlashlight_DesertEagle",
-     "name": "Фонарик для Desert Eagle",
+     "name": "Фонарик для Desert Eagle",
      "name_en": "Desert Eagle Flashlight"
     },
     {
@@ -2382,11 +2545,13 @@
     },
     {
      "id": "WeaponGhillie_Desert",
-     "name": "Weapon Ghillie Suite Desert"
+     "name": "Маскировка для оружия",
+     "name_en": "Weapon Ghillie"
     },
     {
      "id": "WeaponGhillie_Winter",
-     "name": "Weapon Ghillie Suite Winter"
+     "name": "Маскировка для оружия",
+     "name_en": "Weapon Ghillie"
     },
     {
      "id": "WeaponGhillie_Woodland",
@@ -2426,7 +2591,7 @@
     },
     {
      "id": "WeaponSights_DEagle_RedDot",
-     "name": "Прицел с красной точкой для Desert Eagle",
+     "name": "Прицел с красной точкой для Desert Eagle",
      "name_en": "Desert Eagle Red Dot"
     },
     {
@@ -2496,29 +2661,33 @@
     },
     {
      "id": "WeaponSuppressor_12_Gauge",
-     "name": "Глушитель для 12-го калибра",
+     "name": "Глушитель для 12-го калибра",
      "name_en": "12 Gauge Suppressor"
     },
     {
      "id": "WeaponSuppressor_308_Black",
-     "name": "308 Suppressor Black"
+     "name": "Глушитель для .308",
+     "name_en": ".308 Suppressor"
     },
     {
      "id": "WeaponSuppressor_30_06",
-     "name": "Коробка .22 (трасс.)",
-     "name_en": "30-06 Suppressor"
+     "name": "Глушитель для .30-06",
+     "name_en": "Cal .30-06 Suppressor"
     },
     {
      "id": "WeaponSuppressor_338_Black",
-     "name": "AWM Suppressor Black"
+     "name": "Глушитель для .338",
+     "name_en": ".338 Suppressor"
     },
     {
      "id": "WeaponSuppressor_338_Green",
-     "name": "AWM Suppressor Green"
+     "name": "Глушитель для .338 (зелёный)",
+     "name_en": ".338 Suppressor Green"
     },
     {
      "id": "WeaponSuppressor_338_Tan",
-     "name": "AWM Suppressor Tan"
+     "name": "Глушитель для .338 (бежевый)",
+     "name_en": ".338 Suppressor Tan"
     },
     {
      "id": "WeaponSuppressor_45ACP",
@@ -2527,7 +2696,8 @@
     },
     {
      "id": "WeaponSuppressor_5_45x39",
-     "name": "50.45x39mm Suppressor"
+     "name": "Глушитель для 5,45x39 мм",
+     "name_en": "5.45x39mm Suppressor"
     },
     {
      "id": "WeaponSuppressor_AK15",
@@ -2582,7 +2752,8 @@
     },
     {
      "id": "WeaponSuppressor_M82A1",
-     "name": "M82 Suppressor Grey"
+     "name": "Глушитель QDL для M82",
+     "name_en": "M82 QDL Suppressor"
     },
     {
      "id": "WeaponSuppressor_M82A1_Black",
@@ -2613,15 +2784,18 @@
     },
     {
      "id": "WeaponSuppressor_SVD",
-     "name": "SVD Suppressor"
+     "name": "SVD Suppressor",
+     "name_en": "SVD Suppressor"
     },
     {
      "id": "WeaponScope_M82A1",
-     "name": "Оптический прицел M82A1"
+     "name": "Прицел для М82",
+     "name_en": "M82 Scope"
     },
     {
      "id": "WeaponSights_Deagle_RedDot",
-     "name": "Коллиматор \"красная точка\" для Deagle"
+     "name": "Прицел с красной точкой для Desert Eagle",
+     "name_en": "Desert Eagle Red Dot"
     }
    ]
   },
@@ -2639,7 +2813,7 @@
     },
     {
      "id": "BP_Weapon_M1887",
-     "name": "M1887 — обрез",
+     "name": "M1887 — обрез",
      "name_en": "M1887"
     },
     {
@@ -2672,7 +2846,8 @@
     },
     {
      "id": "Weapon_DT11B_Sawed_Off",
-     "name": "The Mule"
+     "name": "DT11B «Мул» — обрез",
+     "name_en": "\"The Mule\" DT11B short"
     },
     {
      "id": "Weapon_Improvised_Shotgun",
@@ -2680,13 +2855,13 @@
     },
     {
      "id": "Weapon_M1887",
-     "name": "M1887 — обрез",
+     "name": "M1887 — обрез",
      "name_en": "M1887"
     },
     {
      "id": "Weapon_M1887_Sawed_off",
-     "name": "Обрез M1887 «Орёл»",
-     "name_en": "M1887 Sawed Off"
+     "name": "Обрез M1887 «Орёл»",
+     "name_en": "M1887 Sawed off"
     },
     {
      "id": "Weapon_SDASS",
@@ -2714,7 +2889,7 @@
     },
     {
      "id": "BPC_Weapon_AK47_Engraved",
-     "name": "7,92x57 мм (трасс.)",
+     "name": "7,92x57 мм (трасс.)",
      "name_en": "AK-47 Engraved"
     },
     {
@@ -2729,7 +2904,7 @@
     },
     {
      "id": "BP_Weapon_AS_Val",
-     "name": "АС «Вал»",
+     "name": "АС «Вал»",
      "name_en": "AS Val"
     },
     {
@@ -2748,7 +2923,7 @@
     },
     {
      "id": "BP_Weapon_M16A4",
-     "name": "M1887 — обрез",
+     "name": "M1887 — обрез",
      "name_en": "M16A4"
     },
     {
@@ -2806,12 +2981,13 @@
     },
     {
      "id": "Weapon_AK15",
-     "name": "AK15"
+     "name": "AK15",
+     "name_en": "AK-15"
     },
     {
      "id": "Weapon_AK47",
      "name": "АК-47",
-     "name_en": "AK47"
+     "name_en": "AK-47"
     },
     {
      "id": "Weapon_AK47_Engraved",
@@ -2826,11 +3002,11 @@
     {
      "id": "Weapon_AKS_74U",
      "name": "АКС-74У",
-     "name_en": "AKS 74U"
+     "name_en": "AKS-74U"
     },
     {
      "id": "Weapon_AS_Val",
-     "name": "АС «Вал»",
+     "name": "АС «Вал»",
      "name_en": "AS Val"
     },
     {
@@ -2855,7 +3031,8 @@
     },
     {
      "id": "Weapon_AWP",
-     "name": "AWP"
+     "name": "AWP",
+     "name_en": "AWP"
     },
     {
      "id": "Weapon_AWP_Desert",
@@ -2884,12 +3061,13 @@
     },
     {
      "id": "Weapon_M16A4",
-     "name": "M1887 — обрез",
+     "name": "M1887 — обрез",
      "name_en": "M16A4"
     },
     {
      "id": "Weapon_M1_Garand",
-     "name": "M1 Garand"
+     "name": "М1",
+     "name_en": "M1 Rifle"
     },
     {
      "id": "Weapon_M249",
@@ -2919,7 +3097,8 @@
     },
     {
      "id": "Weapon_MK18",
-     "name": "MK18"
+     "name": "MK18",
+     "name_en": "MK18"
     },
     {
      "id": "Weapon_MosinNagant",
@@ -2932,7 +3111,8 @@
     },
     {
      "id": "Weapon_MP5_K",
-     "name": "MP5 K"
+     "name": "MP5 K",
+     "name_en": "MP5 K"
     },
     {
      "id": "Weapon_MP5_SD",
@@ -2959,7 +3139,8 @@
     },
     {
      "id": "Weapon_SVD_Dragunov",
-     "name": "SVD"
+     "name": "SVD",
+     "name_en": "SVD"
     },
     {
      "id": "Weapon_TommyGun",
@@ -2969,7 +3150,7 @@
     {
      "id": "Weapon_UMP45",
      "name": "UMP45",
-     "name_en": "UMP 45"
+     "name_en": "UMP-45"
     },
     {
      "id": "Weapon_VHS2",
@@ -2979,11 +3160,11 @@
     {
      "id": "Weapon_VHS2_Rail",
      "name": "VHS-2 ",
-     "name_en": "VHS2"
+     "name_en": "VHS 2"
     },
     {
      "id": "Weapon_VSS_VZ",
-     "name": "ВСС «Винторез»",
+     "name": "ВСС «Винторез»",
      "name_en": "VSS VZ"
     }
    ]
@@ -3046,7 +3227,8 @@
     },
     {
      "id": "Flashbang",
-     "name": "M84 Stun Grenade"
+     "name": "M84 Stun Grenade",
+     "name_en": "M84 Stun grenade"
     },
     {
      "id": "Frag_Grenade",
@@ -3071,7 +3253,7 @@
     {
      "id": "Mine_01",
      "name": "Противопехотная мина",
-     "name_en": "Anti-Personnel Mine"
+     "name_en": "Anti-personnel mine"
     },
     {
      "id": "BarbedSpikeTrap",
@@ -3096,7 +3278,7 @@
     {
      "id": "ImprovisedMine",
      "name": "Самодельная мина",
-     "name_en": "ImprovisedMine"
+     "name_en": "Improvised Mine"
     },
     {
      "id": "PipeBomb",
@@ -3116,17 +3298,17 @@
     {
      "id": "Mine_02",
      "name": "Малая противопехотная мина",
-     "name_en": "Small Anti-Personnel Mine"
+     "name_en": "Small anti-personnel mine"
     },
     {
      "id": "StakePitTrap",
      "name": "Ловушка из кольев",
-     "name_en": "Stake Pit Trap"
+     "name_en": "Stake Pit"
     },
     {
      "id": "Bait_trap_for_small_animals",
      "name": "Ловушка с приманкой для мелких животных",
-     "name_en": "Bait Trap for Small Animals"
+     "name_en": "Bait Trap For Small Animals"
     },
     {
      "id": "Blast_Cap",
@@ -3135,11 +3317,13 @@
     },
     {
      "id": "C4",
-     "name": "C4 Bomb"
+     "name": "C4 Bomb",
+     "name_en": "C4 Bomb"
     },
     {
      "id": "C4_CircuitBoard",
-     "name": "C4 Circuit Board"
+     "name": "Печатная плата таймера C4",
+     "name_en": "C4 Timer Circuit Board"
     },
     {
      "id": "C4_Detonator",
@@ -3148,11 +3332,13 @@
     },
     {
      "id": "C4_Keypad",
-     "name": "C4 KeyPad"
+     "name": "Печатная плата клавиатуры C4",
+     "name_en": "C4 Keypad Circuit Board"
     },
     {
      "id": "C4_Pack",
-     "name": "C4 Pack"
+     "name": "Взрывчатка C4",
+     "name_en": "Packed C4"
     },
     {
      "id": "CD_Player",
@@ -3186,7 +3372,8 @@
     },
     {
      "id": "Sensor_Detonator",
-     "name": "Sensor Detonator"
+     "name": "Детонатор с датчиком движения",
+     "name_en": "Motion Sensor Detonator"
     },
     {
      "id": "Sentry_50cal_Rifle",
@@ -3220,23 +3407,28 @@
     },
     {
      "id": "FishingHookPack2",
-     "name": "FishingHookPack2 = 10x Medium Sized Fish Hook"
+     "name": "Набор средних крючков",
+     "name_en": "Medium Hook Pack"
     },
     {
      "id": "FishingHookPack1",
-     "name": "FishingHookPack2 = 10x Small Fish Hook"
+     "name": "Набор небольших крючков",
+     "name_en": "Small Fish Hook Pack"
     },
     {
      "id": "FishingHookPack3",
-     "name": "FishingHookPack3 = 10x Double Fish Hook"
+     "name": "Набор двойных крючков",
+     "name_en": "Double Fish Hook Pack"
     },
     {
      "id": "FishingHookPack4",
-     "name": "FishingHookPack4 = 10x Treble Fish Hook"
+     "name": "FishingHookPack4 = 10x Treble Fish Hook",
+     "name_en": "Treble Fish Hook Pack"
     },
     {
      "id": "ImprovisedFishingHook",
-     "name": "Improvised Fishing Hook"
+     "name": "Самодельный крючок",
+     "name_en": "Improvised Fish Hook"
     },
     {
      "id": "FishingHook1",
@@ -3249,7 +3441,8 @@
     },
     {
      "id": "FishingHook3",
-     "name": "Treble Fish Hook"
+     "name": "Тройной крючок",
+     "name_en": "Treble Fishing Hook"
     },
     {
      "id": "FishingHook",
@@ -3283,7 +3476,8 @@
     },
     {
      "id": "FishingRod",
-     "name": "Fishing Rod Blue"
+     "name": "Удочка",
+     "name_en": "Fishing Rod"
     },
     {
      "id": "FishingRod_A",
@@ -3351,22 +3545,22 @@
     },
     {
      "id": "FishingLinePiece_2",
-     "name": "Нейлоновая леска 0,18 мм",
+     "name": "Нейлоновая леска 0,18 мм",
      "name_en": "Nylon line medium 0.18 mm"
     },
     {
      "id": "FishingLinePiece_3",
-     "name": "Нейлоновая леска 0,25 мм",
+     "name": "Нейлоновая леска 0,25 мм",
      "name_en": "Nylon line thick 0.25 mm"
     },
     {
      "id": "FishingLinePiece_4",
-     "name": "Нейлоновая леска 0,5 мм",
+     "name": "Нейлоновая леска 0,5 мм",
      "name_en": "Nylon line thick 0.5 mm"
     },
     {
      "id": "FishingLinePiece_1",
-     "name": "Нейлоновая леска 0,12 мм",
+     "name": "Нейлоновая леска 0,12 мм",
      "name_en": "Nylon line thin 0.12 mm"
     }
    ]
@@ -3384,7 +3578,8 @@
     },
     {
      "id": "FishingBait_Bread",
-     "name": "Bread (bait)"
+     "name": "Наживка из хлеба",
+     "name_en": "Bread Fish Bait"
     },
     {
      "id": "FishingBait_Cheese",
@@ -3415,8 +3610,8 @@
     },
     {
      "id": "FishingReelPro",
-     "name": "Рыболовная катушка",
-     "name_en": "Fishing Reel"
+     "name": "Профессиональная катушка",
+     "name_en": "Fishing Reel Pro"
     },
     {
      "id": "ImprovisedFishingReel",
@@ -3457,11 +3652,12 @@
     {
      "id": "Long_Paddle",
      "name": "Длинное весло",
-     "name_en": "Long Paddle"
+     "name_en": "Long paddle"
     },
     {
      "id": "Short_Paddle_A",
-     "name": "Short Paddle Black/Blue"
+     "name": "Short Paddle Black/Blue",
+     "name_en": "Short paddle"
     },
     {
      "id": "Short_Paddle_B",
@@ -3478,64 +3674,108 @@
     },
     {
      "id": "Fish_Amur",
-     "name": "Amur (Fish)"
+     "name": "Амур",
+     "name_en": "Amur"
     },
     {
      "id": "Fish_Bass",
-     "name": "Bass (Fish)"
+     "name": "Окунь",
+     "name_en": "Bass"
     },
     {
      "id": "Fish_Bleak",
-     "name": "Bleak (Fish)"
+     "name": "Уклейка",
+     "name_en": "Bleak"
     },
     {
      "id": "Fish_Carp",
-     "name": "Carp (Fish)"
+     "name": "Карп",
+     "name_en": "Carp"
     },
     {
      "id": "Fish_Catfish",
-     "name": "Catfish (Fish)"
+     "name": "Сом",
+     "name_en": "Catfish"
     },
     {
      "id": "Fish_Chub",
-     "name": "Chub (Fish)"
+     "name": "Голавль",
+     "name_en": "Chub"
     },
     {
      "id": "Fish_CrucianCarp",
-     "name": "Crucian Carp (Fish)"
+     "name": "Карась",
+     "name_en": "Crucian Carp"
     },
     {
      "id": "Fish_Dentex",
-     "name": "Dentex (Fish)"
+     "name": "Зубан",
+     "name_en": "Dentex"
     },
     {
      "id": "Fish_Orata",
-     "name": "Orata (Fish)"
+     "name": "Дорада",
+     "name_en": "Orata"
     },
     {
      "id": "Fish_Pike",
      "name": "Голова щуки",
-     "name_en": "Pike (Fish)"
+     "name_en": "Pike Fish"
     },
     {
      "id": "Fish_PrussianCarp",
-     "name": "Prussian Carp (Fish)"
+     "name": "Серебряный карась",
+     "name_en": "Prussian Carp"
     },
     {
      "id": "Fish_Ruffe",
-     "name": "Ruffe (Fish)"
+     "name": "Ёрш",
+     "name_en": "Ruffe"
     },
     {
      "id": "Fish_Sardine",
-     "name": "Sardine (Fish)"
+     "name": "Сардина пятнистая",
+     "name_en": "Spotted Sardine"
     },
     {
      "id": "Fish_Tuna",
-     "name": "Tuna (Fish)"
+     "name": "Тунец",
+     "name_en": "Tuna"
     },
     {
      "id": "Pike_Fillet",
-     "name": "Филе щуки"
+     "name": "Филе щуки",
+     "name_en": "Pike Fillet"
+    },
+    {
+     "id": "Fish_Cuttlefish",
+     "name": "Каракатица",
+     "name_en": "Cuttlefish"
+    },
+    {
+     "id": "Fish_EuropeanBass",
+     "name": "Европейский окунь",
+     "name_en": "European Bass"
+    },
+    {
+     "id": "Fish_Monkfish",
+     "name": "Морской чёрт",
+     "name_en": "Monkfish"
+    },
+    {
+     "id": "Fish_RedScorpionfish",
+     "name": "Красная скорпена",
+     "name_en": "Red Scorpionfish"
+    },
+    {
+     "id": "Fish_Shark",
+     "name": "Акула",
+     "name_en": "Shark"
+    },
+    {
+     "id": "Fish_Squid",
+     "name": "Кальмар",
+     "name_en": "Squid"
     }
    ]
   },
@@ -3661,7 +3901,8 @@
     },
     {
      "id": "Medieval_Helmet_01",
-     "name": "Medieval Helmet"
+     "name": "Древний полированный шлем",
+     "name_en": "Feudal's Polished Helmet"
     },
     {
      "id": "Military_Helmet_01_01",
@@ -3706,11 +3947,13 @@
     },
     {
      "id": "Retro_Helmet_01",
-     "name": "Retro Helmet"
+     "name": "Retro Helmet",
+     "name_en": "Retro Helmet"
     },
     {
      "id": "Rider_Helmet_01",
-     "name": "Amur.png"
+     "name": "Мотоциклетный шлем",
+     "name_en": "Rider Helmet"
     },
     {
      "id": "Rider_Helmet_02",
@@ -3723,7 +3966,8 @@
     },
     {
      "id": "Riot_Helmet_02",
-     "name": "Police Fire Helmet"
+     "name": "Шлем спецназа",
+     "name_en": "Riot Helmet"
     },
     {
      "id": "Working_Helmet_01",
@@ -3786,18 +4030,18 @@
     },
     {
      "id": "Baseball_Cap_11",
-     "name": "Бейсбольная кепка",
-     "name_en": "Baseball Cap"
+     "name": "Кепка Dreamreaper",
+     "name_en": "Dreamreaper Cap"
     },
     {
      "id": "Baseball_Cap_12",
-     "name": "Бейсбольная кепка",
-     "name_en": "Baseball Cap"
+     "name": "Кепка JW",
+     "name_en": "JW Cap"
     },
     {
      "id": "Baseball_Cap_13",
-     "name": "Бейсбольная кепка",
-     "name_en": "Baseball Cap"
+     "name": "Кепка T0pCL4SS",
+     "name_en": "T0pCL4SS Cap"
     },
     {
      "id": "Baseball_Cap_14",
@@ -3926,8 +4170,8 @@
     },
     {
      "id": "Christmas_Beanie_02",
-     "name": "Вязаная шапка",
-     "name_en": "Beanie"
+     "name": "Новогодняя шапка",
+     "name_en": "Christmas Beanie"
     },
     {
      "id": "RK_Beanie",
@@ -3936,8 +4180,8 @@
     },
     {
      "id": "RK_Beanie_01",
-     "name": "Вязаная шапка",
-     "name_en": "Beanie"
+     "name": "Шапка Raykit",
+     "name_en": "Raykit Beanie"
     },
     {
      "id": "Zombie_Beenie_02",
@@ -4122,7 +4366,8 @@
     },
     {
      "id": "Military_Cap_01",
-     "name": "Military Hat"
+     "name": "Армейская кепка",
+     "name_en": "Military Cap"
     },
     {
      "id": "Military_Cap_02",
@@ -4227,7 +4472,8 @@
     },
     {
      "id": "Boar_Head_Hat_01",
-     "name": "Boar Head Cap"
+     "name": "Кабанья шапка",
+     "name_en": "Boar Head Hat"
     },
     {
      "id": "BP_HeadLamp",
@@ -4303,7 +4549,8 @@
     },
     {
      "id": "Military_Beanie_01",
-     "name": "Beanie Camo Dark Green"
+     "name": "Вязаная шапка",
+     "name_en": "Beanie"
     },
     {
      "id": "Military_Beanie_02",
@@ -4385,7 +4632,8 @@
     },
     {
      "id": "Pirate_Hat_Sparrow_02",
-     "name": "Pirate's Hat Jack Sparrow"
+     "name": "Пиратская шляпа",
+     "name_en": "Pirate's Hat"
     },
     {
      "id": "Police_Beanie_01",
@@ -4394,15 +4642,18 @@
     },
     {
      "id": "Police_Boonie_Hat_01",
-     "name": "Fishing Police Hat"
+     "name": "Полицейская рыбацкая шляпа",
+     "name_en": "Police Fishing Hat"
     },
     {
      "id": "Police_Cap_01",
-     "name": "Baseball Police Cap"
+     "name": "Полицейская кепка",
+     "name_en": "Police Cap"
     },
     {
      "id": "Police_Cap_02",
-     "name": "Marine Police Cap"
+     "name": "Полицейская панама",
+     "name_en": "Police Hat"
     },
     {
      "id": "Santa_Hat_01",
@@ -4448,7 +4699,8 @@
     },
     {
      "id": "Wolf_Hat_01",
-     "name": "Wolf Head Hat"
+     "name": "Маска из головы волка",
+     "name_en": "Wolf Head Mask"
     },
     {
      "id": "Raymond_Cruz_Hat",
@@ -4553,8 +4805,8 @@
     },
     {
      "id": "Diving_Mask_With_Breathing_Tube",
-     "name": "Подводная маска ",
-     "name_en": "Diving Mask"
+     "name": "Подводная маска с дыхательной трубкой",
+     "name_en": "Diving Mask With Breathing Tube"
     },
     {
      "id": "Gas_Mask",
@@ -4661,7 +4913,8 @@
     },
     {
      "id": "Halloween_Mask_Knife",
-     "name": "Halloween Mask Knife"
+     "name": "Хэллоуинская маска",
+     "name_en": "Halloween Mask"
     },
     {
      "id": "Halloween_Mask_Lecter_06",
@@ -4723,7 +4976,8 @@
     },
     {
      "id": "Scary_Mask_01",
-     "name": "Mask"
+     "name": "Самодельная маска",
+     "name_en": "Improvised Mask"
     },
     {
      "id": "Tyrone_Shoelacez_Mask",
@@ -4795,7 +5049,8 @@
     },
     {
      "id": "Party_Glasses_01",
-     "name": "Party Glasses Stars"
+     "name": "Карнавальные очки",
+     "name_en": "Party Glasses"
     },
     {
      "id": "Party_Glasses_02",
@@ -4808,7 +5063,8 @@
     },
     {
      "id": "Safety_Goggles",
-     "name": "Safety Glasses"
+     "name": "Защитные очки",
+     "name_en": "Safety Goggles"
     },
     {
      "id": "Round_Sunglasses",
@@ -4895,7 +5151,8 @@
     },
     {
      "id": "4_pieces_Ear_Necklace",
-     "name": "Ожерелье из ушей (4 шт.)"
+     "name": "Ожерелье из ушей",
+     "name_en": "Ear Necklace"
     },
     {
      "id": "6_pieces_Ear_Necklace",
@@ -4946,7 +5203,7 @@
     },
     {
      "id": "IMprovised_StabProof",
-     "name": "«Лайка» — бронир. бампер (задн.)",
+     "name": "Improvised Stabproof Vest",
      "name_en": "Improvised Stabproof Vest"
     },
     {
@@ -5003,11 +5260,13 @@
     },
     {
      "id": "Armor_Police_Vest_01",
-     "name": "Police Armor Tactical Vest"
+     "name": "Полицейский тактический жилет",
+     "name_en": "Police Tactical Vest"
     },
     {
      "id": "Armor_Tactical_Vest_01_01",
-     "name": "Armor Tactical Vest Woodland"
+     "name": "Бронированный тактический жилет",
+     "name_en": "Armor Tactical Vest"
     },
     {
      "id": "Armor_Tactical_Vest_01_02",
@@ -5043,7 +5302,7 @@
     },
     {
      "id": "Improvised_Bulletproof_Armor",
-     "name": "Довольно популярная небольшая сумка для ношения на поясе.",
+     "name": "Improvised Bulletproof Armor",
      "name_en": "Improvised Bulletproof Armor"
     },
     {
@@ -5102,6 +5361,11 @@
     {
      "id": "Leather_Improvised_Stabproof_Vest",
      "name": "Кожаный самодельный противоножевой жилет"
+    },
+    {
+     "id": "Bulletproof_Vest_01_Event",
+     "name": "Армейский бронежилет (врем.)",
+     "name_en": "Military Ballistic Vest (Event)"
     }
    ]
   },
@@ -5270,8 +5534,8 @@
     },
     {
      "id": "TC_Backpack",
-     "name": "Рюкзак",
-     "name_en": "Backpack"
+     "name": "Рюкзак T0pCL4SS",
+     "name_en": "T0pCL4SS Backpack"
     },
     {
      "id": "Camo_Backpack_01",
@@ -5350,7 +5614,8 @@
     },
     {
      "id": "Improvised_Bag_Small_01",
-     "name": "Improvised Courier Backpack"
+     "name": "Improvised Courier Backpack",
+     "name_en": "Improvised Courier Backpack"
     },
     {
      "id": "Small_Leather_Backpack_01",
@@ -5404,7 +5669,8 @@
     },
     {
      "id": "Hiking_Backpack_01_01",
-     "name": "Camo Hiking Backpack Red"
+     "name": "Походный рюкзак",
+     "name_en": "Hiking Backpack"
     },
     {
      "id": "Hiking_Backpack_01_02",
@@ -5424,7 +5690,7 @@
     },
     {
      "id": "Hiking_Backpack_Tyrone",
-     "name": "«Волксваген» — бронир. бампер (задн.)",
+     "name": "Tyrone Hiking Backpack",
      "name_en": "Tyrone Hiking Backpack"
     },
     {
@@ -5437,11 +5703,13 @@
     },
     {
      "id": "Leather_Backpack_03",
-     "name": "School Backback Light Brown"
+     "name": "Кожаный рюкзак",
+     "name_en": "Leather Backpack"
     },
     {
      "id": "Military_Backpack_02_01",
-     "name": "Camo Hiking Backpack Dark Green"
+     "name": "Камуфляжный походный рюкзак",
+     "name_en": "Camo Hiking Backpack"
     },
     {
      "id": "Military_Backpack_02_02",
@@ -5501,7 +5769,8 @@
     },
     {
      "id": "Police_Backpack_01",
-     "name": "Police Assault Backpack"
+     "name": "Police Assault Backpack",
+     "name_en": "Police Assault Backpack"
     },
     {
      "id": "Police_Backpack_02",
@@ -5548,8 +5817,8 @@
    "items": [
     {
      "id": "Improvised_Quiver_01",
-     "name": "Самодельный колчан",
-     "name_en": "Improvised Quiver"
+     "name": "Колчан из звериной кожи",
+     "name_en": "Animal Skin Quiver"
     },
     {
      "id": "Improvised_Quiver_02",
@@ -5574,7 +5843,8 @@
     },
     {
      "id": "Military_Quiver_01",
-     "name": "Military Quiver (Snow Camo)"
+     "name": "Армейский колчан",
+     "name_en": "Military Quiver"
     },
     {
      "id": "Military_Quiver_04",
@@ -5634,7 +5904,7 @@
     {
      "id": "RH_Jacket",
      "name": "Комбинированная куртка",
-     "name_en": "Combined Jacket"
+     "name_en": "Combined jacket"
     },
     {
      "id": "Zombie_RH_Jacket",
@@ -5668,8 +5938,8 @@
     },
     {
      "id": "RK_Hoodie_01",
-     "name": "Хлопковое худи",
-     "name_en": "Cotton Hoodie"
+     "name": "Худи Raykit",
+     "name_en": "Raykit Hoodie"
     },
     {
      "id": "Zombie_Hoodie_01",
@@ -6092,22 +6362,22 @@
     },
     {
      "id": "Trucker_Jacket_01",
-     "name": "«Волксваген» — часть кузова (верхн.)",
+     "name": "«Волксваген» — часть кузова (верхн.)",
      "name_en": "Trucker Jacket"
     },
     {
      "id": "Trucker_Jacket_02",
-     "name": "«Волксваген» — часть кузова (верхн.)",
+     "name": "«Волксваген» — часть кузова (верхн.)",
      "name_en": "Trucker Jacket"
     },
     {
      "id": "Trucker_Jacket_03",
-     "name": "«Волксваген» — часть кузова (верхн.)",
+     "name": "«Волксваген» — часть кузова (верхн.)",
      "name_en": "Trucker Jacket"
     },
     {
      "id": "Trucker_Jacket_04",
-     "name": "«Волксваген» — часть кузова (верхн.)",
+     "name": "«Волксваген» — часть кузова (верхн.)",
      "name_en": "Trucker Jacket"
     },
     {
@@ -6132,7 +6402,8 @@
     },
     {
      "id": "Sweater_01",
-     "name": "Wool Sweater"
+     "name": "Кофта",
+     "name_en": "Sweater"
     },
     {
      "id": "Sweater_02",
@@ -6217,11 +6488,13 @@
     },
     {
      "id": "Danny_Trejo_Vest",
-     "name": "Danny Trejo's Vest"
+     "name": "Жилет Дэнни Трехо",
+     "name_en": "Danny Trejo Vest"
     },
     {
      "id": "Ghillie_Suit_Jacket_01",
-     "name": "Ghillie Suite Jacket"
+     "name": "Верх маскхалата",
+     "name_en": "Ghillie Suit Top"
     },
     {
      "id": "Ghillie_Suit_Jacket_02",
@@ -6233,7 +6506,8 @@
     },
     {
      "id": "Ghillie_Suit_Jacket_05",
-     "name": "Ghillie Suite Jacket Winter"
+     "name": "Верх маскхалата (зимний)",
+     "name_en": "Winter Ghillie Suit Top"
     },
     {
      "id": "Improvised_Ghillie_Jacket",
@@ -6242,12 +6516,13 @@
     },
     {
      "id": "Inmate_Hoodie_01",
-     "name": "«Лайка» — часть кузова (верх.)",
+     "name": "«Лайка» — часть кузова (верх.)",
      "name_en": "Inmate Cotton Hoodie"
     },
     {
      "id": "Inmate_shirt_01",
-     "name": "Inmate Shirt Orange"
+     "name": "Рубашка",
+     "name_en": "Shirt"
     },
     {
      "id": "Inmate_Shirt_01_Forest_DigitalDeluxe",
@@ -6312,8 +6587,8 @@
     },
     {
      "id": "Leather_Jacket",
-     "name": "Кожаная кобура",
-     "name_en": "Leather Jacket"
+     "name": "Байкерская кожаная куртка",
+     "name_en": "Biker Leather Jacket"
     },
     {
      "id": "LuisMoncada_Jacket",
@@ -6359,7 +6634,8 @@
     },
     {
      "id": "Police_Shirt_01",
-     "name": "Police Military Shirt"
+     "name": "Полицейская рубашка",
+     "name_en": "Police Shirt"
     },
     {
      "id": "Qipao_Dress_01",
@@ -6387,7 +6663,8 @@
     },
     {
      "id": "Raincoat_01",
-     "name": "Raincoat Yellow"
+     "name": "Дождевик",
+     "name_en": "Raincoat"
     },
     {
      "id": "Raincoat_02",
@@ -6462,7 +6739,8 @@
     },
     {
      "id": "Tactical_Jacket_01_01",
-     "name": "Tactical Jacket Dark Green"
+     "name": "Тактическая куртка",
+     "name_en": "Tactical Jacket"
     },
     {
      "id": "Tactical_Jacket_01_02",
@@ -6494,7 +6772,8 @@
     },
     {
      "id": "Tang_shirt_01",
-     "name": "Tang Shirt Blue"
+     "name": "Рубашка Тан",
+     "name_en": "Tang Shirt"
     },
     {
      "id": "Tang_shirt_02",
@@ -6619,7 +6898,13 @@
     },
     {
      "id": "pOLICE_Sweater_01",
-     "name": "Свитер полиции 01"
+     "name": "Полицейская кофта",
+     "name_en": "Police Sweater"
+    },
+    {
+     "id": "Fisherman_Shirt_01",
+     "name": "Футболка джерси",
+     "name_en": "Jersey Shirt"
     }
    ]
   },
@@ -6658,11 +6943,13 @@
     },
     {
      "id": "Police_Handgun_Holster",
-     "name": "Police Tactical Handgun Holster"
+     "name": "Тактическая кобура",
+     "name_en": "Tactical Handgun Holster"
     },
     {
      "id": "Tactical_Handgun_Holster_01",
-     "name": "Tactical Handgun Holster Dark Green"
+     "name": "Tactical Handgun Holster Dark Green",
+     "name_en": "Tactical handgun holster"
     },
     {
      "id": "Tactical_Handgun_Holster_02",
@@ -6701,7 +6988,7 @@
     {
      "id": "RH_Arm_Guard",
      "name": "Напульсник",
-     "name_en": "Arm Guard"
+     "name_en": "Arm guard"
     },
     {
      "id": "Bear_Pow",
@@ -6829,7 +7116,8 @@
     },
     {
      "id": "Construction_Gloves_01_01",
-     "name": "Construction Gloves Yellow"
+     "name": "Строительные перчатки",
+     "name_en": "Construction Gloves"
     },
     {
      "id": "Construction_Gloves_01_02",
@@ -6841,11 +7129,13 @@
     },
     {
      "id": "Danny_Trejo_Glove_01",
-     "name": "Danny Trejo's Gloves"
+     "name": "Перчатки Дэнни Трехо",
+     "name_en": "Danny Trejo Gloves"
     },
     {
      "id": "Driving_Gloves_01_01",
-     "name": "Driving Gloves Black"
+     "name": "Перчатки для вождения",
+     "name_en": "Driving Gloves"
     },
     {
      "id": "Driving_Gloves_01_02",
@@ -6861,7 +7151,8 @@
     },
     {
      "id": "Electrician_Glove_01_01",
-     "name": "Insulating Rubber Gloves Red"
+     "name": "Изолирующие резиновые перчатки",
+     "name_en": "Insulating rubber glove"
     },
     {
      "id": "Electrician_Glove_01_02",
@@ -6932,7 +7223,8 @@
     },
     {
      "id": "Wool_Gloves_01_01",
-     "name": "Wool Gloves Black"
+     "name": "Шерстяные перчатки",
+     "name_en": "Wool Gloves"
     },
     {
      "id": "Wool_Gloves_01_02",
@@ -7386,7 +7678,8 @@
     },
     {
      "id": "Construction_Pants_01",
-     "name": "Construction Pants Grey"
+     "name": "Арбалетный болт с дилдо",
+     "name_en": "Construction Pants"
     },
     {
      "id": "Construction_Pants_02",
@@ -7398,11 +7691,13 @@
     },
     {
      "id": "Danny_Trejo_Pants",
-     "name": "Danny Trejo's Pants"
+     "name": "Дыхательная система",
+     "name_en": "Danny Trejo Pants"
     },
     {
      "id": "Ghillie_Suit_Pants_01",
-     "name": "Ghillie Suite Pants Woodland"
+     "name": "Низ маскхалата",
+     "name_en": "Ghillie Suit Bottom"
     },
     {
      "id": "Ghillie_Suit_Pants_02",
@@ -7414,11 +7709,13 @@
     },
     {
      "id": "Ghillie_Suit_Pants_05",
-     "name": "Ghillie Suite Pants Snow"
+     "name": "Низ маскхалата (зимний)",
+     "name_en": "Winter Ghillie Suit Bottom"
     },
     {
      "id": "Hippie_Pants_01",
-     "name": "Hippie Pants Green"
+     "name": "Хиппи-штаны",
+     "name_en": "Hippie Pants"
     },
     {
      "id": "Hippie_Pants_02",
@@ -7464,7 +7761,8 @@
     },
     {
      "id": "Inmate_Pants_01_Snow_DigitalDeluxe",
-     "name": "Inmate Pants White"
+     "name": "Штаны",
+     "name_en": "Pants"
     },
     {
      "id": "Inmate_Pants_01_South_DigitalDeluxe",
@@ -7488,7 +7786,8 @@
     },
     {
      "id": "Jeans_02_01_V2",
-     "name": "Jeans Light Green"
+     "name": "Джинсы",
+     "name_en": "Jeans"
     },
     {
      "id": "Jeans_02_02",
@@ -7524,7 +7823,8 @@
     },
     {
      "id": "Kilt_01",
-     "name": "Kilt Grey"
+     "name": "Килт",
+     "name_en": "Kilt"
     },
     {
      "id": "Kilt_02",
@@ -7577,7 +7877,8 @@
     },
     {
      "id": "MilitaryPants_10",
-     "name": "Tactical Military Pants Urban"
+     "name": "Тактические армейские штаны",
+     "name_en": "Tactical Military Pants"
     },
     {
      "id": "Motorcycle_Pants_01",
@@ -7619,7 +7920,8 @@
     },
     {
      "id": "Short_Trousers_01_01",
-     "name": "Short Trousers Blue Navy"
+     "name": "Short Trousers Blue Navy",
+     "name_en": "Short Trousers"
     },
     {
      "id": "Short_Trousers_01_02",
@@ -7639,7 +7941,8 @@
     },
     {
      "id": "Shorts_Pants_01_01",
-     "name": "Short Pants Red/White/Blue"
+     "name": "Короткие шорты",
+     "name_en": "Short Pants"
     },
     {
      "id": "Shorts_Pants_01_02",
@@ -7755,7 +8058,8 @@
     },
     {
      "id": "Tang_pants_01",
-     "name": "Tang Pants Blue"
+     "name": "Штаны Тан",
+     "name_en": "Tang Pants"
     },
     {
      "id": "Tang_pants_02",
@@ -7875,27 +8179,27 @@
     },
     {
      "id": "RH_Shoe",
-     "name": "Магазин для Hunter 85",
+     "name": "Магазин для Hunter 85",
      "name_en": "HighTop Shoes"
     },
     {
      "id": "Sneakers_02_01",
-     "name": "Магазин для Hunter 85",
+     "name": "Магазин для Hunter 85",
      "name_en": "HighTop Shoes"
     },
     {
      "id": "Sneakers_02_02",
-     "name": "Магазин для Hunter 85",
+     "name": "Магазин для Hunter 85",
      "name_en": "HighTop Shoes"
     },
     {
      "id": "Sneakers_02_03",
-     "name": "Магазин для Hunter 85",
+     "name": "Магазин для Hunter 85",
      "name_en": "HighTop Shoes"
     },
     {
      "id": "Sneakers_02_04",
-     "name": "Магазин для Hunter 85",
+     "name": "Магазин для Hunter 85",
      "name_en": "HighTop Shoes"
     },
     {
@@ -7920,7 +8224,8 @@
     },
     {
      "id": "Improvised_Shoes_01",
-     "name": "Improvised Boots"
+     "name": "Improvised Boots",
+     "name_en": "Improvised Boots"
     },
     {
      "id": "Slippers_01",
@@ -7958,16 +8263,18 @@
     },
     {
      "id": "Christmas_Slippers",
-     "name": "Tena's Slippies"
+     "name": "Рождественские тапочки",
+     "name_en": "Christmas Slippers"
     },
     {
      "id": "HighTop_Shoes",
-     "name": "«Волксваген» — часть кузова (прав.)",
+     "name": "«Волксваген» — часть кузова (прав.)",
      "name_en": "Trainer Shoes"
     },
     {
      "id": "Beijing_Shoes_01",
-     "name": "Beijing Shoes Black"
+     "name": "Китайские туфли",
+     "name_en": "Beijing Shoes"
     },
     {
      "id": "Beijing_Shoes_02",
@@ -7983,7 +8290,8 @@
     },
     {
      "id": "Boots_06_01",
-     "name": "Construction Boots Yellow"
+     "name": "Строительные ботинки",
+     "name_en": "Construction Boots"
     },
     {
      "id": "Boots_06_02",
@@ -8013,7 +8321,8 @@
     },
     {
      "id": "Danny_Trejo_Boots_01",
-     "name": "Danny Trejo's Boots"
+     "name": "Ботинки Дэнни Трехо",
+     "name_en": "Danny Trejo Boots"
     },
     {
      "id": "HH_Boots_01",
@@ -8135,7 +8444,8 @@
     },
     {
      "id": "Kilt_Brogue_Shoe_01",
-     "name": "Kilt Brogue Shoes"
+     "name": "Броги",
+     "name_en": "Brogue Shoe"
     },
     {
      "id": "LuisMoncada_Boots",
@@ -8274,8 +8584,8 @@
     },
     {
      "id": "Parsley",
-     "name": "Петрушка",
-     "name_en": "Parsley"
+     "name": "Пастернак",
+     "name_en": "Parsnip"
     },
     {
      "id": "Potato",
@@ -8461,7 +8771,8 @@
     },
     {
      "id": "Watermelon_slice",
-     "name": "Долька арбуза"
+     "name": "Ломтик арбуза",
+     "name_en": "Watermelon slice"
     }
    ]
   },
@@ -8520,7 +8831,8 @@
     },
     {
      "id": "Hazelnuts",
-     "name": "Hazelnuts"
+     "name": "Фундук",
+     "name_en": "Hazel"
     },
     {
      "id": "Oak_Nuts",
@@ -8574,7 +8886,8 @@
     },
     {
      "id": "Cannabis_Seed_Bag",
-     "name": "Cannabis Seeds Bag"
+     "name": "Пакет семян конопли",
+     "name_en": "Cannabis Seed Bag"
     },
     {
      "id": "Cannabis_Seeds",
@@ -8583,7 +8896,8 @@
     },
     {
      "id": "CantaloupeMelon_Seed_Bag",
-     "name": "Cantaloupe Seeds Bag"
+     "name": "Пакет семян мускусной дыни",
+     "name_en": "Sweet Melon Seed Bag"
     },
     {
      "id": "Carrot_Seed_Bag",
@@ -8687,7 +9001,8 @@
     },
     {
      "id": "Peppers_Seed_Bag",
-     "name": "Pepper Seed Bag"
+     "name": "Пакет семян перца",
+     "name_en": "Peppers Seed Bag"
     },
     {
      "id": "Peppers_Seeds",
@@ -8786,7 +9101,8 @@
     },
     {
      "id": "Bag_of_Almonds",
-     "name": "Мешок миндаля"
+     "name": "Миндаль",
+     "name_en": "Almonds"
     }
    ]
   },
@@ -8810,7 +9126,8 @@
     },
     {
      "id": "Salsify_roots",
-     "name": "Корни козлобородника"
+     "name": "Корни козлобородника",
+     "name_en": "Salsify - roots"
     }
    ]
   },
@@ -8829,7 +9146,7 @@
     },
     {
      "id": "Amanita_Pantheria",
-     "name": "9x39 мм (бронеб., самодел.)",
+     "name": "9x39 мм (бронеб., самодел.)",
      "name_en": "Amanita Pantheria"
     },
     {
@@ -8884,8 +9201,8 @@
     },
     {
      "id": "Amanita_Pantherina",
-     "name": "9x39 мм (бронеб., самодел.)",
-     "name_en": "Amanita Pantheria"
+     "name": "Мухомор пантерный",
+     "name_en": "Amanita Pantherina"
     },
     {
      "id": "Amanita_Phalloides",
@@ -8898,7 +9215,8 @@
     },
     {
      "id": "Ganoderma_Lucidum",
-     "name": "Ganoderma Lucidum (Linghzi Mushroom)"
+     "name": "Ganoderma Lucidum (Linghzi Mushroom)",
+     "name_en": "Lingzhi Mushroom"
     },
     {
      "id": "Inonotus_Obliquus",
@@ -9058,8 +9376,8 @@
     },
     {
      "id": "Big_Animal_Fat",
-     "name": "Жир",
-     "name_en": "Fat"
+     "name": "Жир крупного животного",
+     "name_en": "Big Animal Fat"
     },
     {
      "id": "Zombie_Fat",
@@ -9142,8 +9460,8 @@
     },
     {
      "id": "Prisoner_Left_Foot",
-     "name": "Человеческая ступня",
-     "name_en": "Human Foot"
+     "name": "Нож Hunter",
+     "name_en": "Human foot"
     },
     {
      "id": "Prisoner_Right_Foot",
@@ -9177,7 +9495,8 @@
     },
     {
      "id": "Larve",
-     "name": "Larve"
+     "name": "Личинка",
+     "name_en": "Larva"
     },
     {
      "id": "RabbitMeat",
@@ -9363,7 +9682,8 @@
     },
     {
      "id": "Big_Animal_guts",
-     "name": "Внутренности крупного животного"
+     "name": "Кишки крупного животного",
+     "name_en": "Big Animal Guts"
     },
     {
      "id": "Buck_Skinned",
@@ -9431,7 +9751,8 @@
     },
     {
      "id": "Small_Animal_guts",
-     "name": "Внутренности мелкого животного"
+     "name": "Кишки мелкого животного",
+     "name_en": "Small Animal Guts"
     },
     {
      "id": "Wolf_Head",
@@ -9463,7 +9784,8 @@
     },
     {
      "id": "ZombieMeat",
-     "name": "Мясо зомби"
+     "name": "Мясо марионетки",
+     "name_en": "Puppet Meat"
     },
     {
      "id": "Zombie_01_Head",
@@ -9475,7 +9797,8 @@
     },
     {
      "id": "Zombie_01_Left_Arm",
-     "name": "Рука зомби, левая"
+     "name": "Рука марионетки",
+     "name_en": "Puppet Arm"
     },
     {
      "id": "Zombie_01_Left_Foot",
@@ -9495,15 +9818,27 @@
     },
     {
      "id": "Zombie_01_Right_Leg",
-     "name": "Нога зомби, правая"
+     "name": "Нога марионетки",
+     "name_en": "Puppet Leg"
     },
     {
      "id": "Zombie_01_Torso",
-     "name": "Торс зомби"
+     "name": "Туловище марионетки",
+     "name_en": "Puppet Torso"
     },
     {
      "id": "Zombie_guts",
      "name": "Внутренности зомби"
+    },
+    {
+     "id": "Crow_Meat",
+     "name": "Мясо вороны",
+     "name_en": "Crow Meat"
+    },
+    {
+     "id": "Seagull_Meat",
+     "name": "Мясо чайки",
+     "name_en": "Seagull Meat"
     }
    ]
   },
@@ -9644,7 +9979,8 @@
     },
     {
      "id": "Toaster_Pastries2",
-     "name": "Chocolate Toaster Pastries"
+     "name": "Печенье для тостера",
+     "name_en": "Toaster Pastries"
     },
     {
      "id": "Chow_Mein",
@@ -9663,7 +9999,8 @@
     },
     {
      "id": "Crab_Apple",
-     "name": "Crab Apple"
+     "name": "Яблоко",
+     "name_en": "Apple"
     },
     {
      "id": "Crackers",
@@ -9745,7 +10082,8 @@
     },
     {
      "id": "Chips2",
-     "name": "Spicy Nacho Chips"
+     "name": "Spicy Nacho Chips",
+     "name_en": "Spicy Nacho Chips"
     },
     {
      "id": "Toaster_Pastries",
@@ -9845,7 +10183,8 @@
     },
     {
      "id": "SaltBag",
-     "name": "Salt Bag"
+     "name": "Salt Bag",
+     "name_en": "Salt Bag"
     },
     {
      "id": "Tea_Pack",
@@ -9853,11 +10192,13 @@
     },
     {
      "id": "Corn_flakes",
-     "name": "Кукурузные хлопья"
+     "name": "Кукурузные хлопья",
+     "name_en": "Corn Flakes"
     },
     {
      "id": "Instant_OatMeal",
-     "name": "Овсянка быстрого приготовления"
+     "name": "Овсянка быстрого приготовления",
+     "name_en": "Instant Oatmeal"
     },
     {
      "id": "MRE_Cheeseburger",
@@ -9948,7 +10289,8 @@
     },
     {
      "id": "CannedPeach",
-     "name": "Peach Compot"
+     "name": "Персики в банке",
+     "name_en": "Peach Compote"
     },
     {
      "id": "CannedSeafoodMix",
@@ -9957,15 +10299,21 @@
     {
      "id": "Spon",
      "name": "SPON",
-     "name_en": "Spon"
+     "name_en": "SPON"
     },
     {
      "id": "CannedCatfood",
-     "name": "Консервы для кошек"
+     "name": "Кошачий корм",
+     "name_en": "Cat Food"
     },
     {
      "id": "CannedSeaFoodMix",
      "name": "Консервы «Морской коктейль»"
+    },
+    {
+     "id": "CannedSardine_Deluxe",
+     "name": "Sardine",
+     "name_en": "Sardine"
     }
    ]
   },
@@ -9974,7 +10322,8 @@
    "items": [
     {
      "id": "Absinthe",
-     "name": "Absinthe Father"
+     "name": "Absinthe Father",
+     "name_en": "Absinthe Father"
     },
     {
      "id": "Beer",
@@ -10018,7 +10367,7 @@
     },
     {
      "id": "Isopropyl_Alcohol",
-     "name": "Да, он правда кусается.",
+     "name": "Isopropyl Alcohol",
      "name_en": "Isopropyl Alcohol"
     },
     {
@@ -10057,7 +10406,7 @@
     {
      "id": "Can02",
      "name": "Апельсиновый сок",
-     "name_en": "Orange Juice"
+     "name_en": "Orange juice"
     },
     {
      "id": "GlassBottle04",
@@ -10075,8 +10424,8 @@
     },
     {
      "id": "SCUMkin_Spice_Latte",
-     "name": "ЗАПАС СИЛ",
-     "name_en": "SCUMkin Spice Latte"
+     "name": "СТАТИСТИКА",
+     "name_en": "SCUMkin Spice Latter"
     },
     {
      "id": "Slav_Reviver",
@@ -10139,7 +10488,8 @@
     },
     {
      "id": "Improvised_Water_container",
-     "name": "Improvised Water Cantainer"
+     "name": "Самодельный контейнер для воды",
+     "name_en": "Improvised Water Container"
     },
     {
      "id": "Kicmovaca",
@@ -10148,7 +10498,8 @@
     },
     {
      "id": "Water_05l",
-     "name": "Бутылка воды 0,5 л"
+     "name": "Бутылка воды",
+     "name_en": "Water Bottle"
     }
    ]
   },
@@ -10157,13 +10508,13 @@
    "items": [
     {
      "id": "ActivatedCharcoal_01",
-     "name": "Активированный уголь",
-     "name_en": "Activated Charcoal"
+     "name": "Активированный уголь (блистер)",
+     "name_en": "Activated Charcoal - Blister"
     },
     {
      "id": "ActivatedCharcoal_02",
-     "name": "Активированный уголь",
-     "name_en": "Activated Charcoal"
+     "name": "Активированный уголь (коробка)",
+     "name_en": "Activated Charcoal - Box"
     },
     {
      "id": "ActivatedCharcoal_03",
@@ -10177,18 +10528,18 @@
     },
     {
      "id": "Antibiotics_01",
-     "name": "Антибиотики",
-     "name_en": "Antibiotics"
+     "name": "Антибиотики (блистер) — 1000 мг",
+     "name_en": "Antibiotics - Blister - 1000mg"
     },
     {
      "id": "Antibiotics_02",
-     "name": "Антибиотики",
-     "name_en": "Antibiotics"
+     "name": "Антибиотики (коробка) — 1000 мг",
+     "name_en": "Antibiotics - Box - 1000mg"
     },
     {
      "id": "Antibiotics_03",
-     "name": "Антибиотики",
-     "name_en": "Antibiotics"
+     "name": "Антибиотики (банка) — 1000 мг",
+     "name_en": "Antibiotics - Jar - 1000mg"
     },
     {
      "id": "AntiMalariaPills_01",
@@ -10336,7 +10687,8 @@
     },
     {
      "id": "Painkillers_01",
-     "name": "Painkillers Pills"
+     "name": "Обезболивающие (блистер)",
+     "name_en": "Painkillers - Blister"
     },
     {
      "id": "Painkillers_02",
@@ -10348,27 +10700,28 @@
     },
     {
      "id": "Penicillin01",
-     "name": "Penicillin"
+     "name": "Penicillin",
+     "name_en": "Penicillin"
     },
     {
      "id": "Phoenix_Tears",
-     "name": "Слёзы феникса",
-     "name_en": "Phoenix Tears"
+     "name": "Сыворотка быстрого восстановления PT-29",
+     "name_en": "PT-29 Rapid Recovery Serum"
     },
     {
      "id": "PotassiumIodide_Pills_01",
-     "name": "«Бычара» — лёгк. броня для кузова (прав.)",
-     "name_en": "Potassium Iodide Pills"
+     "name": "Potassium Iodide Pills - Blister",
+     "name_en": "Potassium Iodide Pills - Blister"
     },
     {
      "id": "PotassiumIodide_Pills_02",
-     "name": "«Бычара» — лёгк. броня для кузова (прав.)",
-     "name_en": "Potassium Iodide Pills"
+     "name": "Potassium Iodide Pills - Box",
+     "name_en": "Potassium Iodide Pills - Box"
     },
     {
      "id": "PotassiumIodide_Pills_03",
-     "name": "«Бычара» — лёгк. броня для кузова (прав.)",
-     "name_en": "Potassium Iodide Pills"
+     "name": "Potassium Iodide Pills - Jar",
+     "name_en": "Potassium Iodide Pills - Jar"
     },
     {
      "id": "Pressure_Dressing",
@@ -10394,11 +10747,13 @@
     },
     {
      "id": "Vitamins_01",
-     "name": "Vitamin Pills"
+     "name": "Витаминные таблетки (коробка)",
+     "name_en": "Vitamin Pills - Blister"
     },
     {
      "id": "Vitamins_02",
-     "name": "Vitamin Pills"
+     "name": "Витамины (банка)",
+     "name_en": "Vitamin Pills - Box"
     },
     {
      "id": "Vitamins_03",
@@ -10406,7 +10761,8 @@
     },
     {
      "id": "Antibiotic_Pill_Single",
-     "name": "Antibiotic Pill"
+     "name": "Антибиотики — 1000 мг",
+     "name_en": "Antibiotics - 1000mg"
     },
     {
      "id": "AntiburnGel",
@@ -10424,7 +10780,8 @@
     },
     {
      "id": "IntEA_Level1",
-     "name": "Intelligence Enchancement Ampule Level 1"
+     "name": "Выпить",
+     "name_en": "Drink"
     },
     {
      "id": "IntEA_Level2",
@@ -10452,11 +10809,83 @@
     },
     {
      "id": "Isopropyl_alcohol",
-     "name": "Изопропиловый спирт"
+     "name": "Изопропиловый спирт",
+     "name_en": "Isopropyl alcohol"
     },
     {
      "id": "PainKillers_03",
-     "name": "Обезболивающее III"
+     "name": "Обезболивающие (банка)",
+     "name_en": "Painkillers - Jar"
+    },
+    {
+     "id": "Emergency_bandage_Big_Deluxe",
+     "name": "Перевязочный пакет",
+     "name_en": "Emergency Bandage Pack"
+    },
+    {
+     "id": "Emergency_bandage_Deluxe",
+     "name": "Индивидуальный бинт",
+     "name_en": "Emergency Bandage"
+    },
+    {
+     "id": "Improvised_Shelter",
+     "name": "Самодельная кровать",
+     "name_en": "Improvised Bed"
+    },
+    {
+     "id": "Improvised_Workbench",
+     "name": "Самодельный верстак",
+     "name_en": "Improvised Workbench"
+    },
+    {
+     "id": "LogShed_1",
+     "name": "Большой сарай для брёвен",
+     "name_en": "Large Log Shed"
+    },
+    {
+     "id": "Sign_03",
+     "name": "Знак «Извините»",
+     "name_en": "Sorry"
+    },
+    {
+     "id": "Sign_04",
+     "name": "Sign 04",
+     "name_en": "Sign 04"
+    },
+    {
+     "id": "Sign_05",
+     "name": "Minefield Sign",
+     "name_en": "Minefield Sign"
+    },
+    {
+     "id": "Wall_Flag_Premium",
+     "name": "Флаг с эмблемой вашего отряда",
+     "name_en": "A flag that shows your squad's emblem"
+    },
+    {
+     "id": "Wardrobe_Improvised_Wood",
+     "name": "Wardrobe Improvised Wood",
+     "name_en": "Wardrobe Improvised Wood"
+    },
+    {
+     "id": "WeaponRack_Wall_Wood",
+     "name": "Настенная стойка для оружия",
+     "name_en": "Wall Mounted Weapon Rack"
+    },
+    {
+     "id": "WeaponRack_Wood",
+     "name": "WeaponRack Wood",
+     "name_en": "WeaponRack Wood"
+    },
+    {
+     "id": "Work_Drillpress_01",
+     "name": "Сверлильный станок",
+     "name_en": "Drill Press"
+    },
+    {
+     "id": "Work_Lathe_Machine_01",
+     "name": "Токарный станок",
+     "name_en": "Lathe Machine"
     }
    ]
   },
@@ -10538,7 +10967,8 @@
     },
     {
      "id": "Bundle_Rag_Stripes",
-     "name": "Bundle Of Rag Stripes"
+     "name": "Связка тряпичных полосок",
+     "name_en": "Bundle Of Rag Strips"
     },
     {
      "id": "Bundle_Of_Rags",
@@ -10551,7 +10981,7 @@
     },
     {
      "id": "Bundle_Wooden_Plank",
-     "name": "Коробка .30-06 (бронеб.)",
+     "name": "Коробка .30-06 (бронеб.)",
      "name_en": "Bundle Of Wooden Planks"
     },
     {
@@ -10713,12 +11143,13 @@
     },
     {
      "id": "Rubber_Sheet",
-     "name": "«Бычара» — тяж. броня для кузова (лев.)",
+     "name": "Piece Of Rubber",
      "name_en": "Piece Of Rubber"
     },
     {
      "id": "Rag_Stripes",
-     "name": "Rag Stripes"
+     "name": "Тряпичные полоски",
+     "name_en": "Rag Strips"
     },
     {
      "id": "Rags1",
@@ -10781,7 +11212,8 @@
     },
     {
      "id": "Wire",
-     "name": "Wire 1m"
+     "name": "Проволока (10 м)",
+     "name_en": "Wire 10m"
     },
     {
      "id": "Wooden_Log_01",
@@ -10804,7 +11236,8 @@
     },
     {
      "id": "Anode_Plate",
-     "name": "Anode Plate"
+     "name": "Anode Plate",
+     "name_en": "Anode Plate"
     },
     {
      "id": "BCU_Chip",
@@ -10846,7 +11279,8 @@
     },
     {
      "id": "Coal_01",
-     "name": "Coal"
+     "name": "Coal",
+     "name_en": "Coal"
     },
     {
      "id": "Copper_Strip",
@@ -10864,27 +11298,27 @@
     },
     {
      "id": "Fuse_1000A",
-     "name": "Предохранитель на 1000 А",
+     "name": "Предохранитель на 1000 А",
      "name_en": "Fuse 1000A"
     },
     {
      "id": "Fuse_200A",
-     "name": "Предохранитель на 200 А",
+     "name": "Предохранитель на 200 А",
      "name_en": "Fuse 200A"
     },
     {
      "id": "Fuse_400A",
-     "name": "Предохранитель на 400 А",
+     "name": "Предохранитель на 400 А",
      "name_en": "Fuse 400A"
     },
     {
      "id": "Fuse_600A",
-     "name": "Предохранитель на 600 А",
+     "name": "Предохранитель на 600 А",
      "name_en": "Fuse 600A"
     },
     {
      "id": "Fuse_800A",
-     "name": "Предохранитель на 800 А",
+     "name": "Предохранитель на 800 А",
      "name_en": "Fuse 800A"
     },
     {
@@ -10914,7 +11348,8 @@
     },
     {
      "id": "KeyCard",
-     "name": "Bunker Green Key Card"
+     "name": "Ключ-карта",
+     "name_en": "Key Card"
     },
     {
      "id": "KeyCardBunker_Level01",
@@ -10970,7 +11405,8 @@
     },
     {
      "id": "Pen",
-     "name": "Pen"
+     "name": "Pen",
+     "name_en": "Pen"
     },
     {
      "id": "Rags",
@@ -10984,7 +11420,8 @@
     },
     {
      "id": "Safety_pin",
-     "name": "Safety Pin"
+     "name": "Safety Pin",
+     "name_en": "Safety Pin"
     },
     {
      "id": "Silver_Strip",
@@ -11012,7 +11449,8 @@
     },
     {
      "id": "Tree_Branches",
-     "name": "Tree Branches"
+     "name": "Ветка дерева",
+     "name_en": "Tree Branch"
     },
     {
      "id": "WineCork",
@@ -11025,7 +11463,8 @@
     },
     {
      "id": "Wooden_Sticks_Bundle_Meduim",
-     "name": "Bundle Wooden Stick Medium"
+     "name": "Связка коротких деревянных палок",
+     "name_en": "Small Sticks Bundle"
     },
     {
      "id": "Animal_skin",
@@ -11033,7 +11472,8 @@
     },
     {
      "id": "Bundle_Of_Bricks",
-     "name": "Пачка кирпичей"
+     "name": "Связка кирпичей",
+     "name_en": "Bundle Of Bricks"
     },
     {
      "id": "Goat_Horns",
@@ -11041,19 +11481,23 @@
     },
     {
      "id": "Improvised_Plant_rope",
-     "name": "Самодельная верёвка из растений"
+     "name": "Верёвка из коры",
+     "name_en": "Branch Rope"
     },
     {
      "id": "Improvised_rope",
-     "name": "Самодельная верёвка"
+     "name": "Самодельная верёвка",
+     "name_en": "Improvised Rope"
     },
     {
      "id": "Long_wooden_stick",
-     "name": "Длинная деревянная палка"
+     "name": "Длинная деревянная палка",
+     "name_en": "Long Wooden Stick"
     },
     {
      "id": "Rubber_band",
-     "name": "Резиновый жгут"
+     "name": "Резиновый жгут",
+     "name_en": "Rubber Band"
     },
     {
      "id": "Rubber_sheet",
@@ -11116,7 +11560,7 @@
     {
      "id": "Double_Bang_Firecracker",
      "name": "Двойной фейерверк",
-     "name_en": "Double Bang Firecracker"
+     "name_en": "Double-Bang Firecracker"
     },
     {
      "id": "Work_DrillPress_01",
@@ -11165,7 +11609,7 @@
     {
      "id": "Flint_And_Steel",
      "name": "Кремень и кресало",
-     "name_en": "Flint And Steel"
+     "name_en": "Flint and Steel"
     },
     {
      "id": "Gasoline_Canister",
@@ -11225,15 +11669,17 @@
     {
      "id": "Sewing_kit",
      "name": "Швейный набор",
-     "name_en": "Sewing kit"
+     "name_en": "Sewing Kit"
     },
     {
      "id": "Tool_Box",
-     "name": "Tool Box"
+     "name": "Tool Box",
+     "name_en": "Tool Box"
     },
     {
      "id": "Tool_Box_Small",
-     "name": "Tool Box Small"
+     "name": "Маленький набор инструментов",
+     "name_en": "Small Tool Box"
     },
     {
      "id": "Torch",
@@ -11267,11 +11713,13 @@
     },
     {
      "id": "BaseExpansionKit_Lvl1",
-     "name": "Base Expansion Kit Level 1"
+     "name": "Набор для расширения базы (ур. 1)",
+     "name_en": "Base Expansion Kit Lvl 1"
     },
     {
      "id": "BaseExpansionKit_Lvl2",
-     "name": "Base Expansion Kit Level 2"
+     "name": "Набор для расширения базы (ур. 2)",
+     "name_en": "Base Expansion Kit Lvl 2"
     },
     {
      "id": "Battery_Charger_Large",
@@ -11285,7 +11733,7 @@
     },
     {
      "id": "Battery_Charger_Small",
-     "name": "Т — тяж. броня для кузова (верх. пер.)",
+     "name": "Small Battery Charger",
      "name_en": "Small Battery Charger"
     },
     {
@@ -11348,8 +11796,8 @@
     },
     {
      "id": "FlareItem_Green",
-     "name": "Причёска",
-     "name_en": "Flare Green"
+     "name": "Сигнальная ракета",
+     "name_en": "Flare"
     },
     {
      "id": "Geiger_Counter_Analogue",
@@ -11393,7 +11841,8 @@
     },
     {
      "id": "Magnifying_Glass1",
-     "name": "Magnifing Glass"
+     "name": "Увеличительное стекло",
+     "name_en": "Magnifying Glass"
     },
     {
      "id": "Microwave",
@@ -11403,7 +11852,7 @@
     {
      "id": "Mobile_Phone",
      "name": "Мобильный телефон",
-     "name_en": "Mobile Phone"
+     "name_en": "Mobile phone"
     },
     {
      "id": "PaintSprayer",
@@ -11421,7 +11870,8 @@
     },
     {
      "id": "Portable_Gas_Stove",
-     "name": "Gas Stove Portable"
+     "name": "Переносная газовая плитка",
+     "name_en": "Portable Gas Stove"
     },
     {
      "id": "PortableWorkLight",
@@ -11439,12 +11889,13 @@
     },
     {
      "id": "Refrigerator_Portable_Small",
-     "name": "«Бычара» — лёгк. броня для кузова (зад.)",
+     "name": "Portable Refrigerator",
      "name_en": "Portable Refrigerator"
     },
     {
      "id": "Saw",
-     "name": "Saw"
+     "name": "Ножовка по металлу",
+     "name_en": "Metal Saw"
     },
     {
      "id": "Scissors_01",
@@ -11468,7 +11919,8 @@
     },
     {
      "id": "Skewer",
-     "name": "Improvised Skewer"
+     "name": "Вертел",
+     "name_en": "Skewer"
     },
     {
      "id": "Skewer_02",
@@ -11520,7 +11972,28 @@
     },
     {
      "id": "Fire_Hand_Drill_new",
-     "name": "Ручная дрель для добычи огня"
+     "name": "Лучковое веретено",
+     "name_en": "Fire Drill"
+    },
+    {
+     "id": "Fireplace2",
+     "name": "Fireplace2",
+     "name_en": "Fireplace2"
+    },
+    {
+     "id": "Fireplace3",
+     "name": "Кольцо вокруг костра",
+     "name_en": "Fire Ring"
+    },
+    {
+     "id": "Improvised_Barbecue",
+     "name": "Самодельное барбекю",
+     "name_en": "Improvised Barbecue"
+    },
+    {
+     "id": "KitchenStove",
+     "name": "KitchenStove",
+     "name_en": "KitchenStove"
     }
    ]
   },
@@ -11748,7 +12221,7 @@
     },
     {
      "id": "Book_Cooking_BBQ",
-     "name": "Акт. уголь (коробка)",
+     "name": "BBQ Cookbook",
      "name_en": "BBQ Cookbook"
     },
     {
@@ -11771,35 +12244,38 @@
     },
     {
      "id": "Book_Cooking_Pizza",
-     "name": "«Бычара» — тяж. броня для кузова (верх.)",
+     "name": "Pizza Cookbook",
      "name_en": "Pizza Cookbook"
     },
     {
      "id": "Book_Cooking_Rice",
-     "name": "«Бычара» — часть кузова (передн.)",
+     "name": "«Бычара» — часть кузова (передн.)",
      "name_en": "Rice Cookbook"
     },
     {
      "id": "Book_Cooking_Soup",
-     "name": "Т — тяж. броня для двери (лев.)",
+     "name": "Soup Cookbook",
      "name_en": "Soup Cookbook"
     },
     {
      "id": "Book_Cooking_Stew",
-     "name": "Т — тяж. броня для двери (прав.)",
+     "name": "Stew Cookbook",
      "name_en": "Stew Cookbook"
     },
     {
      "id": "BoomBox_01",
-     "name": "BoomBox"
+     "name": "BoomBox",
+     "name_en": "Boom Box"
     },
     {
      "id": "Boxer_Briefs_01",
-     "name": "Male Underpants Boxers Briefs"
+     "name": "Трусы",
+     "name_en": "Boxer Briefs"
     },
     {
      "id": "Brake_Oil",
-     "name": "Brake Oil"
+     "name": "Brake Oil",
+     "name_en": "Brake Oil"
     },
     {
      "id": "Broccoli_Seeds",
@@ -11831,7 +12307,8 @@
     },
     {
      "id": "Cash",
-     "name": "magazine"
+     "name": "Наличные",
+     "name_en": "Cash"
     },
     {
      "id": "Catfish_Fillet_Salted",
@@ -11847,11 +12324,13 @@
     },
     {
      "id": "ChilliPeppers_Seeds",
-     "name": "Chilli Seeds"
+     "name": "Семена перца чили",
+     "name_en": "Chilli Pepper Seeds"
     },
     {
      "id": "Christmas_Present_01",
-     "name": "Gift Box Small"
+     "name": "Маленький рождественский подарок",
+     "name_en": "Small Christmas Gift"
     },
     {
      "id": "Christmas_Present_AK15",
@@ -11895,7 +12374,8 @@
     },
     {
      "id": "Christmas_Present_Ghillie_01",
-     "name": "Christmas Present Ghillie Variant 2"
+     "name": "С Рождеством!",
+     "name_en": "Merry Christmas!"
     },
     {
      "id": "Christmas_Present_Ghillie_02",
@@ -11907,7 +12387,8 @@
     },
     {
      "id": "Christmas_Present_Kar98_02",
-     "name": "Christmas Present KAR98 Variant 3"
+     "name": "Большой рождественский подарок",
+     "name_en": "Big Christmas Gift"
     },
     {
      "id": "Christmas_Present_Laika_Alternator",
@@ -12062,7 +12543,8 @@
     },
     {
      "id": "Copper_Coins",
-     "name": "Медные монеты"
+     "name": "Медные монеты",
+     "name_en": "Copper Coins"
     },
     {
      "id": "Credit_Card_Classic",
@@ -12095,7 +12577,8 @@
     },
     {
      "id": "Dentex_Fillet",
-     "name": "Dentex Fillet"
+     "name": "Филе зубана",
+     "name_en": "Dantex Fillet"
     },
     {
      "id": "Dentex_Fillet_Salted",
@@ -12144,11 +12627,13 @@
     },
     {
      "id": "Ghillie_Suit_Jacket_03",
-     "name": "Ghillie Suite Jacket Desert"
+     "name": "Верх маскхалата (песчаный)",
+     "name_en": "Desert Ghillie Suit Top"
     },
     {
      "id": "Ghillie_Suit_Pants_03",
-     "name": "Ghillie Suite Pants Desert"
+     "name": "Низ маскхалата (песчаный)",
+     "name_en": "Desert Ghillie Suit Bottom"
     },
     {
      "id": "Goat_Steak_Salted",
@@ -12180,7 +12665,7 @@
     {
      "id": "Improvised_Bow_30",
      "name": "Самодельный лук 30#",
-     "name_en": "Improvised Bow 30"
+     "name_en": "Improvised Bow 30#"
     },
     {
      "id": "Improvised_Bow_35",
@@ -12189,7 +12674,8 @@
     },
     {
      "id": "Improvised_Quiver_02_Event",
-     "name": "Improvised Quiver 3 Arrows"
+     "name": "Самодельный колчан",
+     "name_en": "Improvised Quiver"
     },
     {
      "id": "ImprovisedFishingRod",
@@ -12203,7 +12689,8 @@
     },
     {
      "id": "Magazine_DEagle_357",
-     "name": "Desert Eagle .357mm Magazine"
+     "name": "Desert Eagle .357mm Magazine",
+     "name_en": "DEagle .357 Magazine"
     },
     {
      "id": "Magnifying_Glass",
@@ -12246,7 +12733,8 @@
     },
     {
      "id": "Monkfish_Fillet",
-     "name": "Monkfish Fillet"
+     "name": "Филе удильщика",
+     "name_en": "Angler Fillet"
     },
     {
      "id": "Monkfish_Fillet_Salted",
@@ -12307,7 +12795,8 @@
     },
     {
      "id": "Police_Mask_01",
-     "name": "Police Balaclava"
+     "name": "Балаклава",
+     "name_en": "Balaclava"
     },
     {
      "id": "Police_Sweater_01",
@@ -12334,7 +12823,7 @@
     {
      "id": "Recurve_Bow_100",
      "name": "Баллиста 100#",
-     "name_en": "Ballista 100"
+     "name_en": "Ballista 100#"
     },
     {
      "id": "Recurve_Bow_60",
@@ -12344,7 +12833,7 @@
     {
      "id": "Recurve_Bow_70",
      "name": "Хищник 70#",
-     "name_en": "Predator 70"
+     "name_en": "Predator 70#"
     },
     {
      "id": "Recurve_Bow_80",
@@ -12354,11 +12843,12 @@
     {
      "id": "Recurve_Bow_90",
      "name": "Чёрный ястреб 90#",
-     "name_en": "BlackHawk 90"
+     "name_en": "BlackHawk 90#"
     },
     {
      "id": "RH_Bycoket_01",
-     "name": "Robin Hood Bycoket"
+     "name": "Тирольская шляпа",
+     "name_en": "Bycoket"
     },
     {
      "id": "RH_Shoe_01",
@@ -12366,11 +12856,13 @@
     },
     {
      "id": "RH_Tights",
-     "name": "Robin Hood Tights"
+     "name": "Колготки",
+     "name_en": "Tights"
     },
     {
      "id": "Richards_Cheese",
-     "name": "Richards Cheese"
+     "name": "Richards Cheese",
+     "name_en": "Richard's Cheese"
     },
     {
      "id": "RodentMeat",
@@ -12387,7 +12879,8 @@
     },
     {
      "id": "Sardine_Fillet",
-     "name": "Sardine Fillet"
+     "name": "Sardine Fillet",
+     "name_en": "Sardine Fillet"
     },
     {
      "id": "Sardine_Fillet_Salted",
@@ -12435,7 +12928,8 @@
     },
     {
      "id": "Smoke_Grenade",
-     "name": "Smoke Grenade White"
+     "name": "Дымовая граната",
+     "name_en": "Smoke grenade"
     },
     {
      "id": "Smoke_Grenade_Green",
@@ -12479,11 +12973,13 @@
     },
     {
      "id": "Snowballs_01",
-     "name": "Snow Ball White"
+     "name": "Снежок",
+     "name_en": "Snowball"
     },
     {
      "id": "Snowballs_02",
-     "name": "Snow Ball Yellow"
+     "name": "Жёлтый снежок",
+     "name_en": "Yellow Snowball"
     },
     {
      "id": "Sock_01",
@@ -12498,7 +12994,7 @@
     {
      "id": "Suite_Pants_01",
      "name": "Репродуктивная система",
-     "name_en": "Angel's Flight Pants"
+     "name_en": "Angel’s flight pants"
     },
     {
      "id": "Swan_Breasts",
@@ -12570,7 +13066,8 @@
     },
     {
      "id": "Weapon_Deagle_357",
-     "name": "Desert Eagle .357"
+     "name": "Desert Eagle .357",
+     "name_en": "DEagle .357"
     },
     {
      "id": "Weapon_Improvised_Rifle",
@@ -12587,7 +13084,7 @@
     },
     {
      "id": "WW_Seat_BackRight_Item",
-     "name": "«Волксваген» — сиденье (переднее левое)",
+     "name": "«Волксваген» — сиденье (переднее левое)",
      "name_en": "WW Seat Back Right"
     },
     {
@@ -12601,15 +13098,18 @@
     },
     {
      "id": "Bobby_pin",
-     "name": "Заколка"
+     "name": "Шпилька",
+     "name_en": "Bobby Pin"
     },
     {
      "id": "Christmas_tree",
-     "name": "Новогодняя ёлка"
+     "name": "Дугласова пихта",
+     "name_en": "Douglas Fir"
     },
     {
      "id": "Christmas_tree_Decorated",
-     "name": "Новогодняя ёлка (наряженная)"
+     "name": "Рождественская ёлка",
+     "name_en": "Christmas Tree"
     },
     {
      "id": "Kitchen_Board_01",
@@ -12621,12 +13121,123 @@
     },
     {
      "id": "Puppet_Eye",
-     "name": "Глаз куклы"
+     "name": "Глаз марионетки",
+     "name_en": "Puppet Eye"
     },
     {
      "id": "Scum_Sunrise",
      "name": "Обойма для СКС",
      "name_en": "Scum Sunrise"
+    },
+    {
+     "id": "Christmas_tree_Folded",
+     "name": "Свёрнутая дугласова пихта",
+     "name_en": "Folded Douglas Fir"
+    },
+    {
+     "id": "DJ_Mixer_Radio",
+     "name": "Микшер",
+     "name_en": "DJ Mixer"
+    },
+    {
+     "id": "Fire_deflector_shield",
+     "name": "Огнеотражательный щит",
+     "name_en": "Fire Deflector Shield"
+    },
+    {
+     "id": "Fishing_hook",
+     "name": "Набор поплавков",
+     "name_en": "Fishing Hook"
+    },
+    {
+     "id": "Grill",
+     "name": "Гриль",
+     "name_en": "Grill"
+    },
+    {
+     "id": "Jar_02",
+     "name": "Jar",
+     "name_en": "Jar"
+    },
+    {
+     "id": "MetalBrokenArrow",
+     "name": "Сломанная металлическая стрела",
+     "name_en": "Broken Metal Arrow"
+    },
+    {
+     "id": "Military_Backpack_03_01",
+     "name": "Рюкзак",
+     "name_en": "Backpack"
+    },
+    {
+     "id": "SidecarBike_Spikes_Item",
+     "name": "SidecarBike Spikes Item",
+     "name_en": "SidecarBike Spikes Item"
+    },
+    {
+     "id": "Small_Oxygen_Bottle_01",
+     "name": "Маленький баллон кислорода",
+     "name_en": "Small Oxygen Bottle"
+    },
+    {
+     "id": "Spoon",
+     "name": "Ложка",
+     "name_en": "Spoon"
+    },
+    {
+     "id": "Steel_Fork",
+     "name": "Вилка",
+     "name_en": "Fork"
+    },
+    {
+     "id": "Tepee",
+     "name": "Вигвам",
+     "name_en": "Tepee"
+    },
+    {
+     "id": "Tree_Bark",
+     "name": "Кора дерева",
+     "name_en": "Tree Bark"
+    },
+    {
+     "id": "TwD_MotorRacing_Boots_01",
+     "name": "Мотоциклетные ботинки",
+     "name_en": "Motorcycle boots"
+    },
+    {
+     "id": "TwD_MotorRacing_Gloves_01_01",
+     "name": "Тактические перчатки",
+     "name_en": "Tactical Gloves"
+    },
+    {
+     "id": "TwD_MotorRacing_Helmet_01",
+     "name": "Гоночный шлем",
+     "name_en": "Racing Helmet"
+    },
+    {
+     "id": "TwD_MotorRacing_Jacket_01",
+     "name": "Переносной холодильник",
+     "name_en": "Motorcycle Jacket"
+    },
+    {
+     "id": "TwD_MotorRacing_Pants_01",
+     "name": "Мотоциклетные штаны",
+     "name_en": "Motorcycle Pants"
+    },
+    {
+     "id": "WoodenBrokenArrowFeathers",
+     "name": "Сломанная деревянная стрела",
+     "name_en": "Broken Wooden Arrow"
+    },
+    {
+     "id": "Wooden_Fork",
+     "name": "Деревянная вилка",
+     "name_en": "Wooden Fork"
+    },
+    {
+     "id": "Wooden_Spoon",
+     "name": "Деревянная ложка",
+     "name_en": "Wooden Spoon"
     }
    ]
   },
@@ -12664,12 +13275,53 @@
     },
     {
      "id": "SaltGrain",
-     "name": "Salt Grain"
+     "name": "Salt Grain",
+     "name_en": "Salt Grain"
     },
     {
      "id": "Toast",
      "name": "Тост",
      "name_en": "Toast"
+    },
+    {
+     "id": "Dish_SpitRoast_Bear",
+     "name": "Жареная медвежатина",
+     "name_en": "Spit Roasted Bear"
+    },
+    {
+     "id": "Dish_SpitRoast_Fish",
+     "name": "Жареная рыба",
+     "name_en": "Spit Roasted Fish"
+    },
+    {
+     "id": "Dish_SpitRoast_Goat",
+     "name": "Жареное козье мясо",
+     "name_en": "Spit Roasted Goat"
+    },
+    {
+     "id": "Dish_SpitRoast_Horse",
+     "name": "Жареная конина",
+     "name_en": "Spit Roasted Horse"
+    },
+    {
+     "id": "Dish_SpitRoast_Lamb",
+     "name": "Жареная ягнятина",
+     "name_en": "Spit Roasted Lamb"
+    },
+    {
+     "id": "Dish_SpitRoast_Pork",
+     "name": "Жареная свинина",
+     "name_en": "Spit Roasted Pork"
+    },
+    {
+     "id": "Dish_SpitRoast_Poultry",
+     "name": "Жареная птица",
+     "name_en": "Spit Roasted Poultry"
+    },
+    {
+     "id": "Dish_SpitRoast_Wolf",
+     "name": "Жареная крольчатина",
+     "name_en": "Spit Roasted Wolf"
     }
    ]
   },
@@ -12682,7 +13334,8 @@
     },
     {
      "id": "Construction_Earmuffs_01",
-     "name": "Earmuffs Yellow"
+     "name": "Наушники",
+     "name_en": "Earmuffs"
     },
     {
      "id": "Construction_Earmuffs_02",
@@ -12698,7 +13351,8 @@
     },
     {
      "id": "F_Undershirt_Bra_01",
-     "name": "Female Undershirt Bra White"
+     "name": "Female Undershirt Bra White",
+     "name_en": "Bra"
     },
     {
      "id": "F_Undershirt_Bra_02",
@@ -12718,11 +13372,13 @@
     },
     {
      "id": "Hazmat_Suit_Modern",
-     "name": "Hazmat Suit Modern"
+     "name": "Hazmat Suit Modern",
+     "name_en": "Modern Hazmat Suit"
     },
     {
      "id": "Hazmat_Suit_Vintage",
-     "name": "Hazmat Suit Vintage"
+     "name": "Hazmat Suit Vintage",
+     "name_en": "Vintage Hazmat Suit"
     },
     {
      "id": "Kilt_Sock_01",
@@ -12758,7 +13414,8 @@
     },
     {
      "id": "Scum_Shirt_Supporter_Pack_Black_01",
-     "name": "Male Undershirt Black Supporters Pack"
+     "name": "Майка",
+     "name_en": "Undershirt"
     },
     {
      "id": "Socks_02",
@@ -12788,7 +13445,7 @@
    "items": [
     {
      "id": "Weapon_Parts_590A11",
-     "name": "Запчасти для TEC01 490",
+     "name": "Запчасти для TEC01 490",
      "name_en": "TEC01 490 Weapon Parts"
     },
     {
@@ -12813,8 +13470,8 @@
     },
     {
      "id": "Weapon_Parts_AS_Val",
-     "name": "Запчасти для АС «Вал»",
-     "name_en": "AS VAL Weapon Parts"
+     "name": "Запчасти для АС «Вал»",
+     "name_en": "AS Val Weapon Parts"
     },
     {
      "id": "Weapon_Parts_AWM",
@@ -12828,7 +13485,7 @@
     },
     {
      "id": "Weapon_Parts_Block21",
-     "name": "Запчасти для Block 21",
+     "name": "Запчасти для Block 21",
      "name_en": "Block 21 Weapon Parts"
     },
     {
@@ -12846,7 +13503,7 @@
     },
     {
      "id": "Weapon_Parts_DT11b",
-     "name": "Урон игроку от взрывов груза.",
+     "name": "DT11B Weapon Parts",
      "name_en": "DT11B Weapon Parts"
     },
     {
@@ -12857,7 +13514,7 @@
     {
      "id": "Weapon_Parts_HS9",
      "name": "Запчасти для HS-9",
-     "name_en": "HS9 Weapon Parts"
+     "name_en": "HS-9 Weapon Parts"
     },
     {
      "id": "Weapon_Parts_Hunter85",
@@ -12910,7 +13567,8 @@
     },
     {
      "id": "Weapon_Parts_M1_Garand",
-     "name": "M1 Garand Weapon Parts"
+     "name": "Запчасти для М1",
+     "name_en": "M1 Weapon Parts"
     },
     {
      "id": "Weapon_Parts_M249",
@@ -12939,7 +13597,8 @@
     },
     {
      "id": "Weapon_Parts_MosinNagant",
-     "name": "Mosin Nagant Weapon Parts"
+     "name": "M1911 (гравированный)",
+     "name_en": "M1891 Weapon Parts"
     },
     {
      "id": "Weapon_Parts_MP5",
@@ -12948,7 +13607,8 @@
     },
     {
      "id": "Weapon_Parts_Peacekeeper38",
-     "name": "Peacekeeper 38 Weapon Parts"
+     "name": "Запчасти для Peacekeeper 38",
+     "name_en": "Peacekeeper 38 Parts"
     },
     {
      "id": "Weapon_Parts_RPG",
@@ -12967,21 +13627,22 @@
     {
      "id": "Weapon_Parts_SCAR_L",
      "name": "Запчасти для SCAR-L",
-     "name_en": "SCAR-L Weapon Parts"
+     "name_en": "SCAR L Weapon Parts"
     },
     {
      "id": "Weapon_Parts_SDASS",
-     "name": "Сап-доска — каркас",
+     "name": "Сап-доска — каркас",
      "name_en": "SDASS Weapon Parts"
     },
     {
      "id": "Weapon_Parts_Serpent357",
-     "name": "Запчасти для Serpent 357",
+     "name": "Запчасти для Serpent 357",
      "name_en": "Serpent 357 Weapon Parts"
     },
     {
      "id": "Weapon_Parts_SF19",
-     "name": "SF19 Weapon Parts"
+     "name": "Запчасти для HS SF19",
+     "name_en": "HS SF19 Weapon Parts"
     },
     {
      "id": "Weapon_Parts_SKS",
@@ -12989,7 +13650,8 @@
     },
     {
      "id": "Weapon_Parts_SVD",
-     "name": "SVD Weapon Parts"
+     "name": "SVD Weapon Parts",
+     "name_en": "SVD Weapon Parts"
     },
     {
      "id": "Weapon_Parts_TommyGun",
@@ -13012,16 +13674,17 @@
     },
     {
      "id": "Weapon_Parts_VHSBG",
-     "name": "Запчасти для VHS BG",
+     "name": "Запчасти для VHS BG",
      "name_en": "VHS BG Weapon Parts"
     },
     {
      "id": "Weapon_Parts_Viper_M357",
-     "name": "Viper 357 Weapon Parts"
+     "name": "Запчасти для Viper M357",
+     "name_en": "Viper M357 Weapon Parts"
     },
     {
      "id": "Weapon_Parts_VSS_VZ",
-     "name": "Запчасти для ВСС «Винторез»",
+     "name": "Запчасти для ВСС «Винторез»",
      "name_en": "VSS VZ Weapon Parts"
     },
     {
@@ -13245,7 +13908,8 @@
     },
     {
      "id": "Herbicide",
-     "name": "Herbicide"
+     "name": "Средство от сорняков",
+     "name_en": "Weed Repellent"
     },
     {
      "id": "Industrial_Fertilizer",
@@ -13313,8 +13977,8 @@
     },
     {
      "id": "ImprovisedGrillGrid",
-     "name": "Самодельный мангал",
-     "name_en": "Improvised BBQ"
+     "name": "Самодельный гриль",
+     "name_en": "Improvised Grill"
     },
     {
      "id": "Jack_o_Lantern_01",
@@ -13327,11 +13991,13 @@
     },
     {
      "id": "Jack_o_Lantern_03",
-     "name": "531919"
+     "name": "Фонарь из тыквы",
+     "name_en": "Jack-o'-lantern"
     },
     {
      "id": "Lock_Item_Basic",
-     "name": "Iron Lock"
+     "name": "Iron Lock",
+     "name_en": "Iron Lock"
     },
     {
      "id": "Lock_Item_Medium",
@@ -13340,18 +14006,18 @@
     },
     {
      "id": "Lock_Security",
-     "name": "Защита замков (простая)",
-     "name_en": "Lock Protection Basic"
+     "name": "Простая защита замков",
+     "name_en": "Basic Lock Protection"
     },
     {
      "id": "Lock_Security_Lvl2",
-     "name": "Защита замков (средняя)",
-     "name_en": "Lock Protection Medium"
+     "name": "Средняя защита замков",
+     "name_en": "Medium Lock Protection"
     },
     {
      "id": "Lock_Security_Lvl3",
-     "name": "Защита замков (продвинутая)",
-     "name_en": "Lock Protection Advanced"
+     "name": "Продвинутая защита замков",
+     "name_en": "Advanced Lock Protection"
     },
     {
      "id": "Lockpick_Item",
@@ -13381,7 +14047,7 @@
     {
      "id": "SandBag",
      "name": "«Бычара» — бампер (задн.)",
-     "name_en": "Sandbag"
+     "name_en": "Sand Bag"
     },
     {
      "id": "Sandbag_Wall",
@@ -13391,6 +14057,41 @@
      "id": "Standing_Torch_01",
      "name": "Стоящий факел",
      "name_en": "Standing Torch"
+    },
+    {
+     "id": "Electrical_Lock_Trigger",
+     "name": "Electrical Lock Trigger",
+     "name_en": "Electrical Lock Trigger"
+    },
+    {
+     "id": "Lock_Item_WorldOwned_Basic",
+     "name": "Ржавый замок, привязанный к миру",
+     "name_en": "World Owned Rusty Lock"
+    },
+    {
+     "id": "Lock_Item_WorldOwned_Medium",
+     "name": "Lock Item WorldOwned Medium",
+     "name_en": "Lock Item WorldOwned Medium"
+    },
+    {
+     "id": "Lock_Item_WorldOwned_MediumDialLock",
+     "name": "Наборный замок, привязанный к миру",
+     "name_en": "World Owned Dial Lock"
+    },
+    {
+     "id": "Lock_Item_WorldOwned_VeryEasy",
+     "name": "Обычный замок, привязанный к миру",
+     "name_en": "World Owned Lock"
+    },
+    {
+     "id": "Lock_Security_Killbox",
+     "name": "Защита замков",
+     "name_en": "Lock Protection"
+    },
+    {
+     "id": "ZombieKamikazeDummyTrap",
+     "name": "Замок с бомбой",
+     "name_en": "Lock Bomb"
     }
    ]
   },
@@ -13399,11 +14100,13 @@
    "items": [
     {
      "id": "Bicycle_Wheel_54_622_Item",
-     "name": "Bicycle Wheel 622 R50"
+     "name": "Поясная сумка",
+     "name_en": "Wheel 54 622"
     },
     {
      "id": "Bicycle_Wheel_60_622_Item",
-     "name": "Bicycle Wheel 622 R60"
+     "name": "Колесо 60 622",
+     "name_en": "Wheel 60 622"
     },
     {
      "id": "Car_Radio_Item",
@@ -13416,32 +14119,32 @@
     },
     {
      "id": "Cruiser_Brakelight_Item",
-     "name": "«Ракета» — двигатель",
+     "name": "«Ракета» — двигатель",
      "name_en": "Cruiser Brakelight"
     },
     {
      "id": "Cruiser_Fender_Front_Item",
-     "name": "«Ракета» — переднее крыло",
+     "name": "«Ракета» — переднее крыло",
      "name_en": "Cruiser Front Fender"
     },
     {
      "id": "Cruiser_Fender_Rear_Item",
-     "name": "«Ракета» — заднее крыло",
+     "name": "«Ракета» — заднее крыло",
      "name_en": "Cruiser Rear Fender"
     },
     {
      "id": "Cruiser_Headlight_Item",
-     "name": "«Ракета» — фара",
+     "name": "«Ракета» — фара",
      "name_en": "Cruiser Headlight"
     },
     {
      "id": "Cruiser_Seat_Front_Item",
-     "name": "«Ракета» — переднее сидение",
+     "name": "«Ракета» — переднее сидение",
      "name_en": "Cruiser Front Seat"
     },
     {
      "id": "Cruiser_Seat_Rear_Item",
-     "name": "«Ракета» — заднее сидение",
+     "name": "«Ракета» — заднее сидение",
      "name_en": "Cruiser Rear Seat"
     },
     {
@@ -13456,7 +14159,7 @@
     },
     {
      "id": "Cruiser_Wind_Deflector_Item",
-     "name": "«Ракета» — ветровой щиток",
+     "name": "«Ракета» — ветровой щиток",
      "name_en": "Cruiser Wind Deflector"
     },
     {
@@ -13466,42 +14169,42 @@
     },
     {
      "id": "Dirtbike_Body_Hellrider_Item",
-     "name": "«Адский конь» — рама",
+     "name": "«Адский конь» — рама",
      "name_en": "Dirtbike Hellrider Body"
     },
     {
      "id": "Dirtbike_Body_Item",
-     "name": "Кроссовый мотоцикл — рама",
+     "name": "Кроссовый мотоцикл — рама",
      "name_en": "Dirtbike Body"
     },
     {
      "id": "Dirtbike_Brakelight_Item",
-     "name": "Кросс. мотоцикл — стоп-сигнал",
+     "name": "Dirtbike Brakelight",
      "name_en": "Dirtbike Brakelight"
     },
     {
      "id": "Dirtbike_Fender_Item",
-     "name": "Кроссовый мотоцикл — крыло",
+     "name": "Кроссовый мотоцикл — крыло",
      "name_en": "Dirtbike Fender"
     },
     {
      "id": "Dirtbike_Front_Shield_Item",
-     "name": "Кроссовый мотоцикл — передний щиток",
+     "name": "Кроссовый мотоцикл — передний щиток",
      "name_en": "Dirtbike Front Shield"
     },
     {
      "id": "Dirtbike_Front_Wheel_Cover_Item",
-     "name": "Кроссовый мотоцикл — колпак переднего колеса",
+     "name": "Кроссовый мотоцикл — колпак переднего колеса",
      "name_en": "Dirtbike Front Wheel Cover"
     },
     {
      "id": "Dirtbike_Headlight_Item",
-     "name": "Кросс. мотоцикл — фары",
+     "name": "Dirtbike Headlights",
      "name_en": "Dirtbike Headlights"
     },
     {
      "id": "Dirtbike_Hellrider_Skull_Item",
-     "name": "«Адский конь» — череп",
+     "name": "«Адский конь» — череп",
      "name_en": "Dirtbike Hellrider Skull"
     },
     {
@@ -13521,15 +14224,18 @@
     },
     {
      "id": "Laika_Body_ArmorHeavy_Left",
-     "name": "Laika Heavy Body Armor Left"
+     "name": "«Лайка» — тяжёлая броня для кузова (левая)",
+     "name_en": "Laika Body Armor Heavy Left"
     },
     {
      "id": "Laika_Body_ArmorHeavy_Right",
-     "name": "Laika Heavy Body Armor Right"
+     "name": "«Лайка» — тяжёлая броня для кузова (правая)",
+     "name_en": "Laika Body Armor Heavy Right"
     },
     {
      "id": "Laika_Body_ArmorHeavy_Top_Item",
-     "name": "Laika Heavy Armor WindShield"
+     "name": "«Лайка» — коробка передач",
+     "name_en": "Laika Heavy Armor Top"
     },
     {
      "id": "Laika_Body_ArmorLight_Left",
@@ -13545,27 +14251,28 @@
     },
     {
      "id": "Laika_Body_Front",
-     "name": "«Лайка» — часть кузова (передняя)",
+     "name": "«Лайка» — часть кузова (передняя)",
      "name_en": "Laika Body Front"
     },
     {
      "id": "Laika_Body_Left",
-     "name": "«Лайка» — часть кузова (правая)",
+     "name": "«Лайка» — часть кузова (правая)",
      "name_en": "Laika Body Left"
     },
     {
      "id": "Laika_Body_Right",
-     "name": "«Лайка» — часть кузова (верхняя)",
+     "name": "«Лайка» — часть кузова (верхняя)",
      "name_en": "Laika Body Right"
     },
     {
      "id": "Laika_Body_Top",
-     "name": "«Лайка» — часть кузова (верхняя)",
+     "name": "«Лайка» — часть кузова (верхняя)",
      "name_en": "Laika Body Top"
     },
     {
      "id": "Laika_Bumper_Armor_Back_Item",
-     "name": "Laika Armor Back"
+     "name": "«Лайка» — бронированный бампер (задний)",
+     "name_en": "Laika Bumper Armor Back"
     },
     {
      "id": "Laika_Bumper_Back_Item",
@@ -13573,19 +14280,23 @@
     },
     {
      "id": "Laika_Bumper_Front_Item",
-     "name": "Laika Front Bumper"
+     "name": "«Лайка» — бампер (передний)",
+     "name_en": "Laika Bumper Front"
     },
     {
      "id": "Laika_Door_ArmorHeavy_FrontLeft_Item",
-     "name": "Laika Door Armor Heavy Front Left"
+     "name": "«Лайка» — тяжёлая броня для двери (передняя левая)",
+     "name_en": "Laika Door Heavy Armor Front Left"
     },
     {
      "id": "Laika_Door_ArmorHeavy_FrontRight_Item",
-     "name": "Laika Door Armor Heavy Front Right"
+     "name": "«Лайка» — тяжёлая броня для двери (передняя правая)",
+     "name_en": "Laika Door Heavy Armor Front Right"
     },
     {
      "id": "Laika_Door_ArmorLight_FrontLeft_Item",
-     "name": "Laika Door Armor Light Front Left"
+     "name": "Laika Door Armor Light Front Left",
+     "name_en": "Laika Door Light Armor Front Left"
     },
     {
      "id": "Laika_Door_ArmorLight_FrontRight_Item",
@@ -13593,37 +14304,37 @@
     },
     {
      "id": "Laika_Door_Left_Item",
-     "name": "«Лайка» — дверь (передняя левая)",
-     "name_en": "Laika Door Front Left"
+     "name": "«Лайка» — дверь (левая)",
+     "name_en": "Laika Door Left"
     },
     {
      "id": "Laika_Door_Right_Item",
-     "name": "«Лайка» — дверь (передняя правая)",
-     "name_en": "Laika Door Front Right"
+     "name": "«Лайка» — дверь (правая)",
+     "name_en": "Laika Door Right"
     },
     {
      "id": "Laika_DoorHood_Item",
-     "name": "«Лайка» — капот",
+     "name": "«Лайка» — капот",
      "name_en": "Laika Hood"
     },
     {
      "id": "Laika_DoorTrunk_ArmorHeavy_Item",
-     "name": "«Лайка» — тяжёлая броня для багажника",
+     "name": "«Лайка» — тяжёлая броня для багажника",
      "name_en": "Laika Trunk Armor Heavy"
     },
     {
      "id": "Laika_DoorTrunk_ArmorLight_Item",
-     "name": "«Лайка» — лёгкая броня для багажника",
+     "name": "«Лайка» — лёгкая броня для багажника",
      "name_en": "Laika Trunk Armor Light"
     },
     {
      "id": "Laika_DoorTrunk_Item",
-     "name": "«Лайка» — багажник",
+     "name": "«Лайка» — багажник",
      "name_en": "Laika Trunk"
     },
     {
      "id": "Laika_Engine_Alternator_Item",
-     "name": "«Лайка» — генератор",
+     "name": "«Лайка» — генератор",
      "name_en": "Laika Alternator"
     },
     {
@@ -13632,157 +14343,157 @@
     },
     {
      "id": "Laika_Lights_FrontRight",
-     "name": "«Лайка» — задний фонарь (левый)",
+     "name": "«Лайка» — задний фонарь (левый)",
      "name_en": "Laika Lights Front Right"
     },
     {
      "id": "Laika_Lights_RearLeft",
-     "name": "«Лайка» — задний фонарь (правый)",
+     "name": "«Лайка» — задний фонарь (правый)",
      "name_en": "Laika Lights Rear Left"
     },
     {
      "id": "Laika_Lights_RearRight",
-     "name": "«Лайка» — сиденье (заднее)",
+     "name": "«Лайка» — сиденье (заднее)",
      "name_en": "Laika Lights Rear Right"
     },
     {
      "id": "Laika_Seat_FrontLeft_Item",
-     "name": "«Лайка» — сиденье (переднее левое)",
+     "name": "«Лайка» — сиденье (переднее левое)",
      "name_en": "Laika Seat Front Left"
     },
     {
      "id": "Laika_Seat_FrontRight_Item",
-     "name": "«Лайка» — сиденье (переднее правое)",
+     "name": "«Лайка» — сиденье (переднее правое)",
      "name_en": "Laika Seat Front Right"
     },
     {
      "id": "Rager_Body_ArmorHeavy_Back_Item",
-     "name": "«Бычара» — тяжёлая броня для кузова (задняя)",
+     "name": "«Бычара» — тяжёлая броня для кузова (задняя)",
      "name_en": "Rager Body Armor Heavy Back"
     },
     {
      "id": "Rager_Body_ArmorHeavy_Left_Item",
-     "name": "«Бычара» — тяжёлая броня для кузова (левая)",
+     "name": "«Бычара» — тяжёлая броня для кузова (левая)",
      "name_en": "Rager Body Armor Heavy Left"
     },
     {
      "id": "Rager_Body_ArmorHeavy_Right_Item",
-     "name": "«Бычара» — лёгкая броня для кузова (задняя)",
+     "name": "«Бычара» — лёгкая броня для кузова (задняя)",
      "name_en": "Rager Body Armor Heavy Right"
     },
     {
      "id": "Rager_Body_ArmorHeavy_Top_Item",
-     "name": "«Бычара» — лёгкая броня для кузова (левая)",
+     "name": "«Бычара» — лёгкая броня для кузова (левая)",
      "name_en": "Rager Body Armor Heavy Top"
     },
     {
      "id": "Rager_Body_ArmorLight_Back_Item",
-     "name": "«Бычара» — лёгкая броня для кузова (правая)",
+     "name": "«Бычара» — лёгкая броня для кузова (правая)",
      "name_en": "Rager Body Armor Light Back"
     },
     {
      "id": "Rager_Body_ArmorLight_Left_Item",
-     "name": "«Бычара» — лёгкая броня для кузова (верхняя)",
+     "name": "«Бычара» — лёгкая броня для кузова (верхняя)",
      "name_en": "Rager Body Armor Light Left"
     },
     {
      "id": "Rager_Body_ArmorLight_Right_Item",
-     "name": "«Бычара» — часть кузова (передняя)",
+     "name": "«Бычара» — часть кузова (передняя)",
      "name_en": "Rager Body Armor Light Right"
     },
     {
      "id": "Rager_Body_ArmorLight_Top_Item",
-     "name": "«Бычара» — часть кузова (левая)",
+     "name": "«Бычара» — часть кузова (левая)",
      "name_en": "Rager Body Armor Light Top"
     },
     {
      "id": "Rager_Body_Front",
-     "name": "«Бычара» — часть кузова (правая)",
+     "name": "«Бычара» — часть кузова (правая)",
      "name_en": "Rager Body Front"
     },
     {
      "id": "Rager_Body_Left",
-     "name": "«Бычара» — часть кузова (левая)",
+     "name": "«Бычара» — часть кузова (левая)",
      "name_en": "Rager Body Left"
     },
     {
      "id": "Rager_Body_Right",
-     "name": "«Бычара» — часть кузова (верхняя)",
+     "name": "«Бычара» — часть кузова (верхняя)",
      "name_en": "Rager Body Right"
     },
     {
      "id": "Rager_Body_Top",
-     "name": "«Бычара» — часть кузова (верхняя)",
+     "name": "«Бычара» — часть кузова (верхняя)",
      "name_en": "Rager Body Top"
     },
     {
      "id": "Rager_Bumper_Back_Item",
-     "name": "«Бычара» — бампер (задний)",
+     "name": "«Бычара» — бампер (задний)",
      "name_en": "Rager Bumper Back"
     },
     {
      "id": "Rager_Bumper_Front_Item",
-     "name": "«Бычара» — бампер (передн.)",
+     "name": "«Бычара» — бампер (передн.)",
      "name_en": "Rager Bumper Front"
     },
     {
      "id": "Rager_Door_ArmorHeavy_BackLeft_Item",
-     "name": "«Бычара» — тяжёлая броня для двери (задняя левая)",
+     "name": "«Бычара» — тяжёлая броня для двери (задняя левая)",
      "name_en": "Rager Door Armor Heavy Back Left"
     },
     {
      "id": "Rager_Door_ArmorHeavy_BackRight_Item",
-     "name": "«Бычара» — тяжёлая броня для двери (задняя правая)",
+     "name": "«Бычара» — тяжёлая броня для двери (задняя правая)",
      "name_en": "Rager Door Armor Heavy Back Right"
     },
     {
      "id": "Rager_Door_ArmorHeavy_FrontLeft_Item",
-     "name": "«Бычара» — тяжёлая броня для двери (передняя левая)",
+     "name": "«Бычара» — тяжёлая броня для двери (передняя левая)",
      "name_en": "Rager Door Armor Heavy Front Left"
     },
     {
      "id": "Rager_Door_ArmorHeavy_FrontRight_Item",
-     "name": "«Бычара» — тяжёлая броня для двери (передняя правая)",
+     "name": "«Бычара» — тяжёлая броня для двери (передняя правая)",
      "name_en": "Rager Door Armor Heavy Front Right"
     },
     {
      "id": "Rager_Door_ArmorLight_BackLeft_Item",
-     "name": "«Бычара» — лёгкая броня для двери (задняя левая)",
+     "name": "«Бычара» — лёгкая броня для двери (задняя левая)",
      "name_en": "Rager Door Armor Light Back Left"
     },
     {
      "id": "Rager_Door_ArmorLight_BackRight_Item",
-     "name": "«Бычара» — лёгкая броня для двери (задняя правая)",
+     "name": "«Бычара» — лёгкая броня для двери (задняя правая)",
      "name_en": "Rager Door Armor Light Back Right"
     },
     {
      "id": "Rager_Door_ArmorLight_FrontLeft_Item",
-     "name": "«Бычара» — лёгкая броня для двери (передняя левая)",
+     "name": "«Бычара» — лёгкая броня для двери (передняя левая)",
      "name_en": "Rager Door Armor Light Front Left"
     },
     {
      "id": "Rager_Door_ArmorLight_FrontRight_Item",
-     "name": "«Бычара» — лёгкая броня для двери (передняя правая)",
+     "name": "«Бычара» — лёгкая броня для двери (передняя правая)",
      "name_en": "Rager Door Armor Light Front Right"
     },
     {
      "id": "Rager_Door_BackLeft_Item",
-     "name": "«Бычара» — дверь (задняя левая)",
+     "name": "«Бычара» — дверь (задняя левая)",
      "name_en": "Rager Door Back Left"
     },
     {
      "id": "Rager_Door_BackRight_Item",
-     "name": "«Бычара» — дверь (задняя правая)",
+     "name": "«Бычара» — дверь (задняя правая)",
      "name_en": "Rager Door Back Right"
     },
     {
      "id": "Rager_Door_FrontLeft_Item",
-     "name": "«Бычара» — дверь (передняя левая)",
+     "name": "«Бычара» — дверь (передняя левая)",
      "name_en": "Rager Door Front Left"
     },
     {
      "id": "Rager_Door_FrontRight_Item",
-     "name": "«Бычара» — дверь (передняя правая)",
+     "name": "«Бычара» — дверь (передняя правая)",
      "name_en": "Rager Door Front Right"
     },
     {
@@ -13807,12 +14518,12 @@
     },
     {
      "id": "Rager_Lights_FrontLeft",
-     "name": "«Бычара» — фара (прав.)",
+     "name": "«Бычара» — фара (прав.)",
      "name_en": "Rager Lights Front Left"
     },
     {
      "id": "Rager_Lights_FrontRight",
-     "name": "«Бычара» — задний фонарь (лев.)",
+     "name": "«Бычара» — задний фонарь (лев.)",
      "name_en": "Rager Lights Front Right"
     },
     {
@@ -13825,37 +14536,37 @@
     },
     {
      "id": "Rager_Lights_RearTop",
-     "name": "«Бычара» — сиденье (заднее)",
+     "name": "«Бычара» — сиденье (заднее)",
      "name_en": "Rager Lights Rear Top"
     },
     {
      "id": "Rager_Seat_FrontLeft_Item",
-     "name": "«Бычара» — сиденье (передн. лев.)",
+     "name": "Rager Seat Front Left",
      "name_en": "Rager Seat Front Left"
     },
     {
      "id": "Rager_Seat_FrontRight_Item",
-     "name": "«Бычара» — сиденье (передн. прав.)",
+     "name": "Rager Seat Front Right",
      "name_en": "Rager Seat Front Right"
     },
     {
      "id": "Rager_Wheel_ArmorHeavy_FrontLeft_Item",
-     "name": "«Бычара» — тяжёлая защита колеса (передняя левая)",
+     "name": "«Бычара» — тяжёлая защита колеса (передняя левая)",
      "name_en": "Rager Wheel Armor Heavy Front Left"
     },
     {
      "id": "Rager_Wheel_ArmorHeavy_FrontRight_Item",
-     "name": "«Бычара» — тяжёлая защита колеса (передняя правая)",
+     "name": "«Бычара» — тяжёлая защита колеса (передняя правая)",
      "name_en": "Rager Wheel Armor Heavy Front Right"
     },
     {
      "id": "Rager_Wheel_ArmorLight_FrontLeft_Item",
-     "name": "«Бычара» — лёгкая защита колеса (передняя левая)",
+     "name": "«Бычара» — лёгкая защита колеса (передняя левая)",
      "name_en": "Rager Wheel Armor Light Front Left"
     },
     {
      "id": "Rager_Wheel_ArmorLight_FrontRight_Item",
-     "name": "«Бычара» — лёгкая защита колеса (передняя правая)",
+     "name": "«Бычара» — лёгкая защита колеса (передняя правая)",
      "name_en": "Rager Wheel Armor Light Front Right"
     },
     {
@@ -13880,37 +14591,37 @@
     },
     {
      "id": "RIS_BrakeLight_Center_Item",
-     "name": "RIS (военный) — каркас",
+     "name": "RIS (военный) — каркас",
      "name_en": "RIS Brake Light Center"
     },
     {
      "id": "RIS_BrakeLight_Left_Item",
-     "name": "RIS — левый стоп-сигнал",
+     "name": "RIS — левый стоп-сигнал",
      "name_en": "RIS Brake Light Left"
     },
     {
      "id": "RIS_BrakeLight_Right_Item",
-     "name": "RIS — правый стоп-сигнал",
+     "name": "RIS — правый стоп-сигнал",
      "name_en": "RIS Brake Light Right"
     },
     {
      "id": "RIS_Hand_Guards_Civilian_Item",
-     "name": "RIS (гражданский) — защита для рук",
+     "name": "RIS (гражданский) — защита для рук",
      "name_en": "RIS Hand Guards Civilian"
     },
     {
      "id": "RIS_Headlight_Left_Item",
-     "name": "RIS — фара (левая)",
+     "name": "RIS — фара (левая)",
      "name_en": "RIS Headlight Left"
     },
     {
      "id": "RIS_Headlight_Right_Item",
-     "name": "RIS — фара (правая)",
+     "name": "RIS — фара (правая)",
      "name_en": "RIS Headlight Right"
     },
     {
      "id": "RIS_Light_Shades_Civilian_Item",
-     "name": "RIS (гражданский) — шторки",
+     "name": "RIS (гражданский) — шторки",
      "name_en": "RIS Light Shades Civilian"
     },
     {
@@ -13920,42 +14631,42 @@
     },
     {
      "id": "RIS_Spikes_Military",
-     "name": "RIS (военный) — шипы",
+     "name": "RIS (военный) — шипы",
      "name_en": "RIS Spikes Military"
     },
     {
      "id": "RIS_Wheel_Armor_Item",
-     "name": "RIS — броня для колёс",
+     "name": "RIS — броня для колёс",
      "name_en": "RIS Wheel Armor"
     },
     {
      "id": "SidecarBike_Brakelight_Item",
-     "name": "Мотоцикл с коляской: стоп-сигнал",
+     "name": "Стоп-сигнал мотоцикла с коляской",
      "name_en": "Sidecar Bike Brake Light"
     },
     {
      "id": "SidecarBike_Fender_Front_Item",
-     "name": "Мотоцикл с коляской: переднее крыло",
+     "name": "Переднее крыло мотоцикла с коляской",
      "name_en": "Sidecar Bike Fender Front"
     },
     {
      "id": "SidecarBike_Fender_Rear_Item",
-     "name": "Мотоцикл с коляской: заднее крыло",
+     "name": "Заднее крыло мотоцикла с коляской",
      "name_en": "Sidecar Bike Fender Rear"
     },
     {
      "id": "SidecarBike_Fender_Sidecar_Item",
-     "name": "Мотоцикл с коляской: крыло коляски",
+     "name": "Крыло мотоциклетной коляски",
      "name_en": "Sidecar Bike Fender Sidecar"
     },
     {
      "id": "SidecarBike_Headlight_Item",
-     "name": "Мотоцикл с коляской: фара",
+     "name": "Фара для мотоцикла с коляской",
      "name_en": "Sidecar Bike Headlight"
     },
     {
      "id": "SidecarBike_Seat_Back_Item",
-     "name": "Мотоцикл с коляской: заднее сиденье",
+     "name": "Заднее сиденье мотоцикла с коляской",
      "name_en": "Sidecar Bike Seat Back"
     },
     {
@@ -13965,52 +14676,52 @@
     },
     {
      "id": "SidecarBike_Sidecar_Brakelight_Item",
-     "name": "Коляска мотоцикла: стоп-сигнал",
+     "name": "Переднее сиденье мотоцикла с коляской",
      "name_en": "Sidecar Bike Sidecar Brake Light"
     },
     {
      "id": "SidecarBike_Sidecar_Headlight_Item",
-     "name": "Коляска мотоцикла: фара",
+     "name": "Фара мотоциклетной коляски",
      "name_en": "Sidecar Bike Sidecar Headlight"
     },
     {
      "id": "SidecarBike_Sidecar_WeaponStation_Item",
-     "name": "Коляска мотоцикла: крепление для оружия",
+     "name": "Крепление для оружия на мотоциклетной коляске",
      "name_en": "Sidecar Bike Sidecar Weapon Station"
     },
     {
      "id": "SidecarBike_Wheel_4x16_Item",
-     "name": "Мотоцикл с коляской: колесо",
+     "name": "Колесо для мотоцикла с коляской",
      "name_en": "Sidecar Bike Wheel"
     },
     {
      "id": "SportBike_Body_Street_Item",
-     "name": "Спортивный мотоцикл — рама городская",
+     "name": "Спортивный мотоцикл — рама городская",
      "name_en": "Sportbike Street Body"
     },
     {
      "id": "SportBike_Fender_Item",
-     "name": "Спортивный мотоцикл — крыло",
+     "name": "Спортивный мотоцикл — крыло",
      "name_en": "Sportbike Fender"
     },
     {
      "id": "SportBike_Fender_Street_Item",
-     "name": "Спортивный мотоцикл — крыло городское",
+     "name": "Спортивный мотоцикл — крыло городское",
      "name_en": "Sportbike Street Fender"
     },
     {
      "id": "SportBike_Seat_Brakelight_Item",
-     "name": "Спортивный мотоцикл — стоп-сигнал",
+     "name": "Спортивный мотоцикл — стоп-сигнал",
      "name_en": "Sportbike Brake Light"
     },
     {
      "id": "SportBike_Seat_Item",
-     "name": "Спортивный мотоцикл — сидение",
+     "name": "Спортивный мотоцикл — сидение",
      "name_en": "Sportbike Seat"
     },
     {
      "id": "SportBike_Seat_Street_Item",
-     "name": "Спортивный мотоцикл — сидение городское",
+     "name": "Спортивный мотоцикл — сидение городское",
      "name_en": "Sportbike Street Seat"
     },
     {
@@ -14025,42 +14736,42 @@
     },
     {
      "id": "SportBike_Wind_Deflector_Headlight_Item",
-     "name": "Спортивный мотоцикл — фара",
+     "name": "Спортивный мотоцикл — фара",
      "name_en": "Sportbike Headlight"
     },
     {
      "id": "SportBike_Wind_Deflector_Item",
-     "name": "Спортивный мотоцикл — ветровой щиток",
+     "name": "Спортивный мотоцикл — ветровой щиток",
      "name_en": "Sportbike Wind Deflector"
     },
     {
      "id": "SportBike_Wind_Deflector_Street_Headlight_Item",
-     "name": "Спортивный мотоцикл — фара городская",
+     "name": "Спортивный мотоцикл — фара городская",
      "name_en": "Sportbike Street Headlight"
     },
     {
      "id": "Tractor_Body_Left_ArmorHeavy_Item",
-     "name": "Трактор: тяжёлая броня корпуса (лево)",
+     "name": "Трактор — тяжёлая броня для кузова (левая)",
      "name_en": "Tractor Body Armor Heavy Left"
     },
     {
      "id": "Tractor_Body_Left_Brakelight_Item",
-     "name": "Трактор: стоп-сигнал левый",
+     "name": "Трактор — левый стоп-сигнал",
      "name_en": "Tractor Brake Light Left"
     },
     {
      "id": "Tractor_Body_Left_Item",
-     "name": "Трактор: корпус левый",
+     "name": "Трактор — часть кузова (левая)",
      "name_en": "Tractor Body Left"
     },
     {
      "id": "Tractor_Body_Right_ArmorHeavy_Item",
-     "name": "Трактор: тяжёлая броня корпуса (право)",
+     "name": "Трактор — тяжёлая броня для кузова (правая)",
      "name_en": "Tractor Body Armor Heavy Right"
     },
     {
      "id": "Tractor_Body_Right_Brakelight_Item",
-     "name": "Трактор: стоп-сигнал правый",
+     "name": "Трактор — правый стоп-сигнал",
      "name_en": "Tractor Brake Light Right"
     },
     {
@@ -14070,72 +14781,72 @@
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Back_Item",
-     "name": "Трактор: тяжёлая броня верх (зад)",
+     "name": "Трактор — тяжёлая броня для кузова (верхняя задняя)",
      "name_en": "Tractor Body Armor Heavy Top Back"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Front_Item",
-     "name": "Трактор: тяжёлая броня верх (перед)",
+     "name": "Трактор — тяжёлая броня для кузова (верхняя передняя)",
      "name_en": "Tractor Body Armor Heavy Top Front"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Left_Item",
-     "name": "Трактор: тяжёлая броня верх (лево)",
+     "name": "Трактор — тяжёлая броня для кузова (верхняя левая)",
      "name_en": "Tractor Body Armor Heavy Top Left"
     },
     {
      "id": "Tractor_Body_Top_ArmorHeavy_Right_Item",
-     "name": "Трактор: тяжёлая броня верх (право)",
+     "name": "Трактор — тяжёлая броня для кузова (верхняя правая)",
      "name_en": "Tractor Body Armor Heavy Top Right"
     },
     {
      "id": "Tractor_Body_Top_Door_Left_Item",
-     "name": "Трактор: дверь левая",
+     "name": "Трактор — дверь (левая)",
      "name_en": "Tractor Door Left"
     },
     {
      "id": "Tractor_Body_Top_Door_Right_Item",
-     "name": "Трактор: дверь правая",
+     "name": "Трактор — дверь (правая)",
      "name_en": "Tractor Door Right"
     },
     {
      "id": "Tractor_Door_Hood_Headlight_Left_Item",
-     "name": "Трактор: фара левая",
+     "name": "Трактор — фара (левая)",
      "name_en": "Tractor Headlight Left"
     },
     {
      "id": "Tractor_Door_Hood_Headlight_Right_Item",
-     "name": "Трактор: фара правая",
+     "name": "Трактор — фара (правая)",
      "name_en": "Tractor Headlight Right"
     },
     {
      "id": "Tractor_Door_Hood_Item",
-     "name": "Трактор: капот",
+     "name": "Трактор — капот",
      "name_en": "Tractor Hood"
     },
     {
      "id": "Tractor_Door_Left_ArmorHeavy_Item",
-     "name": "Трактор: броня двери левая",
+     "name": "Трактор — тяжёлая броня для двери (левая)",
      "name_en": "Tractor Door Armor Heavy Left"
     },
     {
      "id": "Tractor_Door_Right_ArmorHeavy_Item",
-     "name": "Трактор: броня двери правая",
+     "name": "Трактор — тяжёлая броня для двери (правая)",
      "name_en": "Tractor Door Armor Heavy Right"
     },
     {
      "id": "Tractor_Engine_Alternator_Item",
-     "name": "Трактор: генератор",
+     "name": "Трактор — генератор",
      "name_en": "Tractor Alternator"
     },
     {
      "id": "Tractor_Seat_Driver_Item",
-     "name": "Трактор: сиденье водителя",
+     "name": "Трактор — сиденье водителя",
      "name_en": "Tractor Driver Seat"
     },
     {
      "id": "Tractor_WheelArmorHeavy_Front_Item",
-     "name": "Трактор: тяжёлая броня колеса (перед)",
+     "name": "Трактор — тяжёлая защита колеса (передняя)",
      "name_en": "Tractor Wheel Armor Heavy Front"
     },
     {
@@ -14169,27 +14880,27 @@
     },
     {
      "id": "WW_Body_Back",
-     "name": "«Волксваген» — часть кузова (задняя)",
+     "name": "«Волксваген» — часть кузова (задняя)",
      "name_en": "WW Body Back"
     },
     {
      "id": "WW_Body_Front",
-     "name": "«Волксваген» — часть кузова (передняя)",
+     "name": "«Волксваген» — часть кузова (передняя)",
      "name_en": "WW Body Front"
     },
     {
      "id": "WW_Body_Left",
-     "name": "«Волксваген» — часть кузова (левая)",
+     "name": "«Волксваген» — часть кузова (левая)",
      "name_en": "WW Body Left"
     },
     {
      "id": "WW_Body_Right",
-     "name": "«Волксваген» — часть кузова (правая)",
+     "name": "«Волксваген» — часть кузова (правая)",
      "name_en": "WW Body Right"
     },
     {
      "id": "WW_Body_Top",
-     "name": "«Волксваген» — часть кузова (верхняя)",
+     "name": "«Волксваген» — часть кузова (верхняя)",
      "name_en": "WW Body Top"
     },
     {
@@ -14198,81 +14909,82 @@
     },
     {
      "id": "WW_Bumper_Back_Item",
-     "name": "«Волксваген» — генератор",
+     "name": "«Волксваген» — генератор",
      "name_en": "WW Back Bumper"
     },
     {
      "id": "WW_Bumper_Front_Item",
-     "name": "«Волксваген» — тяжёлая броня для кузова (верхняя)",
+     "name": "«Волксваген» — тяжёлая броня для кузова (верхняя)",
      "name_en": "WW Front Bumper"
     },
     {
      "id": "WW_Door_ArmorHeavy_BackLeft_Item",
-     "name": "«Волксваген» — тяжёлая броня для двери (задняя левая)",
+     "name": "«Волксваген» — тяжёлая броня для двери (задняя левая)",
      "name_en": "WW Door Armor Heavy Back Left"
     },
     {
      "id": "WW_Door_ArmorHeavy_BackRight_Item",
-     "name": "«Волксваген» — часть кузова (левая)",
+     "name": "«Волксваген» — часть кузова (левая)",
      "name_en": "WW Door Armor Heavy Back Right"
     },
     {
      "id": "WW_Door_ArmorHeavy_FrontLeft_Item",
-     "name": "«Волксваген» — часть кузова (правая)",
+     "name": "«Волксваген» — часть кузова (правая)",
      "name_en": "WW Door Armor Heavy Front Left"
     },
     {
      "id": "WW_Door_ArmorHeavy_FrontRight_Item",
-     "name": "«Волксваген» — часть кузова (верхняя)",
+     "name": "«Волксваген» — часть кузова (верхняя)",
      "name_en": "WW Door Armor Heavy Front Right"
     },
     {
      "id": "WW_Door_ArmorLight_BackLeft_Item",
-     "name": "«Волксваген» — ходовая часть",
+     "name": "«Волксваген» — ходовая часть",
      "name_en": "WW Door Armor Light Back Left"
     },
     {
      "id": "WW_Door_ArmorLight_BackRight_Item",
-     "name": "«Волксваген» — дверь (задняя левая)",
+     "name": "«Волксваген» — дверь (задняя левая)",
      "name_en": "WW Door Armor Light Back Right"
     },
     {
      "id": "WW_Door_ArmorLight_FrontLeft_Item",
-     "name": "«Волксваген» — дверь (задняя правая)",
+     "name": "«Волксваген» — дверь (задняя правая)",
      "name_en": "WW Door Armor Light Front Left"
     },
     {
      "id": "WW_Door_ArmorLight_FrontRight_Item",
-     "name": "«Волксваген» — дверь (передняя левая)",
+     "name": "«Волксваген» — дверь (передняя левая)",
      "name_en": "WW Door Armor Light Front Right"
     },
     {
      "id": "WW_Door_BackLeft_Item",
-     "name": "«Волксваген» — дверь (передняя правая)",
+     "name": "«Волксваген» — дверь (передняя правая)",
      "name_en": "WW Door Back Left"
     },
     {
      "id": "WW_Door_BackRight_Item",
-     "name": "«Волксваген» — двигатель",
+     "name": "«Волксваген» — двигатель",
      "name_en": "WW Door Back Right"
     },
     {
      "id": "WW_Door_FrontLeft_Item",
-     "name": "«Волксваген» — бампер (передний)",
+     "name": "«Волксваген» — бампер (передний)",
      "name_en": "WW Door Front Left"
     },
     {
      "id": "WW_Door_FrontRight_Item",
-     "name": "«Волксваген» — коробка передач",
+     "name": "«Волксваген» — коробка передач",
      "name_en": "WW Door Front Right"
     },
     {
      "id": "WW_DoorHood_Item",
-     "name": "WW Hood"
+     "name": "WW Hood",
+     "name_en": "WW Hood"
     },
     {
      "id": "WW_DoorTrunk_ArmorHeavy_Item",
-     "name": "«Волксваген» — тяжёлая броня для багажника",
+     "name": "«Волксваген» — тяжёлая броня для багажника",
      "name_en": "WW Trunk Armor Heavy"
     },
     {
@@ -14282,46 +14994,47 @@
     },
     {
      "id": "WW_DoorTrunk_Item",
-     "name": "WW Trunk"
+     "name": "WW Trunk",
+     "name_en": "WW Trunk"
     },
     {
      "id": "WW_Engine_Alternator_Item",
-     "name": "«Волксваген» — генератор",
+     "name": "«Волксваген» — генератор",
      "name_en": "WW Alternator"
     },
     {
      "id": "WW_Lights_FrontLeft",
-     "name": "«Волксваген» — сиденье (заднее левое)",
+     "name": "«Волксваген» — сиденье (заднее левое)",
      "name_en": "WW Lights Front Left"
     },
     {
      "id": "WW_Lights_FrontRight",
-     "name": "«Волксваген» — сиденье (заднее правое)",
+     "name": "«Волксваген» — сиденье (заднее правое)",
      "name_en": "WW Lights Front Right"
     },
     {
      "id": "WW_Lights_RearLeft",
-     "name": "«Волксваген» — сиденье (переднее левое)",
+     "name": "«Волксваген» — сиденье (переднее левое)",
      "name_en": "WW Lights Rear Left"
     },
     {
      "id": "WW_Lights_RearRight",
-     "name": "«Волксваген» — сиденье (заднее левое)",
+     "name": "«Волксваген» — сиденье (заднее левое)",
      "name_en": "WW Lights Rear Right"
     },
     {
      "id": "WW_Seat_BackLeft_Item",
-     "name": "«Волксваген» — багажник",
+     "name": "«Волксваген» — багажник",
      "name_en": "WW Seat Back Left"
     },
     {
      "id": "WW_Seat_FrontLeft_Item",
-     "name": "«Волксваген» — сиденье (переднее правое)",
+     "name": "«Волксваген» — сиденье (переднее правое)",
      "name_en": "WW Seat Front Left"
     },
     {
      "id": "WW_Seat_FrontRight_Item",
-     "name": "«Волксваген» — тяжёлая броня для багажника",
+     "name": "«Волксваген» — тяжёлая броня для багажника",
      "name_en": "WW Seat Front Right"
     },
     {
