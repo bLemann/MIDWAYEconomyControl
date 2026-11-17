@@ -365,7 +365,27 @@ finally{btn.disabled=false}};
 $('#srv-upload').onclick=async()=>{if(!doc)return toast('Сначала импортируйте документ');let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');if(!(await askConfirm('Выгрузка на сервер','Отправить текущий документ как EconomyOverride.json в '+(c.remotePath||'/')+'? Существующий файл будет скопирован в .backup-метку. Отсутствующие папки будут созданы.')))return;let btn=$('#srv-upload');btn.disabled=true;
 try{let d=await pushDocToServer(c);srvStatus('Документ выгружен на сервер (backup='+(d.backupCreated?'создан':'нет')+(d.dirsCreated&&d.dirsCreated.length?', папки: '+d.dirsCreated.join(', '):'')+(d.localSnapshot?', снапшот сохранён':'')+')');toast((d.backupCreated?'Документ выгружен, резервная копия создана':'Документ выгружен (новый файл)')+' → '+(c.remotePath||'/')+'/EconomyOverride.json');ftpGo(c.remotePath||'/').catch(()=>{})}
 catch(e){srvStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
-finally{btn.disabled=false}};
+ finally{btn.disabled=false}};
+
+$('#srv-snaps').onclick=async()=>{let dlg=$('#snaps-dialog');if(!dlg.open)dlg.showModal();$('#snaps-box').innerHTML='<p class="empty">Загрузка…</p>';$('#snaps-status').textContent='';
+try{let d=await fetch('/api/ftp/snapshots').then(r=>r.json());if(!d.ok)throw new Error(d.error||'Ошибка чтения снапшотов');renderSnaps(d.snapshots||[])}
+catch(e){$('#snaps-box').innerHTML='<p class="empty">Ошибка: '+e.message+'</p>'}};
+$('#snaps-close').onclick=()=>$('#snaps-dialog').close();
+function snapsTarget(fileName,c){let rp=String(c.remotePath||'/').trim()||'/';if(/^STORY_/.test(fileName)&&/^\/Server\/SCUM\/Saved\/Config\/WindowsServer\/?$/i.test(rp))return rp.replace(/\/+$/,'')+'/Quests/Override';return rp}
+function fmtStamp(n){n=String(n);let m=n.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/);if(m)return m[1]+'-'+m[2]+'-'+m[3]+' '+m[4]+':'+m[5]+':'+m[6];m=n.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})Z/);return m?m[1]+'-'+m[2]+'-'+m[3]+' '+m[4]+':'+m[5]:n}
+function renderSnaps(groups){let box=$('#snaps-box');box.innerHTML='';
+if(!groups.length){box.innerHTML='<p class="empty">Снапшотов пока нет — скачайте файл с сервера или сделайте выгрузку</p>';return}
+groups.forEach(g=>{let h=document.createElement('p');h.className='note';h.textContent=g.fileName;box.append(h);
+g.files.forEach(f=>{let row=document.createElement('div');row.className='file-row';let nm=document.createElement('span');nm.textContent=fmtStamp(f.name)+' · '+(f.bytes/1024).toFixed(1)+' КБ';row.append(nm);
+let b=document.createElement('button');b.textContent='↩ ВОССТАНОВИТЬ';b.onclick=async()=>{let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
+b.disabled=true;$('#snaps-status').textContent='Восстанавливаю '+g.fileName+'…';
+try{let rp=snapsTarget(g.fileName,c),d=await ftpRequest('/api/ftp/snapshots/restore',{fileName:g.fileName,snapshot:f.name,remotePath:rp,confirm:true});
+toast('Восстановлено: '+g.fileName+' → '+rp+(d.backupCreated?' · backup на сервере':'')+(d.localSnapshot?' · новый снапшот создан':''));
+log('Восстановлен снапшот '+f.name+' → '+rp+'/'+g.fileName+(d.restoredFrom?'; источник: '+d.restoredFrom:'')+(d.localSnapshot?'; снапшот текущего файла: '+d.localSnapshot:''));
+$('#snaps-status').textContent='';$('#srv-snaps').click()}
+catch(e){$('#snaps-status').textContent='';toast('Восстановление: '+e.message)}
+finally{b.disabled=false}};
+row.append(b);box.append(row)})})}
 
 function parentPath(p){p=p.replace(/\/+$/,'');let i=p.lastIndexOf('/');return i<=0?'/':p.slice(0,i)}
 function joinPath(p,n){return (p==='/'||p==='.'?p.replace(/^\.$/,''):p.replace(/\/+$/,''))+'/'+n}

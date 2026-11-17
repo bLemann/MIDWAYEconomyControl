@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.40"
+VERSION = "0.8.41"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -1637,13 +1637,46 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_loot()
         if self.path == "/api/update/progress":
             return self.handle_update_progress()
+        if self.path == "/api/ftp/snapshots":
+            base = server_files_dir()
+            root = base / "snapshots"
+            groups = {}
+            def snap_add(fname, path):
+                try:
+                    st = path.stat()
+                except OSError:
+                    return
+                groups.setdefault(fname, []).append({"name": path.name, "bytes": st.st_size, "mtime": int(st.st_mtime)})
+            flat_re = re.compile(r"^\d{8}T\d{4,6}(?:\d{3})?Z_(.+)$")
+            if base.is_dir():
+                for f in base.iterdir():
+                    if not f.is_file():
+                        continue
+                    m = flat_re.match(f.name)
+                    if not m:
+                        continue
+                    fname = m.group(1)
+                    if fname.lower() == "economyoverride.json" or QUEST_NAME_RE.match(fname):
+                        snap_add(fname, f)
+            if root.is_dir():
+                for d in root.iterdir():
+                    if not d.is_dir():
+                        continue
+                    if d.name.lower() != "economyoverride.json" and not QUEST_NAME_RE.match(d.name):
+                        continue
+                    for f in d.iterdir():
+                        if f.is_file():
+                            snap_add(d.name, f)
+            out = [{"fileName": k, "files": sorted(v, key=lambda x: x["name"], reverse=True)} for k, v in groups.items()]
+            out.sort(key=lambda g: max(f["mtime"] for f in g["files"]), reverse=True)
+            return self.send_json(200, {"ok": True, "snapshots": out})
         return super().do_GET()
 
     def do_POST(self):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -3202,6 +3235,42 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json(400, {"ok": False, "error": "content must be valid base64"})
             if len(raw) > 5 * 1024 * 1024:
                 return self.send_json(413, {"ok": False, "error": "File exceeds 5 MB limit"})
+        if route == "/api/ftp/snapshots/restore":
+            if data.get("confirm") is not True:
+                return self.send_json(400, {"ok": False, "error": "Restore requires explicit confirmation"})
+            fname = str(data.get("fileName") or "")
+            snap = str(data.get("snapshot") or "")
+            if not fname or any(c in fname for c in "\r\n/\\") or fname in (".", ".."):
+                return self.send_json(400, {"ok": False, "error": "A file name (not a path) is required"})
+            if not snap or any(c in snap for c in "\r\n/\\") or snap in (".", ".."):
+                return self.send_json(400, {"ok": False, "error": "A snapshot file name is required"})
+            if fname.lower() != "economyoverride.json" and not QUEST_NAME_RE.match(fname):
+                return self.send_json(400, {"ok": False, "error": "Only EconomyOverride.json or STORY_*.json can be restored"})
+            safe = re.sub(r"[^\w\-.]", "_", fname).strip("._") or "file"
+            if len(safe) > 96:
+                safe = safe[:96]
+            base = server_files_dir().resolve()
+            root = (base / "snapshots").resolve()
+            snap_dir = (root / safe).resolve()
+            candidates = []
+            nested = (snap_dir / snap).resolve()
+            if nested.parent == snap_dir and snap_dir.parent == root:
+                candidates.append(nested)
+            flat = (base / snap).resolve()
+            if flat.parent == base and re.fullmatch(r"\d{8}T\d{4,6}(?:\d{3})?Z_" + re.escape(fname), snap):
+                candidates.append(flat)
+            snap_path = next((p for p in candidates if p.is_file()), None)
+            if snap_path is None:
+                return self.send_json(404, {"ok": False, "error": "Snapshot not found"})
+            try:
+                raw = snap_path.read_bytes()
+            except OSError:
+                return self.send_json(500, {"ok": False, "error": "Snapshot read failed"})
+            if len(raw) > 5 * 1024 * 1024:
+                return self.send_json(413, {"ok": False, "error": "File exceeds 5 MB limit"})
+            data["content"] = base64.b64encode(raw).decode("ascii")
+            data["restoredFrom"] = str(snap_path)
+            route = "/api/ftp/upload"
         if route in ("/api/ftp/download", "/api/ftp/upload", "/api/ftp/inspect"):
             remote = str(data.get("fileName") or "")
             if not remote or any(c in remote for c in "\r\n/\\") or remote in (".", ".."):
@@ -3439,7 +3508,7 @@ class Handler(SimpleHTTPRequestHandler):
             except ftplib.error_perm:
                 pass
             ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-            return {"ok": True, "backupCreated": backup_created, "localSnapshot": snapshot_path, "dirsCreated": dirs_created, "fileName": remote}
+            return {"ok": True, "backupCreated": backup_created, "localSnapshot": snapshot_path, "dirsCreated": dirs_created, "fileName": remote, "restoredFrom": data.get("restoredFrom")}
         if route == "/api/ftp/inspect":
             info = {"ok": True, "tls": tls, "fileName": remote, "path": remote_path}
             try:
