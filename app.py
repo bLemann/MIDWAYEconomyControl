@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.48"
+VERSION = "0.8.49"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -3734,7 +3734,60 @@ class Handler(SimpleHTTPRequestHandler):
             except ftplib.error_perm:
                 pass
             ftp.storbinary("STOR " + remote_path, io.BytesIO(raw))
-            return {"ok": True, "backupCreated": backup_created, "localSnapshot": snapshot_path, "dirsCreated": dirs_created, "fileName": remote, "restoredFrom": data.get("restoredFrom")}
+            report = {"bytesSent": len(raw), "sha256Sent": hashlib.sha256(raw).hexdigest()}
+            if backup_created:
+                prev = backup.getvalue()
+                report["beforeBytes"] = len(prev)
+                report["beforeSha256"] = hashlib.sha256(prev).hexdigest()
+            verify = io.BytesIO()
+            try:
+                ftp.retrbinary("RETR " + remote_path, verify.write)
+                got = verify.getvalue()
+                report["bytesRemote"] = len(got)
+                report["sha256Remote"] = hashlib.sha256(got).hexdigest()
+                report["match"] = report["sha256Remote"] == report["sha256Sent"]
+            except (ftplib.error_perm, ftplib.error_proto):
+                report["bytesRemote"] = report["sha256Remote"] = report["match"] = None
+            try:
+                report["mdtm"] = ftp.voidcmd("MDTM " + remote_path)[4:].strip()
+            except (ftplib.error_perm, ftplib.error_proto):
+                report["mdtm"] = None
+            if remote.lower() == "economyoverride.json":
+                try:
+                    parsed = json.loads(raw.decode("utf-8-sig"))
+                    edoc = parsed.get("economy-override") if isinstance(parsed, dict) else None
+                    if isinstance(edoc, dict) and isinstance(edoc.get("traders"), dict):
+                        stub_fields = ECON_NUMERIC_FIELDS + ECON_VIS_FIELDS
+
+                        def _is_def(v):
+                            s = "" if v is None else str(v).strip()
+                            if s in ("", "default"):
+                                return True
+                            try:
+                                return float(s.replace(",", ".")) == -1.0
+                            except ValueError:
+                                return False
+
+                        traders_n = rows_n = stubs_n = nocodes_n = hidden_n = 0
+                        for t, rws in edoc["traders"].items():
+                            if not isinstance(rws, list):
+                                continue
+                            traders_n += 1
+                            for r in rws:
+                                if not isinstance(r, dict):
+                                    continue
+                                rows_n += 1
+                                code = next((str(r.get(f)).strip() for f in ECON_CODE_FIELDS if r.get(f) is not None and str(r.get(f)).strip()), "")
+                                if not code:
+                                    nocodes_n += 1
+                                elif all(_is_def(r.get(f)) for f in stub_fields):
+                                    stubs_n += 1
+                                if str(r.get("can-be-purchased", "")).strip().lower() == "false":
+                                    hidden_n += 1
+                        report["summary"] = {"traders": traders_n, "rows": rows_n, "stubs": stubs_n, "nocodes": nocodes_n, "hidden": hidden_n}
+                except (ValueError, UnicodeDecodeError, AttributeError):
+                    pass
+            return {"ok": True, "backupCreated": backup_created, "localSnapshot": snapshot_path, "dirsCreated": dirs_created, "fileName": remote, "restoredFrom": data.get("restoredFrom"), "report": report}
         if route == "/api/ftp/inspect":
             info = {"ok": True, "tls": tls, "fileName": remote, "path": remote_path}
             try:

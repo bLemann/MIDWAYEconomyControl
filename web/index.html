@@ -907,6 +907,13 @@
   <div class="dlg-foot"><span class="hint-inline"></span><button type="button" class="btn-green" id="cat-go">СКАЧАТЬ HTML</button><button type="button" class="btn-dark" id="cat-cancel">ОТМЕНА</button></div>
 </dialog>
 
+<dialog id="upr-dialog">
+  <div class="dlg-head"><h3>ОТЧЁТ О ЗАГРУЗКЕ</h3><span class="hint-inline" id="upr-file"></span></div>
+  <div id="upr-body"></div>
+  <p class="note">Файл после записи прочитан с сервера повторно и сверен с отправленным (SHA-256). MDTM — время изменения по часовому серверу (UTC).</p>
+  <div class="dlg-foot"><span class="hint-inline" id="upr-status"></span><button type="button" class="btn-dark" id="upr-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
 <div id="toast"></div>
 <div class="watermark">MIDWAY</div>
 <script src="app.js"></script>

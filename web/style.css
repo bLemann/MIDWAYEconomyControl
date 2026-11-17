@@ -481,3 +481,9 @@ body:not(.mod-l) .l-only{display:none!important}
 .link{background:none;border:none;color:#9cc7ef;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;text-align:left;text-decoration:underline}
 .warn{color:var(--amber)}
 .trader-list .trow .badge{margin-left:8px;flex:none}
+.upr-t{width:100%;border-collapse:collapse;font-size:12px}
+.upr-t td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.upr-t td:first-child{color:var(--muted);white-space:nowrap;width:42%;letter-spacing:.5px}
+.upr-ok{color:var(--green);font-weight:800}
+.upr-bad{color:var(--red);font-weight:800}
+.mono{font-family:var(--mono);font-size:11px}
