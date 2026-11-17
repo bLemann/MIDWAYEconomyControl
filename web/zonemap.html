@@ -37,6 +37,13 @@ main{display:flex;gap:12px;padding:12px 14px;flex:1;min-height:0}
 canvas{position:absolute;inset:0;cursor:crosshair}
 #hint{position:absolute;left:10px;bottom:8px;font:11px var(--mono);color:#ffd88a;background:rgba(13,15,19,.8);border:1px solid var(--line2);border-radius:3px;padding:2px 8px;pointer-events:none}
 #zoomhint{position:absolute;right:10px;bottom:8px;font:11px var(--mono);color:var(--muted);background:rgba(13,15,19,.8);border:1px solid var(--line2);border-radius:3px;padding:2px 8px;pointer-events:none}
+#tlegend{position:absolute;left:10px;top:8px;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 180px);z-index:3}
+#tlegend .chip{display:flex;gap:5px;align-items:center;font-size:10px;padding:2px 7px;border-radius:3px;border:1px solid var(--line2);background:rgba(13,15,19,.82);cursor:pointer;user-select:none}
+#tlegend .chip:hover{border-color:var(--amber)}
+#tlegend .chip.off{opacity:.35;text-decoration:line-through}
+#tlegend.dim .chip{opacity:.3}
+#tlegend .chip i{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+#ttip{position:absolute;z-index:4;font:11px var(--mono);color:#ffd88a;background:rgba(13,15,19,.92);border:1px solid var(--line2);border-radius:3px;padding:3px 8px;pointer-events:none;white-space:nowrap}
 footer{display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--panel);border-top:1px solid var(--line2)}
 .note{font-size:11px;color:var(--muted);line-height:1.6;margin:8px 2px}
 textarea{width:100%;min-height:calc(100vh - 170px);background:#10131a;color:#c7d0dc;border:1px solid var(--line2);border-radius:5px;font:12px/1.5 var(--mono);white-space:pre;resize:vertical;padding:10px;outline:none}
@@ -50,6 +57,7 @@ textarea:focus{border-color:var(--amber)}
   <h1 id="title">Зоны лута</h1>
   <span class="badge none" id="wbadge">БАЗА</span>
   <label class="chk"><input type="checkbox" id="draw"> РИСОВАТЬ (тянуть ЛКМ)</label>
+  <label class="chk"><input type="checkbox" id="tmk" checked> ТОРГОВЦЫ</label>
   <span class="note" style="margin:0">ПКМ — пан, колесо — зум</span>
   <span class="spacer"></span>
   <span id="status">Загрузка…</span>
@@ -66,7 +74,7 @@ textarea:focus{border-color:var(--amber)}
     <p class="note" style="margin:0">Координаты — Unreal-строки «X=… Y=…» (TopLeft → BottomRight). Клик по карточке — подсветка. Поля Zones.json вне Zones сохраняются. Публикация — в основном окне, вкладка СПАВНЕРЫ → «ОТПРАВИТЬ ВСЁ НА СЕРВЕР».</p>
   </div>
   <div id="right">
-    <div id="cvwrap"><canvas id="cv"></canvas><span id="hint"></span><span id="zoomhint"></span></div>
+    <div id="cvwrap"><canvas id="cv"></canvas><span id="hint"></span><span id="zoomhint"></span><div id="tlegend"></div><div id="ttip" class="hidden"></div></div>
   </div>
   <div id="jsonwrap" class="hidden" style="flex:1"><textarea id="jsondoc" spellcheck="false"></textarea></div>
 </main>

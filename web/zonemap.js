@@ -6,10 +6,21 @@ const p2g=(px,py)=>({x:(1080-px-540)/SX+CXP,y:(py-540)/SY+CYP});
 const zParse=s=>{s=String(s||'');const mx=s.match(/X=([-+]?\d+\.?\d*)/i),my=s.match(/Y=([-+]?\d+\.?\d*)/i);
  return{x:mx?parseFloat(mx[1]):0,y:my?parseFloat(my[1]):0}};
 const zFmt=(x,y)=>'X='+x.toFixed(3)+' Y='+y.toFixed(3);
+const TR_OUTPOSTS=(typeof ZM_OUTPOSTS!=='undefined')?ZM_OUTPOSTS:{};
+const TR_ROLES=(typeof ZM_ROLES!=='undefined')?ZM_ROLES:[];
+const TR_RU=(typeof ZM_ROLE_RU!=='undefined')?ZM_ROLE_RU:{};
+const TR_COLOR=(typeof ZM_ROLE_COLOR!=='undefined')?ZM_ROLE_COLOR:{};
+const trShow={};TR_ROLES.forEach(r=>trShow[r]=true);
+const TR_MARKERS=[];
+Object.keys(TR_OUTPOSTS).forEach(sec=>{
+ const o=g2p(TR_OUTPOSTS[sec].x,TR_OUTPOSTS[sec].y);
+ TR_ROLES.forEach((role,i)=>{
+  const ang=-Math.PI/2+i*2*Math.PI/TR_ROLES.length;
+  TR_MARKERS.push({sec:sec,role:role,x:o.x+Math.cos(ang)*16,y:o.y+Math.sin(ang)*16})})});
 
 let mod='',doc=null,working=false,sel=-1,drag=null,pan=null,jsonMode=false;
 let img=null,view={x:0,y:0},zoom=1,fit=1;
-const cv=$('#cv'),ctx=cv.getContext('2d');
+const cv=$('#cv'),ctx=cv.getContext('2d'),tt=$('#ttip');
 
 async function api(path,opts){let r=await fetch(path,opts);let d=await r.json().catch(()=>({}));
  if(!r.ok||d.ok===false)throw new Error(d.error||('HTTP '+r.status));return d}
@@ -42,9 +53,10 @@ function draw(){
   ctx.lineWidth=i===sel?2.5:1;
   ctx.strokeStyle=i===sel?'#ffb428':'#5a96ff';
   ctx.strokeRect(x,y,w,h);
-  if(w>60&&h>18){ctx.fillStyle='rgba(11,12,16,.75)';ctx.fillRect(x+3,y+3,34,13);
-   ctx.fillStyle=i===sel?'#ffb428':'#fff';ctx.font='bold 10px monospace';ctx.fillText(String(i+1),x+7,y+13)}});
- if(drag&&drag.b){
+   if(w>60&&h>18){ctx.fillStyle='rgba(11,12,16,.75)';ctx.fillRect(x+3,y+3,34,13);
+    ctx.fillStyle=i===sel?'#ffb428':'#fff';ctx.font='bold 10px monospace';ctx.fillText(String(i+1),x+7,y+13)}});
+  if($('#tmk').checked)drawTraders();
+  if(drag&&drag.b){
   const x=Math.min(drag.a.x,drag.b.x),y=Math.min(drag.a.y,drag.b.y);
   ctx.fillStyle='rgba(255,255,255,.18)';
   ctx.fillRect(x,y,Math.abs(drag.b.x-drag.a.x),Math.abs(drag.b.y-drag.a.y));
@@ -55,6 +67,28 @@ function draw(){
 function toWorld(e){const r=cv.getBoundingClientRect();
  return{x:view.x+(e.clientX-r.left)/zoom,y:view.y+(e.clientY-r.top)/zoom}}
 function toScreen(wx,wy){return{x:(wx-view.x)*zoom,y:(wy-view.y)*zoom}}
+
+function drawTraders(){
+ const r=Math.max(3.5,4.5*zoom);
+ TR_MARKERS.forEach(m=>{
+  if(!trShow[m.role])return;
+  const s=toScreen(m.x,m.y);
+  if(s.x<-20||s.y<-20||s.x>cv.width+20||s.y>cv.height+20)return;
+  ctx.beginPath();ctx.arc(s.x,s.y,r,0,6.2832);
+  ctx.fillStyle=TR_COLOR[m.role]||'#cccccc';ctx.fill();
+  ctx.lineWidth=1;ctx.strokeStyle='rgba(10,12,16,.9)';ctx.stroke()});
+ Object.keys(TR_OUTPOSTS).forEach(sec=>{
+  const o=g2p(TR_OUTPOSTS[sec].x,TR_OUTPOSTS[sec].y),s=toScreen(o.x,o.y);
+  if(s.x<-60||s.y<-60||s.x>cv.width+60||s.y>cv.height+60)return;
+  ctx.beginPath();ctx.arc(s.x,s.y,Math.max(2.5,3.5*zoom),0,6.2832);
+  ctx.fillStyle='rgba(10,12,16,.85)';ctx.fill();
+  ctx.strokeStyle='#ffb428';ctx.lineWidth=1;ctx.stroke();
+  const fs=Math.max(9,Math.min(15,10*zoom));
+  if(fs>=9){
+   ctx.font='bold '+fs+'px Segoe UI';
+   const t=sec.replace('_',''),tw=ctx.measureText(t).width;
+   ctx.fillStyle='rgba(11,12,16,.75)';ctx.fillRect(s.x-tw/2-3,s.y+r+3,tw+6,fs+3);
+   ctx.fillStyle='#ffd88a';ctx.fillText(t,s.x-tw/2,s.y+r+fs+4)}})}
 
 function render(){
  const w=$('#wbadge');
@@ -170,6 +204,18 @@ window.addEventListener('mousemove',e=>{
  const inside=ox>=0&&oy>=0&&ox<=cv.width&&oy<=cv.height;
  if(inside){const w0=p2g(view.x+ox/zoom,view.y+oy/zoom);
   $('#hint').textContent='X='+w0.x.toFixed(0)+' Y='+w0.y.toFixed(0)}
+ let hit=null,hd=1e9;
+ if(inside&&!pan&&!drag&&$('#tmk').checked){
+  TR_MARKERS.forEach(m=>{
+   if(!trShow[m.role])return;
+   const s=toScreen(m.x,m.y),d=Math.hypot(ox-s.x,oy-s.y);
+   if(d<Math.max(9,7*zoom)+4&&d<hd){hit=m;hd=d}})}
+ if(hit){const g=p2g(hit.x,hit.y);
+  tt.textContent=TR_RU[hit.role]+' · '+hit.sec.replace('_','-')+' · '+zFmt(g.x,g.y);
+  tt.style.left=Math.min(ox+14,cv.width-230)+'px';
+  tt.style.top=(oy+12)+'px';
+  tt.classList.remove('hidden')}
+ else tt.classList.add('hidden');
  if(drag&&inside){drag.b={x:ox,y:oy};draw()}});
 window.addEventListener('mouseup',()=>{
  if(pan){pan=null;return}
@@ -196,5 +242,17 @@ $('#b-close').onclick=async()=>{
   body:JSON.stringify({mod:mod})})}catch(e){}
  try{localStorage.setItem('loot-work-bump',String(Date.now()))}catch(e){}
  window.close()};
+(function(){
+ const lg=$('#tlegend');
+ TR_ROLES.forEach(role=>{
+  const c=document.createElement('span');c.className='chip';
+  const i=document.createElement('i');i.style.background=TR_COLOR[role]||'#cccccc';
+  const s=document.createElement('span');s.textContent=TR_RU[role]||role;
+  c.append(i,s);
+  c.onclick=()=>{trShow[role]=!trShow[role];c.classList.toggle('off',!trShow[role]);draw()};
+  lg.append(c)});
+ const mk=$('#tmk');
+ mk.onchange=()=>{lg.classList.toggle('dim',!mk.checked);draw()};})();
+
 load();
 resize();
