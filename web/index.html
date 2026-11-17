@@ -106,6 +106,9 @@
       <button class="btn-red big" id="calc-scan-current">ВЫГОДА: ТЕКУЩИЙ ТОРГОВЕЦ</button>
       <button class="btn-dark big" id="calc-scan-sector">ВЫГОДА: СЕКТОР</button>
       <button class="btn-dark big" id="calc-scan-all">ВЫГОДА: ВСЕ ТОРГОВЦЫ</button>
+      <small class="sec-cap">КАТАЛОГ ДЛЯ ИГРОКОВ</small>
+      <p class="hint">HTML-файл со всеми торговцами текущего документа: что и по каким ценам покупается/продаётся. Открывается в любом браузере без программы — можно выложить игрокам.</p>
+      <button class="btn-green big" id="cat-export">СОБРАТЬ КАТАЛОГ…</button>
       <small class="sec-cap">СТАТУС СПИСКА (ВИДИМОСТЬ)</small>
       <label>СТАТУС<select id="vis-status"><option value="">— не менять</option><option value="default">Открыт (по умолчанию)</option><option value="true">Открыт (true)</option><option value="false">Скрыт</option></select></label>
       <button class="btn-dark big" id="vis-apply-list">ПРИМЕНИТЬ КО ВСЕМ СПИСКУ</button>
@@ -895,6 +898,13 @@
   <div id="l-calc-extra" class="l-calc-extra"></div>
   <p class="note">Это модель оценки, не точная механика игры: записи независимы; выбор предмета внутри записи пропорционален весам редкости (веса выше можно менять); Quantity равномерно Min..Max (в расчёте среднее); FixedItems спавнятся всегда; Nodes-записи считаются агрегированно — предметы за ними живут в дереве лута; Subpresets не разворачиваются. Расчёт по EFFECTIVE-документу (с учётом WORKING-правки пресета).</p>
   <div class="dlg-foot"><span id="l-calc-status" class="hint-inline"></span><button type="button" class="btn-dark" id="l-calc-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="cat-dialog">
+  <div class="dlg-head"><h3>КАТАЛОГ ДЛЯ ИГРОКОВ</h3><span class="hint-inline">ЭКСПОРТ HTML</span></div>
+  <label class="full" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="cat-icons" checked> Встроить иконки товаров (файл заметно крупнее)</label>
+  <p class="note">В каталог попадают только реальные строки (без −1/default-заглушек): цены с учётом множителей, требуемая слава, отметки «скрыт» и «только после продажи». Файл самодостаточен — работает без интернета и программы.</p>
+  <div class="dlg-foot"><span class="hint-inline"></span><button type="button" class="btn-green" id="cat-go">СКАЧАТЬ HTML</button><button type="button" class="btn-dark" id="cat-cancel">ОТМЕНА</button></div>
 </dialog>
 
 <div id="toast"></div>

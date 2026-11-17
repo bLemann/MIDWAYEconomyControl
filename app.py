@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.47"
+VERSION = "0.8.48"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -770,6 +770,62 @@ ECON_ASSORT = {
     "Barber": (),
 }
 ECON_BOATSHOP_FOOD = frozenset(["Pike_Fillet", "Amur_Steak", "Carp_Steak", "Catfish_Fillet", "Catfish_Steak", "FishFreshwater", "Monkfish_Steak", "Pike_Steak", "SeaWaterFish", "Tuna_Steak", "Amur_Fillet", "Amur_Fillet_Salted", "Amur_Steak_Salted", "Bass_Fillet", "Bass_Fillet_Salted", "Bleak_Fillet", "Bleak_Fillet_Salted", "Carp_Fillet", "Carp_Fillet_Salted", "Carp_Steak_Salted", "Catfish_Fillet_Salted", "Catfish_Steak_Salted", "Chub_Fillet", "Chub_Fillet_Salted", "Dentex_Fillet", "Dentex_Fillet_Salted", "EuropeanBass_Fillet", "EuropeanBass_Fillet_Salted", "Monkfish_Fillet", "Monkfish_Fillet_Salted", "Monkfish_Steak_Salted", "Orata_Fillet", "Orata_Fillet_Salted", "Pike_Fillet_Salted", "Pike_Steak_Salted", "Ruffe_Fillet", "Ruffe_Fillet_Salted", "Sardine_Fillet", "Sardine_Fillet_Salted", "Scorpionfish_Fillet", "Scorpionfish_Fillet_Salted", "Tuna_Fillet", "Tuna_Fillet_Salted", "Tuna_Steak_Salted"])
+
+CATALOG_CSS = """
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#101312;color:#cfd6d0;font:14px/1.45 "Segoe UI",Arial,sans-serif;padding:24px}
+header{max-width:1100px;margin:0 auto 18px}
+h1{margin:0 0 6px;font-size:22px;letter-spacing:.06em;color:#8fd668}
+.meta{color:#8b948d;font-size:12px;margin-bottom:10px}
+#q{width:100%;max-width:520px;padding:9px 12px;background:#171b19;border:1px solid #2c332f;color:#e8ece9;border-radius:6px}
+.legend{margin-top:8px;color:#7d867f;font-size:12px}
+section{max-width:1100px;margin:26px auto}
+h2{font-size:15px;letter-spacing:.14em;color:#8fd668;border-bottom:1px solid #2c332f;padding-bottom:6px;margin:0 0 12px}
+.t{margin:0 0 20px}
+h3{margin:0 0 8px;font-size:15px;color:#e8ece9}
+h3 small{color:#7d867f;font-weight:400;font-size:11px;margin-left:8px}
+table{width:100%;border-collapse:collapse;background:#151917;border:1px solid #232a26}
+th{position:sticky;top:0;background:#1b211e;color:#9aa39c;font-size:11px;letter-spacing:.08em;text-align:left;padding:8px 10px}
+td{padding:7px 10px;border-top:1px solid #20261f;vertical-align:middle}
+tr:nth-child(even) td{background:#131715}
+td.num{text-align:right;font-weight:600;color:#f5c96b;white-space:nowrap}
+td.def{color:#6c756e;text-align:right;white-space:nowrap}
+td.nm b{display:block;color:#e8ece9}
+td.nm .code{display:block;color:#6c756e;font-size:11px;font-family:Consolas,monospace}
+td.cat{color:#9aa39c;font-size:12px;white-space:nowrap}
+td.bd{white-space:nowrap;text-align:right}
+.ico{display:inline-block;width:28px;height:28px;background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle}
+.ico.def{border:1px dashed #2c332f;border-radius:4px}
+.bdg{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#2c332f;color:#c9d3cc;font-size:10px;letter-spacing:.05em}
+.bdg.off{background:#4b1f1f;color:#ff9d9d}
+footer{max-width:1100px;margin:30px auto;color:#6c756e;font-size:11px;text-align:center}
+"""
+
+CATALOG_JS = """
+<script>
+(function(){
+var q=document.getElementById('q');
+q.addEventListener('input',function(){
+var v=q.value.trim().toLowerCase();
+document.querySelectorAll('section').forEach(function(s){
+var tvis=0;
+s.querySelectorAll('.t').forEach(function(t){
+var vis=0;
+t.querySelectorAll('tbody tr').forEach(function(r){
+var ok=!v||r.textContent.toLowerCase().indexOf(v)>-1;
+r.style.display=ok?'':'none';
+if(ok)vis++;
+});
+t.style.display=vis?'':'none';
+tvis+=vis;
+});
+s.style.display=tvis?'':'none';
+});
+});
+})();
+</script>
+"""
 
 def connect_ftp(data, attempt_start=0):
     errors = []
@@ -1677,7 +1733,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/snapshot", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -1696,6 +1752,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_ftp_test(doc)
         if self.path == "/api/economy/validate":
             return self.handle_economy_validate(doc)
+        if self.path == "/api/economy/catalog":
+            return self.handle_economy_catalog(doc)
         if self.path == "/api/loot/snapshot":
             return self.handle_loot_snapshot(doc)
         if self.path == "/api/loot/root":
@@ -3033,6 +3091,152 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as exc:
             return self.send_json(500, {"ok": False, "error": str(exc)[:200]})
         return self.send_json(200, {"ok": True})
+
+    def handle_economy_catalog(self, data):
+        doc = (data or {}).get("doc")
+        if not (isinstance(doc, dict) and isinstance(doc.get("traders"), dict)):
+            doc = data if isinstance(data, dict) else None
+        if not isinstance(doc, dict) or not isinstance(doc.get("traders"), dict) or not doc["traders"]:
+            return self.send_json(400, {"ok": False, "error": "doc.traders (object) is required"})
+        with_icons = bool((data or {}).get("icons"))
+
+        names, cats = {}, {}
+        try:
+            dbj = json.loads((WEB / "items-db.json").read_text(encoding="utf-8-sig"))
+            for c in dbj.get("categories") or []:
+                for it in c.get("items") or []:
+                    if isinstance(it, dict) and isinstance(it.get("id"), str) and it["id"].strip():
+                        names[it["id"].strip()] = str(it.get("name") or it.get("name_en") or it["id"].strip())
+                        cats[it["id"].strip()] = str(c.get("name") or "Разное")
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
+        for x in load_custom_items():
+            if isinstance(x, dict) and isinstance(x.get("id"), str) and x["id"].strip():
+                names.setdefault(x["id"].strip(), str(x.get("name") or x["id"].strip()))
+                cats.setdefault(x["id"].strip(), str(x.get("category") or "Разное"))
+
+        def is_def(v):
+            s = str(v if v is not None else "").strip().lower()
+            if s in ("", "default"):
+                return True
+            try:
+                return float(s.replace(",", ".")) == -1.0
+            except ValueError:
+                return False
+
+        def num(v):
+            if is_def(v):
+                return None
+            try:
+                return float(str(v).strip().replace(",", "."))
+            except ValueError:
+                return None
+
+        icon_cache = {}
+
+        def icon_html(code):
+            if not with_icons:
+                return "<i class='ico def'></i>"
+            if code not in icon_cache:
+                body, ext = read_icon_bytes(code)
+                icon_cache[code] = "data:%s;base64,%s" % (ICON_MIME.get(ext, "application/octet-stream"), base64.b64encode(body).decode("ascii")) if body else ""
+            uri = icon_cache[code]
+            return "<i class='ico' style='background-image:url(%s)'></i>" % uri if uri else "<i class='ico def'></i>"
+
+        def price_cell(v, delta):
+            x = num(v)
+            if x is None:
+                return "<td class='def'>—</td>"
+            eff = x * (1.0 + delta) if delta is not None else x
+            eff = round(eff)
+            txt = format(eff, ",").replace(",", " ")
+            if delta is not None and delta != 0:
+                return "<td class='num' title='базовая цена %s · множитель ×%s'>%s</td>" % (format(round(x), ",").replace(",", " "), round(1.0 + delta, 2), txt)
+            return "<td class='num'>%s</td>" % txt
+
+        esc = html.escape
+        stub_fields = ECON_NUMERIC_FIELDS + ECON_VIS_FIELDS
+        order = {s: i for i, s in enumerate(ECON_SECTORS)}
+        sec_titles = {"A_0": "СЕКТОР A", "B_4": "СЕКТОР B", "C_2": "СЕКТОР C", "Z_3": "СЕКТОР Z"}
+        sectors = {}
+        total_items, stubs, nocodes = 0, 0, 0
+
+        for t, rows in doc["traders"].items():
+            tname = str(t)
+            if not isinstance(rows, list):
+                continue
+            m = re.match(r"^([A-Za-z])_(\d+)_(.+)$", tname)
+            sec = (m.group(1).upper() + "_" + m.group(2)) if m else "ПРОЧИЕ"
+            items, seen = [], set()
+            for r in rows:
+                if not isinstance(r, dict):
+                    continue
+                code = ""
+                for f in ECON_CODE_FIELDS:
+                    v = r.get(f)
+                    if v is not None and str(v).strip():
+                        code = str(v).strip()
+                        break
+                if not code:
+                    nocodes += 1
+                    continue
+                if code in seen:
+                    continue
+                seen.add(code)
+                if all(is_def(r.get(f)) for f in stub_fields):
+                    stubs += 1
+                    continue
+                delta = num(r.get("delta-price"))
+                fame = num(r.get("required-famepoints"))
+                badges = []
+                if delta is not None and delta != 0:
+                    badges.append("<span class='bdg' title='множитель цен строки: цена ×%s'>×%s</span>" % (round(1.0 + delta, 2), round(1.0 + delta, 2)))
+                if str(r.get("can-be-purchased", "")).strip().lower() == "false":
+                    badges.append("<span class='bdg off' title='can-be-purchased: false — товара нет в продаже'>СКРЫТ</span>")
+                if str(r.get("available-after-sale-only", "")).strip().lower() == "true":
+                    badges.append("<span class='bdg' title='available-after-sale-only: появляется только после продажи'>ПОСЛЕ ПРОДАЖИ</span>")
+                items.append((code, names.get(code) or code, cats.get(code) or "Не в каталоге", r.get("base-purchase-price"), r.get("base-sell-price"), delta, fame, "".join(badges)))
+            if not items:
+                continue
+            total_items += len(items)
+            sectors.setdefault(sec, []).append((tname, m.group(3) if m else tname, items))
+
+        traders_count = sum(len(v) for v in sectors.values())
+        parts = []
+        parts.append("<!doctype html><html lang='ru'><head><meta charset='utf-8'>")
+        parts.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+        parts.append("<title>MIDWAY · Каталог торговцев</title>")
+        parts.append("<style>%s</style></head><body>" % CATALOG_CSS)
+        parts.append("<header><h1>MIDWAY · КАТАЛОГ ТОРГОВЦЕВ</h1>")
+        parts.append("<div class='meta'>%s · торговцев: %d · товаров: %d · %s</div>" % (datetime.now().strftime("%d.%m.%Y %H:%M"), traders_count, total_items, "с иконками" if with_icons else "без иконок"))
+        parts.append("<input id='q' placeholder='Поиск: название или ID' autocomplete='off'>")
+        parts.append("<div class='legend'>ПОКУПКА — цена, по которой торговец продаёт вам · ПРОДАЖА — сколько торговец заплатит вам · ×N — множитель цены строки · СЛАВА — требуемая известность · «—» = стандартная серверская цена</div>")
+        parts.append("</header>")
+        for sec in sorted(sectors, key=lambda s: (order.get(s, 99), s)):
+            parts.append("<section><h2>%s</h2>" % esc(sec_titles.get(sec, sec)))
+            for tname, role, items in sorted(sectors[sec], key=lambda x: x[0].lower()):
+                parts.append("<div class='t'><h3>%s <small>%s · позиций: %d</small></h3>" % (esc(role), esc(tname), len(items)))
+                parts.append("<table><thead><tr><th></th><th>ТОВАР</th><th>КАТЕГОРИЯ</th><th>ПОКУПКА</th><th>ПРОДАЖА</th><th>СЛАВА</th><th></th></tr></thead><tbody>")
+                for code, name, cat, buy, sell, delta, fame, badges in sorted(items, key=lambda x: (x[2], x[1].lower(), x[0].lower())):
+                    parts.append("<tr>%s<td class='nm'><b>%s</b><span class='code'>%s</span></td><td class='cat'>%s</td>%s%s<td class='def'>%s</td><td class='bd'>%s</td></tr>" % (
+                        icon_html(code), esc(name), esc(code), esc(cat),
+                        price_cell(buy, delta), price_cell(sell, delta),
+                        format(int(round(fame)), ",").replace(",", " ") if fame is not None else "—", badges))
+                parts.append("</tbody></table></div>")
+            parts.append("</section>")
+        icons_count = len([u for u in icon_cache.values() if u])
+        parts.append("<footer>Собрано в MIDWAY Economy Control v%s · пропущено строк-заглушек (−1/default): %d · строк без кода: %d · иконок встроено: %d</footer>" % (VERSION, stubs, nocodes, icons_count))
+        parts.append(CATALOG_JS)
+        parts.append("</body></html>")
+        payload = "".join(parts).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Catalog-Traders", str(traders_count))
+        self.send_header("X-Catalog-Items", str(total_items))
+        self.end_headers()
+        self.wfile.write(payload)
 
     def handle_economy_validate(self, data):
         doc = (data or {}).get("doc")
