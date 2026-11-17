@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.46"
+VERSION = "0.8.47"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -3043,7 +3043,7 @@ class Handler(SimpleHTTPRequestHandler):
         issues = []
         summary = {"errors": 0, "warnings": 0, "infos": 0, "traders": 0, "rows": 0,
                    "dupCodes": 0, "unknownIds": 0, "hiddenRows": 0, "hugePrices": 0, "unknownGlobals": 0,
-                   "offAssortment": 0}
+                   "offAssortment": 0, "arbPrices": 0}
         sev_key = {"error": "errors", "warn": "warnings", "info": "infos"}
 
         def add(sev, cat, message, **kw):
@@ -3157,6 +3157,15 @@ class Handler(SimpleHTTPRequestHandler):
                     if num >= 1000000000:
                         summary["hugePrices"] += 1
                         add("info", "price", "%s = %s — похоже на «выключенную торговлю»" % (f, s), trader=tname, idx=idx, code=code, field=f)
+                try:
+                    buy_num = float(str(r.get("base-purchase-price") or "").strip())
+                    sell_num = float(str(r.get("base-sell-price") or "").strip())
+                except ValueError:
+                    buy_num = sell_num = None
+                if buy_num is not None and sell_num is not None and buy_num > 0 and sell_num >= buy_num:
+                    summary["arbPrices"] += 1
+                    add("warn", "arbitrage", "Продажа ≥ покупка (%s ≥ %s) — игрок может купить у торговца и сразу продать ему с выгодой" % (sell_num, buy_num), trader=tname, idx=idx, code=code,
+                        fix={"type": "auto-sell", "trader": tname, "idx": idx, "to": str(int(round(buy_num * 0.5)))})
                 for f in ECON_VIS_FIELDS:
                     v = r.get(f)
                     s = "" if v is None else str(v).strip()

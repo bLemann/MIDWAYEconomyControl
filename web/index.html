@@ -99,6 +99,13 @@
         <button class="btn-dark big" id="tool-fame-sector">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ СЕКТОРА</button>
         <button class="btn-dark big" id="tool-fame-all">ПРИМЕНИТЬ ВСЕМ ТРЕЙДЕРАМ</button>
       </div>
+      <small class="sec-cap">КАЛЬКУЛЯТОР ПРОДАЖИ</small>
+      <label>МАРЖА, % ОТ ПОКУПКИ<input id="calc-margin" placeholder="50"></label>
+      <label>ОКРУГЛЕНИЕ<select id="calc-round"><option value="1">до целого</option><option value="10">до 10</option><option value="100">до 100</option></select></label>
+      <p class="hint">Цена продажи = цена покупки × маржа (50 → половина). Вводите «покупку» в таблице — «продажа» подставится сама, если поле пустое/−1 или было заполнено калькулятором. Ручная правка «продажи» отключает автозаполнение строки.</p>
+      <button class="btn-red big" id="calc-scan-current">ВЫГОДА: ТЕКУЩИЙ ТОРГОВЕЦ</button>
+      <button class="btn-dark big" id="calc-scan-sector">ВЫГОДА: СЕКТОР</button>
+      <button class="btn-dark big" id="calc-scan-all">ВЫГОДА: ВСЕ ТОРГОВЦЫ</button>
       <small class="sec-cap">СТАТУС СПИСКА (ВИДИМОСТЬ)</small>
       <label>СТАТУС<select id="vis-status"><option value="">— не менять</option><option value="default">Открыт (по умолчанию)</option><option value="true">Открыт (true)</option><option value="false">Скрыт</option></select></label>
       <button class="btn-dark big" id="vis-apply-list">ПРИМЕНИТЬ КО ВСЕМ СПИСКУ</button>
@@ -143,6 +150,7 @@
           <span>Каталог: <b id="st-catalog">0</b></span>
           <span>UNVERIFIED: <b id="st-unv">0</b></span>
           <span>Продаётся: <b id="st-sale">0</b></span>
+          <span id="lg-arb" class="lg" title="Строки, где цена продажи ≥ цены покупки — игрок может купить и сразу продать с выгодой">⚠ арбитраж: <b id="st-arb">0</b></span>
           <span id="lg-chg" class="lg" hidden>● изменено: <b>0</b></span>
           <span id="lg-add" class="lg" hidden>● добавлено: <b>0</b></span>
           <span>Изменений: <b id="change-total">0</b></span>

@@ -303,6 +303,14 @@ tr.row-hidden td:last-child{background:#101318}
 tr.row-hidden:hover td:last-child{background:#161a21}
 tr.row-hidden td input,tr.row-hidden td select{opacity:.55}
 
+/* ===== ARBITRAGE ROWS (sell price >= buy price) ===== */
+tr.row-arb td{background:rgba(223,65,72,.10)}
+tr.row-arb:hover td{background:rgba(223,65,72,.16)}
+tr.row-arb td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+tr.row-arb td:last-child{background:#201316}
+tr.row-arb:hover td:last-child{background:#281619}
+tr.row-arb td input.in-sell{color:#ff9a9e}
+
 /* ===== FOOTER ===== */
 footer{margin-top:18px;padding:14px 0 4px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:1.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 
