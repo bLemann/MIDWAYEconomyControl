@@ -17,6 +17,7 @@
     <button class="profile active" id="prof-tc"><i class="p-ico">TC</i><span>SCUM TRADER CONFIG EDITOR<small>EconomyOverride.json</small></span></button>
     <button class="profile" id="prof-q"><i class="p-ico">Q</i><span>SCUM QUEST CONFIGURATOR<small>Quest.json</small></span></button>
     <button class="profile" id="prof-l"><i class="p-ico">L</i><span>SCUM LOOT CONFIGURATOR<small>LootBP · VANILLA DB</small></span></button>
+    <button class="profile" id="prof-ss"><i class="p-ico">SS</i><span>SERVER SETTINGS<small>ServerSettings.ini</small></span></button>
     <button class="profile soon" disabled><i class="p-ico">S</i><span>SCUM SKILL EDITOR<small>Character.sqlite · скоро</small></span></button>
   </nav>
   <div class="top-right">
@@ -53,6 +54,7 @@
     <button class="tab q-only" data-view="q-editor">РЕДАКТОР</button>
     <button class="tab q-only" data-view="q-export">ЭКСПОРТ</button>
     <button class="tab l-only active" data-view="l-browse">БАЗА ЛУТА</button>
+    <button class="tab ss-only active" data-view="ss-edit">НАСТРОЙКИ СЕРВЕРА</button>
   </div>
   <div class="tabs-side">
     <button class="tab side tc-only" data-view="catalog">КАТАЛОГ</button>
@@ -639,6 +641,27 @@
   </article>
 </section>
 
+<section class="view ss-only" id="ss-edit">
+  <div class="toolbar">
+    <div><h2>ServerSettings.ini · настройки сервера</h2><p>Все параметры сервера в одном файле: правила, мир, респавн, транспорт, урон, функции. Типы значений: вкл/выкл, число, время ЧЧ:ММ:СС, цена (суффикс g = золото), текст.</p></div>
+    <input id="ss-search" placeholder="Поиск по ключу или значению" spellcheck="false">
+    <button class="btn-dark" id="ss-diff" disabled>ИЗМЕНЕНИЯ (0)</button>
+    <button class="btn-dark" id="ss-reset" disabled>СБРОСИТЬ ВСЁ</button>
+    <button class="btn-green" id="ss-upload" disabled>ВЫГРАЗИТЬ НА СЕРВЕР</button>
+    <button class="btn-green" id="ss-download">СКАЧАТЬ С СЕРВЕРА</button>
+  </div>
+  <article class="panel srv-panel"><h3>СЕРВЕР · SERVERSETTINGS.INI</h3>
+    <div class="srv-row"><span id="ss-status" class="hint">Файл ещё не загружен — нажмите «СКАЧАТЬ С СЕРВЕРА» (используется FTP-профиль из вкладки «FTP / ФАЙЛЫ»)</span></div>
+    <p class="note"><b>⚠ ВАЖНО: сервер SCUM перезаписывает ServerSettings.ini из своей памяти при ВЫКЛЮЧЕНИИ.</b> Редактируйте файл только на ОСТАНОВЛЕННОМ сервере: остановить → скачать → изменить → выгрузить → запустить. Если выгрузить поверх работающего сервера, изменения пропадут при его остановке. Перед выгрузкой приложение автоматически создаёт на сервере копию .backup-метку и локальный снапшот.</p>
+  </article>
+  <div class="ss-layout">
+    <aside class="ss-groups" id="ss-groups"><p class="empty">Сначала скачайте файл</p></aside>
+    <article class="panel ss-main">
+      <div class="ss-wrap"><table class="ss-t"><thead><tr><th>КЛЮЧ</th><th>ЗНАЧЕНИЕ</th><th></th></tr></thead><tbody id="ss-tbody"></tbody></table></div>
+    </article>
+  </div>
+</section>
+
 <footer>MIDWAY ECONOMY CONTROL · BY LEMANN <span>TRADER CONFIG · ECONOMYOVERRIDE.JSON · LOCAL TOOL</span></footer>
 </main>
 
@@ -912,6 +935,12 @@
   <div id="upr-body"></div>
   <p class="note">Файл после записи прочитан с сервера повторно и сверен с отправленным (SHA-256). MDTM — время изменения по часовому серверу (UTC).</p>
   <div class="dlg-foot"><span class="hint-inline" id="upr-status"></span><button type="button" class="btn-dark" id="upr-close">ЗАКРЫТЬ</button></div>
+</dialog>
+
+<dialog id="ss-diff-dialog">
+  <div class="dlg-head"><h3>ИЗМЕНЕНИЯ SERVERSETTINGS.INI</h3><span class="hint-inline" id="ss-diff-count"></span></div>
+  <div id="ss-diff-body" class="ss-diff-body"></div>
+  <div class="dlg-foot"><span class="hint-inline">Сбросить отдельную строку можно кнопкой ↩ в таблице</span><button type="button" class="btn-dark" id="ss-diff-close">ЗАКРЫТЬ</button></div>
 </dialog>
 
 <div id="toast"></div>

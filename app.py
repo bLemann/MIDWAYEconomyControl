@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.49"
+VERSION = "0.8.50"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -54,6 +54,24 @@ def version_newer(candidate, current):
     pa = tuple(int(x) for x in re.findall(r"\d+", candidate)[:4])
     pb = tuple(int(x) for x in re.findall(r"\d+", current)[:4])
     return bool(pa) and bool(pb) and pa > pb
+
+_SS_DB_CACHE = {"mtime": None, "data": None}
+
+def ss_db():
+    p = WEB / "ss-db.json"
+    try:
+        mtime = p.stat().st_mtime
+        if _SS_DB_CACHE["data"] is None or mtime != _SS_DB_CACHE["mtime"]:
+            raw = json.loads(p.read_text(encoding="utf-8-sig"))
+            _SS_DB_CACHE["mtime"] = mtime
+            _SS_DB_CACHE["data"] = {
+                "groups": [str(g) for g in raw.get("groups") or []],
+                "keys": raw.get("keys") if isinstance(raw.get("keys"), dict) else {},
+            }
+    except (OSError, ValueError):
+        _SS_DB_CACHE["mtime"] = None
+        _SS_DB_CACHE["data"] = {"groups": [], "keys": {}}
+    return _SS_DB_CACHE["data"]
 
 def ftp_ensure_dir(ftp, path):
     parts = [p for p in path.replace("\\", "/").split("/") if p not in ("", ".")]
@@ -1733,7 +1751,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -1754,6 +1772,10 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_economy_validate(doc)
         if self.path == "/api/economy/catalog":
             return self.handle_economy_catalog(doc)
+        if self.path == "/api/serversettings/parse":
+            return self.handle_serversettings_parse(doc)
+        if self.path == "/api/serversettings/serialize":
+            return self.handle_serversettings_serialize(doc)
         if self.path == "/api/loot/snapshot":
             return self.handle_loot_snapshot(doc)
         if self.path == "/api/loot/root":
@@ -3237,6 +3259,151 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("X-Catalog-Items", str(total_items))
         self.end_headers()
         self.wfile.write(payload)
+
+    def handle_serversettings_parse(self, data):
+        try:
+            raw = base64.b64decode(str((data or {}).get("content") or ""), validate=True)
+        except (ValueError, TypeError):
+            return self.send_json(400, {"ok": False, "error": "content (base64) is required"})
+        if not raw:
+            return self.send_json(400, {"ok": False, "error": "content (base64) is required"})
+        if len(raw) > 1024 * 1024:
+            return self.send_json(413, {"ok": False, "error": "File too large (max 1 MB)"})
+        try:
+            text = raw.decode("utf-8")
+            enc = "utf-8"
+        except UnicodeDecodeError:
+            text = raw.decode("cp1251")
+            enc = "cp1251"
+        eol = "crlf" if "\r\n" in text else "lf"
+        nl = "\r\n" if eol == "crlf" else "\n"
+        parts = text.split(nl)
+        trailing_n = 0
+        while parts and parts[-1] == "":
+            parts.pop()
+            trailing_n += 1
+        if trailing_n > 4 or not parts:
+            return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (trailing lines)"})
+        db = ss_db()
+        dbkeys = db["keys"] if isinstance(db["keys"], dict) else {}
+        sections = []
+        seen_sec = set()
+        seen_keys = set()
+        unknown = 0
+        pending_blank = False
+        cur = None
+        for idx, line in enumerate(parts):
+            if line == "":
+                if cur is None:
+                    return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (leading blank line)"})
+                if idx == len(parts) - 1 or parts[idx + 1].startswith("["):
+                    pending_blank = True
+                    continue
+                return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (blank line inside section)"})
+            if line.startswith("["):
+                if not line.endswith("]") or len(line) > 66 or line[1:-1] in seen_sec:
+                    return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (bad section header: %s)" % line[:60]})
+                name = line[1:-1]
+                if cur is not None and not pending_blank:
+                    return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (missing blank line before [%s])" % name})
+                seen_sec.add(name)
+                cur = {"name": name, "keys": []}
+                sections.append(cur)
+                pending_blank = False
+                continue
+            if line.startswith(";") or line.startswith("#"):
+                return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (comments are not expected)"})
+            if cur is None:
+                return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (key before any section)"})
+            if "=" not in line:
+                return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (line without '=')"})
+            key, _, value = line.partition("=")
+            key = key.strip()
+            if not re.match(r"^[A-Za-z0-9_.]{1,200}$", key) or key in seen_keys:
+                return self.send_json(400, {"ok": False, "error": "Unsupported ServerSettings.ini layout (bad or duplicate key: %s)" % key[:60]})
+            seen_keys.add(key)
+            meta = dbkeys.get(key) if isinstance(dbkeys.get(key), dict) else {}
+            known = bool(meta)
+            if not known:
+                unknown += 1
+            cur["keys"].append({
+                "key": key,
+                "value": value,
+                "group": meta.get("group") or "Other",
+                "type": meta.get("type") or "text",
+                "known": known,
+            })
+            pending_blank = False
+        if not sections or not any(s["keys"] for s in sections):
+            return self.send_json(400, {"ok": False, "error": "No sections with keys found"})
+        total = sum(len(s["keys"]) for s in sections)
+        return self.send_json(200, {
+            "ok": True, "eol": eol, "encoding": enc, "trailingN": trailing_n,
+            "groups": db["groups"],
+            "sections": sections,
+            "counts": {"sections": len(sections), "keys": total, "unknown": unknown},
+        })
+
+    def handle_serversettings_serialize(self, data):
+        data = data or {}
+        eol = data.get("eol")
+        if eol not in ("crlf", "lf"):
+            return self.send_json(400, {"ok": False, "error": "eol must be 'crlf' or 'lf'"})
+        enc = data.get("encoding") or "utf-8"
+        if enc not in ("utf-8", "cp1251"):
+            return self.send_json(400, {"ok": False, "error": "encoding must be 'utf-8' or 'cp1251'"})
+        try:
+            trailing_n = int(data.get("trailingN"))
+        except (TypeError, ValueError):
+            return self.send_json(400, {"ok": False, "error": "trailingN (int) is required"})
+        if not 0 <= trailing_n <= 4:
+            return self.send_json(400, {"ok": False, "error": "trailingN out of range"})
+        sections = data.get("sections")
+        if not isinstance(sections, list) or not sections or len(sections) > 64:
+            return self.send_json(400, {"ok": False, "error": "sections (non-empty list) is required"})
+        nl = "\r\n" if eol == "crlf" else "\n"
+        lines = []
+        seen_sec = set()
+        seen_keys = set()
+        total = 0
+        for i, sec in enumerate(sections):
+            if not isinstance(sec, dict):
+                return self.send_json(400, {"ok": False, "error": "Bad section entry"})
+            name = sec.get("name")
+            keys = sec.get("keys")
+            if not isinstance(name, str) or not re.match(r"^[^\[\]\r\n=]{1,64}$", name) or name in seen_sec:
+                return self.send_json(400, {"ok": False, "error": "Bad or duplicate section name"})
+            if not isinstance(keys, list) or not keys or len(keys) > 2048:
+                return self.send_json(400, {"ok": False, "error": "Section [%s]: keys (non-empty list) is required" % name})
+            seen_sec.add(name)
+            if i > 0:
+                lines.append("")
+            lines.append("[%s]" % name)
+            for entry in keys:
+                if not isinstance(entry, dict):
+                    return self.send_json(400, {"ok": False, "error": "Bad key entry in section [%s]" % name})
+                key = entry.get("key")
+                value = entry.get("value")
+                if not isinstance(key, str):
+                    return self.send_json(400, {"ok": False, "error": "Bad key entry (not a string) in section [%s]" % name})
+                if not re.match(r"^scum\.[A-Za-z0-9_.]{1,200}$", key) or key in seen_keys:
+                    return self.send_json(400, {"ok": False, "error": "Bad or duplicate key: %s" % key[:80]})
+                if not isinstance(value, str) or "\r" in value or "\n" in value or "\x00" in value or len(value) > 4000:
+                    return self.send_json(400, {"ok": False, "error": "Bad value for %s (single line, max 4000 chars)" % key[:80]})
+                seen_keys.add(key)
+                total += 1
+                lines.append("%s=%s" % (key, value))
+        if not total:
+            return self.send_json(400, {"ok": False, "error": "No keys to serialize"})
+        text = nl.join(lines) + nl * trailing_n
+        try:
+            raw = text.encode(enc)
+        except UnicodeEncodeError:
+            raw = text.encode("utf-8", errors="replace")
+        return self.send_json(200, {
+            "ok": True, "content": base64.b64encode(raw).decode("ascii"),
+            "size": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+        })
 
     def handle_economy_validate(self, data):
         doc = (data or {}).get("doc")

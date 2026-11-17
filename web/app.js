@@ -541,17 +541,18 @@ const Q_NPCS=['GeneralGoods','Doctor','Armorer','Mechanic'];
 const Q_TYPES=['Elimination','Fetch'];
 const Q_TIER_REWARD={1:{money:[1000,5000],fame:[10,20]},2:{money:[2000,3500],fame:[15,20]},3:{money:[5000,7500],fame:[25,30]}};
 const Q_NAME_RE=/^STORY_[A-Za-z0-9_\-]{1,96}\.json$/;
-let qModule=false,lModule=false,qQuests=[],qDoc=null,qName=null,qDirty=false,qDiff=null;
+let qModule=false,lModule=false,ssModule=false,ssData=null,ssVals={},ssOrig={},ssGroups=[],ssCur=null,qQuests=[],qDoc=null,qName=null,qDirty=false,qDiff=null;
 
-function qFlag(){let f=$('#changes-flag');if(qModule){if(qDirty){f.hidden=false;f.textContent='● Есть изменения'}else f.hidden=true}else{if(changes>0){f.hidden=false;f.textContent='● Есть изменения · '+changes}else f.hidden=true}}
-function setModule(m){qModule=(m==='q');lModule=(m==='l');document.body.classList.toggle('mod-q',qModule);document.body.classList.toggle('mod-l',lModule);
-$('#prof-tc').classList.toggle('active',m==='tc');$('#prof-q').classList.toggle('active',qModule);$('#prof-l').classList.toggle('active',lModule);
-$('#import').textContent=qModule?'← ИМПОРТ ФАЙЛОВ':'← ИМПОРТ ФАЙЛА';$('#import').hidden=lModule;
-if(qModule)qRefresh().then(()=>go('q-editor'));else if(lModule){go('l-browse');lootInit()}else go('items');
+function qFlag(){let f=$('#changes-flag');if(qModule){if(qDirty){f.hidden=false;f.textContent='● Есть изменения'}else f.hidden=true}else if(ssModule){let n=ssChanged();if(n>0){f.hidden=false;f.textContent='● Есть изменения · '+n}else f.hidden=true}else{if(changes>0){f.hidden=false;f.textContent='● Есть изменения · '+changes}else f.hidden=true}}
+function setModule(m){qModule=(m==='q');lModule=(m==='l');ssModule=(m==='ss');document.body.classList.toggle('mod-q',qModule);document.body.classList.toggle('mod-l',lModule);document.body.classList.toggle('mod-ss',ssModule);
+$('#prof-tc').classList.toggle('active',m==='tc');$('#prof-q').classList.toggle('active',qModule);$('#prof-l').classList.toggle('active',lModule);$('#prof-ss').classList.toggle('active',ssModule);
+$('#import').textContent=qModule?'← ИМПОРТ ФАЙЛОВ':'← ИМПОРТ ФАЙЛА';$('#import').hidden=lModule||ssModule;
+if(qModule)qRefresh().then(()=>go('q-editor'));else if(lModule){go('l-browse');lootInit()}else if(ssModule){go('ss-edit');ssInit()}else go('items');
 qFlag()}
-$('#prof-tc').onclick=()=>{if(qModule||lModule)setModule('tc')};
+$('#prof-tc').onclick=()=>{if(qModule||lModule||ssModule)setModule('tc')};
 $('#prof-q').onclick=()=>{if(!qModule)setModule('q')};
 $('#prof-l').onclick=()=>{if(!lModule)setModule('l')};
+$('#prof-ss').onclick=()=>{if(!ssModule)setModule('ss')};
 
 function qClone(o){return JSON.parse(JSON.stringify(o))}
 function qTemplate(){return{AssociatedNPC:'GeneralGoods',Tier:1,Title:'Новый квест | New Quest',Description:'RU: \nEN: ',TimeLimitHours:24.0,RewardPool:[{CurrencyNormal:1000,Fame:10}],Conditions:[{TrackingCaption:'Цель | Goal',SequenceIndex:0,CanBeAutoCompleted:true,Type:'Elimination',TargetCharacters:['Puppet'],Amount:1}]}}
@@ -1647,3 +1648,118 @@ window.addEventListener('focus',()=>{if(lootStatus)lootRun(lootPubRefresh())});
 Q_NPCS.forEach(n=>{let o=document.createElement('option');o.value=n;$('#npc-list').append(o)});
 qDoc=qTemplate();qRenderEditor();qRenderCheck();qRenderPreview();
 qRefresh();
+
+/* ===== SERVER SETTINGS MODULE (SS) ===== */
+const SS_TIME_RE=/^\d+:\d{2}:\d{2}$/;
+let ssSearchT=null;
+function ssAllKeys(){let out=[];(ssData&&ssData.sections||[]).forEach(s=>(s.keys||[]).forEach(k=>out.push(k)));return out}
+function ssChanged(){let n=0;for(const k in ssVals)if(ssVals[k]!==ssOrig[k])n++;return n}
+function ssStatus(s){$('#ss-status').textContent=s+' · '+new Date().toLocaleTimeString()}
+function ssInit(){if(!ssData){$('#ss-groups').innerHTML='<p class="empty">Сначала скачайте файл</p>';$('#ss-tbody').innerHTML='<tr><td colspan="3" class="empty">Нажмите «СКАЧАТЬ С СЕРВЕРА» — используется FTP-профиль из вкладки «FTP / ФАЙЛЫ»</td></tr>';ssRenderTop()}}
+function ssRenderTop(){let n=ssData?ssChanged():0;$('#ss-diff').disabled=!n;$('#ss-diff').textContent='ИЗМЕНЕНИЯ ('+n+')';$('#ss-reset').disabled=!n;$('#ss-upload').disabled=!n;qFlag()}
+function ssRender(){ssRenderGroups();ssRenderRows();ssRenderTop()}
+function ssRenderGroups(){
+ let box=$('#ss-groups');box.innerHTML='';
+ if(!ssData){box.innerHTML='<p class="empty">Сначала скачайте файл</p>';return}
+ let mk=(label,g)=>{let t=0,ch=0;ssAllKeys().forEach(k=>{if(g&&k.group!==g)return;t++;if(ssVals[k.key]!==ssOrig[k.key])ch++});
+  let b=document.createElement('button');b.className='ss-gbtn'+(ssCur===g?' active':'');b.title=label;
+  let nm=document.createElement('span');nm.textContent=label;let c=document.createElement('span');c.className='cnt';c.textContent=t+(ch?' · Δ'+ch:'');
+  b.append(nm,c);b.onclick=()=>{ssCur=g;ssRenderGroups();ssRenderRows()};box.append(b)};
+ mk('ВСЕ ПАРАМЕТРЫ',null);
+ (ssGroups||[]).forEach(g=>mk(g==='Other'?'ДРУГОЕ / НЕИЗВЕСТНЫЕ':g,g));
+}
+function ssControl(k){
+ let cur=ssVals[k.key],el;
+ if(k.type==='bool'){el=document.createElement('select');[['0','0 · выкл'],['1','1 · вкл']].forEach(p=>{let o=document.createElement('option');o.value=p[0];o.textContent=p[1];el.append(o)});el.value=/^1$/.test(cur)?'1':'0'}
+ else if(k.type==='int'||k.type==='float'){el=document.createElement('input');el.type='number';el.step=k.type==='int'?'1':'any';el.value=cur}
+ else{el=document.createElement('input');el.type='text';el.value=cur;el.spellcheck=false;if(k.type==='time')el.placeholder='ЧЧ:ММ:СС (часы могут быть >24)'}
+ el.onchange=()=>ssSet(k.key,el.value);
+ return el}
+function ssSet(key,val){val=String(val);if(ssVals[key]===val)return;ssVals[key]=val;ssRender()}
+function ssRenderRows(){
+ let tb=$('#ss-tbody');let wrap=$('.ss-wrap');let st=wrap?wrap.scrollTop:0;tb.innerHTML='';
+ if(!ssData){tb.innerHTML='<tr><td colspan="3" class="empty">Файл не загружен</td></tr>';return}
+ let q=$('#ss-search').value.trim().toLowerCase();let shown=0;
+ ssAllKeys().forEach(k=>{
+  if(ssCur&&k.group!==ssCur)return;
+  if(q&&!(k.key.toLowerCase().includes(q)||String(ssVals[k.key]).toLowerCase().includes(q)))return;
+  shown++;let changed=ssVals[k.key]!==ssOrig[k.key];
+  let tr=document.createElement('tr');if(changed)tr.className='ss-changed';
+  let td1=document.createElement('td');td1.className='ss-key';td1.textContent=k.key;
+  if(!k.known){let b=document.createElement('span');b.className='ss-badge-unknown';b.textContent='НЕИЗВ. (МОД?)';td1.append(b)}
+  let td2=document.createElement('td');td2.className='ss-val';td2.append(ssControl(k));
+  let td3=document.createElement('td');td3.className='ss-act';
+  if(changed){let rb=document.createElement('button');rb.className='btn-dark ss-rowreset';rb.textContent='↩';rb.title='Вернуть исходное значение: '+ssOrig[k.key];rb.onclick=()=>ssSet(k.key,ssOrig[k.key]);td3.append(rb)}
+  tr.append(td1,td2,td3);tb.append(tr)});
+ if(!shown)tb.innerHTML='<tr><td colspan="3" class="empty">Ничего не найдено</td></tr>';
+ if(wrap)wrap.scrollTop=st}
+function ssValidate(){
+ let errs=[];
+ for(const k of ssAllKeys()){let v=ssVals[k.key];
+  if(/[\r\n]/.test(v)){errs.push(k.key+': перенос строки');continue}
+  if(v==='')continue;
+  if(k.type==='bool'&&!/^[01]$/.test(v))errs.push(k.key+': ожидается 0 или 1');
+  else if(k.type==='int'&&!/^-?\d+$/.test(v))errs.push(k.key+': ожидается целое число');
+  else if(k.type==='float'&&!/^-?\d+(\.\d+)?$/.test(v))errs.push(k.key+': ожидается число');
+  else if(k.type==='time'&&!SS_TIME_RE.test(v))errs.push(k.key+': формат ЧЧ:ММ:СС, например 240:00:00')}
+ return errs}
+$('#ss-search').oninput=()=>{clearTimeout(ssSearchT);ssSearchT=setTimeout(ssRenderRows,200)};
+$('#ss-download').onclick=async()=>{
+ let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
+ if(ssData&&ssChanged()&&!(await askConfirm('Незахваченные изменения','В форме есть изменения ('+ssChanged()+' шт.), которые ещё не выгружены на сервер — при загрузке свежего файла они пропадут. Продолжить?')))return;
+ let btn=$('#ss-download');btn.disabled=true;ssStatus('Скачиваю ServerSettings.ini…');
+ try{
+  let d=await ftpRequest('/api/ftp/download',{fileName:'ServerSettings.ini',remotePath:c.remotePath||'/'});
+  try{await fetch('/api/snapshots/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileName:'ServerSettings.ini',content:d.content})})}catch(e){}
+  let pr=await fetch('/api/serversettings/parse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:d.content})}).then(r=>r.json());
+  if(!pr.ok)throw new Error(pr.error||'Файл не распознан');
+  ssData=pr;ssVals={};ssOrig={};ssGroups=(pr.groups||[]).slice();
+  ssAllKeys().forEach(k=>{ssVals[k.key]=k.value;ssOrig[k.key]=k.value});
+  if(ssAllKeys().some(k=>!k.known)&&!ssGroups.includes('Other'))ssGroups.push('Other');
+  ssCur=null;$('#ss-search').value='';
+  ssStatus('Загружено: '+(pr.counts.keys)+' ключей · '+(pr.counts.sections)+' секций · неизвестных: '+(pr.counts.unknown)+' · локальный снапшот в data\\server-files');
+  ssRender();toast('ServerSettings.ini загружен ('+(pr.counts.keys)+' ключей)')
+ }catch(e){ssStatus('Ошибка скачивания');toast('ServerSettings: '+e.message)}
+ finally{btn.disabled=false}};
+$('#ss-reset').onclick=async()=>{
+ if(!ssData||!ssChanged())return;
+ if(!(await askConfirm('Сброс изменений','Вернуть все '+ssChanged()+' изменённых параметров к значениям из скачанного файла?')))return;
+ ssVals=Object.assign({},ssOrig);ssRender();toast('Изменения сброшены')};
+$('#ss-diff').onclick=()=>{
+ if(!ssData)return;
+ let box=$('#ss-diff-body');box.innerHTML='';
+ let rows=document.createElement('table');rows.className='ss-t ss-dt';
+ let thead=document.createElement('thead');let hr=document.createElement('tr');
+ ['КЛЮЧ','БЫЛО','СТАНЕТ'].forEach(h=>{let th=document.createElement('th');th.textContent=h;hr.append(th)});
+ thead.append(hr);rows.append(thead);
+ let tb=document.createElement('tbody');let n=0;
+ ssAllKeys().forEach(k=>{if(ssVals[k.key]===ssOrig[k.key])return;n++;
+  let tr=document.createElement('tr');
+  let a=document.createElement('td');a.className='ss-key';a.textContent=k.key;
+  let b=document.createElement('td');b.className='ss-old';b.textContent=ssOrig[k.key]===''?'(пусто)':ssOrig[k.key];
+  let c=document.createElement('td');c.className='ss-new';c.textContent=ssVals[k.key]===''?'(пусто)':ssVals[k.key];
+  tr.append(a,b,c);tb.append(tr)});
+ rows.append(tb);
+ $('#ss-diff-count').textContent=n+' из '+ssAllKeys().length;
+ if(n)box.append(rows);else box.innerHTML='<p class="empty">Нет изменений</p>';
+ $('#ss-diff-dialog').showModal()};
+$('#ss-diff-close').onclick=()=>$('#ss-diff-dialog').close();
+$('#ss-upload').onclick=async()=>{
+ if(!ssData)return toast('Сначала скачайте файл с сервера');
+ let n=ssChanged();if(!n)return toast('Нет изменений');
+ let errs=ssValidate();if(errs.length)return toast('Проверка: '+errs.slice(0,3).join('; ')+(errs.length>3?' … (всего '+errs.length+')':''));
+ let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
+ let btn=$('#ss-upload');btn.disabled=true;
+ try{
+  let payload={eol:ssData.eol,encoding:ssData.encoding,trailingN:ssData.trailingN,
+   sections:(ssData.sections||[]).map(s=>({name:s.name,keys:(s.keys||[]).map(k=>({key:k.key,value:ssVals[k.key]}))}))};
+  let sz=await fetch('/api/serversettings/serialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json());
+  if(!sz.ok)throw new Error(sz.error||'Сериализация не удалась');
+  if(!(await askConfirm('Выгрузка ServerSettings.ini','Изменено параметров: '+n+' из '+ssAllKeys().length+'. Файл будет записан в '+(c.remotePath||'/')+'/ServerSettings.ini, существующий сохранится как .backup-метка на сервере.\n\n⚠ СЕРВЕР ДОЛЖЕН БЫТЬ ОСТАНОВЛЕН: при выключении сервер перезапишет файл из памяти и изменения пропадут. Выгрузить?')))return;
+  let d=await ftpRequest('/api/ftp/upload',{fileName:'ServerSettings.ini',content:sz.content,confirm:true});
+  Object.assign(ssOrig,ssVals);ssRender();
+  ssStatus('Выгружено на '+c.host+' · изменённых параметров: '+n);
+  toast('ServerSettings.ini выгружен ('+n+' изменений)');
+  showUploadReport(d,(c.remotePath||'/')+'/ServerSettings.ini')
+ }catch(e){ssStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
+ finally{btn.disabled=false}};

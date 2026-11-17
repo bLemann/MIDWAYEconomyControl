@@ -1,0 +1,2230 @@
+{
+ "generated": "2026-11-17",
+ "source": "docs/server-settings-map.md + live ServerSettings.ini (ServerSettingsVersion=7, 439 keys)",
+ "groups": [
+  "Server and general",
+  "Rules and access",
+  "Time, weather, map",
+  "World (misc.)",
+  "Encounters and hordes",
+  "Puppets (zombies)",
+  "NPC, sentries, dropships",
+  "Animals and fishing",
+  "Bunkers and killboxes",
+  "Airdrop (cargo drop)",
+  "Loot and spawners",
+  "Operation and cleanup",
+  "Fame and progress",
+  "Skills (multipliers)",
+  "Squads",
+  "Quests",
+  "Respawn and death",
+  "Vehicle limits",
+  "Fuel and battery",
+  "Damage (multipliers)",
+  "Bases and flags",
+  "Raid protection",
+  "Turrets",
+  "Water (pumps)",
+  "Gasoline (pumps)",
+  "Propane (pumps)",
+  "Features (misc.)"
+ ],
+ "keys": {
+  "scum.ServerName": {
+   "group": "Server and general",
+   "type": "text",
+   "section": "General"
+  },
+  "scum.ServerDescription": {
+   "group": "Server and general",
+   "type": "text",
+   "section": "General"
+  },
+  "scum.ServerPassword": {
+   "group": "Server and general",
+   "type": "off/empty",
+   "section": "General"
+  },
+  "scum.MaxPlayers": {
+   "group": "Server and general",
+   "type": "int",
+   "section": "General"
+  },
+  "scum.PlaySafeIdProtection": {
+   "group": "Server and general",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.ServerBannerUrl": {
+   "group": "Server and general",
+   "type": "off/empty",
+   "section": "General"
+  },
+  "scum.ServerPlaystyle": {
+   "group": "Server and general",
+   "type": "text",
+   "section": "General"
+  },
+  "scum.WelcomeMessage": {
+   "group": "Server and general",
+   "type": "text",
+   "section": "General"
+  },
+  "scum.MessageOfTheDay": {
+   "group": "Server and general",
+   "type": "text",
+   "section": "General"
+  },
+  "scum.MessageOfTheDayCooldown": {
+   "group": "Server and general",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.MinServerTickRate": {
+   "group": "Server and general",
+   "type": "int",
+   "section": "General"
+  },
+  "scum.MaxServerTickRate": {
+   "group": "Server and general",
+   "type": "int",
+   "section": "General"
+  },
+  "scum.MaxPingCheckEnabled": {
+   "group": "Server and general",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.MaxPing": {
+   "group": "Server and general",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.MaxNumberOfConsecutiveHighPingReadings": {
+   "group": "Server and general",
+   "type": "int",
+   "section": "General"
+  },
+  "scum.RustyLocksLogging": {
+   "group": "Server and general",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.PartialWipe": {
+   "group": "Server and general",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.GoldWipe": {
+   "group": "Server and general",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.FullWipe": {
+   "group": "Server and general",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DaysSinceLastLoginToBecomeInactive": {
+   "group": "Server and general",
+   "type": "int",
+   "section": "General"
+  },
+  "scum.ServerSettingsVersion": {
+   "group": "Server and general",
+   "type": "int",
+   "section": "General"
+  },
+  "scum.AllowFirstPerson": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowThirdPerson": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowCrosshair": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowVoting": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowMapScreen": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowKillClaiming": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowComa": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowMinesAndTraps": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowSkillGainInSafeZones": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowEvents": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.LimitGlobalChat": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowGlobalChat": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowLocalChat": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowSquadChat": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.AllowAdminChat": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.HideKillNotification": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DisableExamineGhost": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DisableTimedGifts": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.VotingDuration": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.PlayerMinimalVotingInterest": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.PlayerPositiveVotePercentage": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.EnableSpawnOnGround": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DisableSuicidePuppetSpawning": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.DisableLootPuppetSpawning": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.AllowMultipleFlagsPerPlayer": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.AllowFlagPlacementOnBBElements": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.MovementInertiaAmount": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.StaminaDrainOnJumpMultiplier": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.StaminaDrainOnClimbMultiplier": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.DisableExhaustion": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.BedrollVisibilityTimer": {
+   "group": "Rules and access",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.AllowAutomaticParachuteOpening": {
+   "group": "Rules and access",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TimeOfDaySpeed": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.NighttimeDarkness": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.SunriseTime": {
+   "group": "Time, weather, map",
+   "type": "time",
+   "section": "World"
+  },
+  "scum.SunsetTime": {
+   "group": "Time, weather, map",
+   "type": "time",
+   "section": "World"
+  },
+  "scum.CustomMapEnabled": {
+   "group": "Time, weather, map",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.CustomMapCenterXCoordinate": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CustomMapCenterYCoordinate": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CustomMapWidth": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CustomMapHeight": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DoorLockability.Garage": {
+   "group": "Time, weather, map",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.RadiationEnabled": {
+   "group": "Time, weather, map",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.BodySimulationSpeedMultiplier": {
+   "group": "Time, weather, map",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.MaxAllowedCharacters": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedPuppets": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedNPCs": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.EnableLootPuppetHorde": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.ProbabilityForArmedNPCToDropItemFromHandsWhenSearched": {
+   "group": "World (misc.)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.MinimumDurabilityOfArmedNPCsDroppedItemFromHands": {
+   "group": "World (misc.)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.MaximumDurabilityOfArmedNPCsDroppedItemFromHands": {
+   "group": "World (misc.)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EnableDropshipAbandonedBunkerEncounter": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EnableDropshipBaseBuildingEncounter": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.SpawnEncountersInThreatZonesIgnoringBaseBuilding": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EnableEncounterManagerLowPlayerCountMode": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.StartTimeOfDay": {
+   "group": "World (misc.)",
+   "type": "time",
+   "section": "World"
+  },
+  "scum.EnableFog": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.ShouldDestroyEntitiesOutsideMapLimitsOnRestart": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.AreAnimalsAllowedInWorld": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.MaxNonVirtualAnimalsInWorld": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedKillboxKeycards": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedKillboxKeycards_PoliceStation": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedKillboxKeycards_RadiationZone": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.MaxAllowedApexFacilityKeycards": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedApexFacilityKeycards_PoliceStation": {
+   "group": "World (misc.)",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaxAllowedApexFacilityKeycards_RadiationZone": {
+   "group": "World (misc.)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EncounterBaseCharacterAmountMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterExtraCharacterPerPlayerMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterExtraCharacterPlayerCapMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterRespawnTimeMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterRespawnBatchSizeMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterAggressiveSpawnChanceOverride": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterAINoiseResponseRadiusMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeGroupBaseCharacterAmountMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeGroupExtraCharacterPerPlayerMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeGroupExtraCharacterPlayerCapMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeBaseCharacterAmountMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeExtraCharacterPerPlayerMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeExtraCharacterPlayerCapMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeActivationChanceMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeNoiseCheckCooldownMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeSpawnDistanceMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeGroupRefillTimeMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHordeShouldPlayActivationSound": {
+   "group": "Encounters and hordes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EncounterHordePuppetHordeActivationScreamOverrideChance": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCanRemoveLowPriorityCharacters": {
+   "group": "Encounters and hordes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EncounterCanClampCharacterNumWhenOutOfResources": {
+   "group": "Encounters and hordes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EncounterCharacterSpawnDistanceMinOverrideLTZ": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterSpawnDistanceMaxOverrideLTZ": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterSpawnDistanceMinOverrideLargePOI": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterSpawnDistanceMaxOverrideLargePOI": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterRespawnDistanceMinOverrideLTZ": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterRespawnDistanceMaxOverrideLTZ": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterRespawnDistanceMinOverrideLargePOI": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterCharacterRespawnDistanceMaxOverrideLargePOI": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterLTZRadiusMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterMTZRadiusMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterHTZRadiusMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterVirtualizedTimeOverride": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterZoneActivationDistanceMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterGlobalZoneCooldownMultiplier": {
+   "group": "Encounters and hordes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.EncounterEnableSpawnPreventionAreaSpawnOnCharacterDeath": {
+   "group": "Encounters and hordes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EncounterNeverRespawnCharacters": {
+   "group": "Encounters and hordes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.PuppetsCanOpenDoors": {
+   "group": "Puppets (zombies)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.PuppetsCanVaultWindows": {
+   "group": "Puppets (zombies)",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.PuppetHealthMultiplier": {
+   "group": "Puppets (zombies)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.PuppetRunningSpeedMultiplier": {
+   "group": "Puppets (zombies)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.PuppetCullDistanceOverride": {
+   "group": "Puppets (zombies)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.PuppetLimpingHealthThreshold": {
+   "group": "Puppets (zombies)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.PuppetWorldEncounterSpawnWeightMultiplier": {
+   "group": "Puppets (zombies)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.MaxAllowedDrones": {
+   "group": "NPC, sentries, dropships",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.DisableSentrySpawning": {
+   "group": "NPC, sentries, dropships",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EnableSentryRespawning": {
+   "group": "NPC, sentries, dropships",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.DropshipHealthMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.SentryHealthMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ArmedNPCDifficultyLevel": {
+   "group": "NPC, sentries, dropships",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.ArmedNPCHealthMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ArmedNPCDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ArmedNPCSpreadMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ArmedNPCRunningSpeedMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ArmedNPCNetCullDistanceOverride": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ArmedNPCLimpingHealthThreshold": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DropshipWorldEncounterSpawnWeightMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DropshipAbandonedBunkerEncounterTriggerChance": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.SentryDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.SentryRailgunDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.SentryGrenadeDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.SentryBaseBuildingDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.DropshipDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.DropshipRailgunDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.DropshipBaseBuildingElementsDamageMultiplier": {
+   "group": "NPC, sentries, dropships",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.MaxAllowedBirds": {
+   "group": "Animals and fishing",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.AnimalNetCullDistanceOverride": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AnimalGlobalDensityMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BearPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BoarPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ChickenPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DeerPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DonkeyPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.GoatPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.HorsePrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.RabbitPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.WolfPrevalenceMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BearMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BoarMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.ChickenMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DeerMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.DonkeyMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.GoatMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.HorseMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.RabbitMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.WolfMaxHealthMultiplier": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.FishingHighActivityZoneRotationTime": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.FishingHighActivityZoneAmount": {
+   "group": "Animals and fishing",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.WolfswagenMaxAmount": {
+   "group": "Animals and fishing",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.WolfswagenMaxFunctionalAmount": {
+   "group": "Animals and fishing",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.WolfswagenMinPurchasedAmount": {
+   "group": "Animals and fishing",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.AbandonedBunkerCommotionThreshold": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerCommotionThresholdPerPlayerExtra": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerEnemyActivationThreshold": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerEnemyActivationThresholdPerPlayerExtra": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerResetArmoryLockersOnActivationOnly": {
+   "group": "Bunkers and killboxes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.EnableLockedLootContainers": {
+   "group": "Bunkers and killboxes",
+   "type": "bool",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerMaxSimultaneouslyActive": {
+   "group": "Bunkers and killboxes",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerActiveDurationHours": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerKeyCardActiveDurationHours": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.AbandonedBunkerBCUTerminalCooldown": {
+   "group": "Bunkers and killboxes",
+   "type": "time",
+   "section": "World"
+  },
+  "scum.SecretBunkerKeyCardActiveDurationHours": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.KillboxDefuseFailureBonus": {
+   "group": "Bunkers and killboxes",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.CargoDropCooldownMinimum": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CargoDropCooldownMaximum": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CargoDropFallDelay": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CargoDropFallDuration": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CargoDropSelfdestructTime": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CargoDropZombieEncounterWeightMultiplier": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.CargoDropDropshipEncounterWeightMultiplier": {
+   "group": "Airdrop (cargo drop)",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.SpawnerProbabilityMultiplier": {
+   "group": "Loot and spawners",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.ExamineSpawnerProbabilityMultiplier": {
+   "group": "Loot and spawners",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.ExamineSpawnerExpirationTimeMultiplier": {
+   "group": "Loot and spawners",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.SpawnerExpirationTimeMultiplier": {
+   "group": "Loot and spawners",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.EnableItemCooldownGroups": {
+   "group": "Loot and spawners",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.ItemCooldownGroupsDurationMultiplier": {
+   "group": "Loot and spawners",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.LogoutTimer": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.LogoutTimerWhileCaptured": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.LogoutTimerInBunker": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.MasterServerUpdateSendInterval": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.MasterServerIsLocalTest": {
+   "group": "Operation and cleanup",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.ItemVirtualizationRelevancyUpdatePeriod": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.ItemVirtualizationEventProcessingTimeBudget": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.ItemVirtualizationVisitorDistanceTravelledForUpdate": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.ItemVirtualizationVisitorBounds": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.VirtualizedItemBounds": {
+   "group": "Operation and cleanup",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.LogSuicides": {
+   "group": "Operation and cleanup",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DeleteInactiveUsers": {
+   "group": "Operation and cleanup",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DeleteBannedUsers": {
+   "group": "Operation and cleanup",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.LogChestOwnership": {
+   "group": "Operation and cleanup",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DeleteDuplicateChestsOnServerStartup": {
+   "group": "Operation and cleanup",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.FameGainMultiplier": {
+   "group": "Fame and progress",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.FamePointPenaltyOnDeath": {
+   "group": "Fame and progress",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.FamePointPenaltyOnKilled": {
+   "group": "Fame and progress",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.FamePointRewardOnKill": {
+   "group": "Fame and progress",
+   "type": "float",
+   "section": "General"
+  },
+  "scum.MaintainItemsExpirationTime": {
+   "group": "Fame and progress",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.NameChangeCooldown": {
+   "group": "Fame and progress",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.NameChangeCost": {
+   "group": "Fame and progress",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.NewPlayerProtectionDuration": {
+   "group": "Fame and progress",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.HideQuickAccessBar": {
+   "group": "Fame and progress",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.HideLifeIndicators": {
+   "group": "Fame and progress",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableDeenaOnServer": {
+   "group": "Fame and progress",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableSelectedSkillsPromotion": {
+   "group": "Skills (multipliers)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.ArcherySkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.AviationSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.AwarenessSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.BrawlingSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.CamouflageSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.CookingSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.DemolitionSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.DrivingSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.EnduranceSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.EngineeringSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.FarmingSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.HandgunSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.MedicalSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.MeleeWeaponsSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.MotorcycleSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.RiflesSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.RunningSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.SnipingSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.StealthSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.SurvivalSkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.ThieverySkillMultiplier": {
+   "group": "Skills (multipliers)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.SquadRespawnPrice": {
+   "group": "Squads",
+   "type": "price(gold)",
+   "section": "Respawn"
+  },
+  "scum.SquadRespawnInitialTime": {
+   "group": "Squads",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.SquadRespawnCooldown": {
+   "group": "Squads",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.SquadCooldownResetMultiplier": {
+   "group": "Squads",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.TombstoneMaxAmountPerSquad": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SquadMemberCountAtIntLevel1": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SquadMemberCountAtIntLevel2": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SquadMemberCountAtIntLevel3": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SquadMemberCountAtIntLevel4": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SquadMemberCountAtIntLevel5": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SquadMemberCountLimitForPunishment": {
+   "group": "Squads",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.RTSquadProbationDuration": {
+   "group": "Squads",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.SquadMoneyPenaltyPerPrevSquadMember": {
+   "group": "Squads",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.SquadFamePointsPenaltyPerPrevSquadMember": {
+   "group": "Squads",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.QuestsEnabled": {
+   "group": "Quests",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.QuestsGlobalCycleDuration": {
+   "group": "Quests",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.QuestsTraderRefillCooldown": {
+   "group": "Quests",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.QuestsPhoneRefillCooldown": {
+   "group": "Quests",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.QuestsNoticeBoardRefillCooldown": {
+   "group": "Quests",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.QuestRequirementsBlockTradeableItems": {
+   "group": "Quests",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.AllowSectorRespawn": {
+   "group": "Respawn and death",
+   "type": "bool",
+   "section": "Respawn"
+  },
+  "scum.AllowShelterRespawn": {
+   "group": "Respawn and death",
+   "type": "bool",
+   "section": "Respawn"
+  },
+  "scum.AllowSquadmateRespawn": {
+   "group": "Respawn and death",
+   "type": "bool",
+   "section": "Respawn"
+  },
+  "scum.RandomRespawnPrice": {
+   "group": "Respawn and death",
+   "type": "int",
+   "section": "Respawn"
+  },
+  "scum.SectorRespawnPrice": {
+   "group": "Respawn and death",
+   "type": "int",
+   "section": "Respawn"
+  },
+  "scum.ShelterRespawnPrice": {
+   "group": "Respawn and death",
+   "type": "price(gold)",
+   "section": "Respawn"
+  },
+  "scum.ShelterRespawnPriceOutsideFlagArea": {
+   "group": "Respawn and death",
+   "type": "price(gold)",
+   "section": "Respawn"
+  },
+  "scum.RandomRespawnInitialTime": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.SectorRespawnInitialTime": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.ShelterRespawnInitialTime": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.RandomRespawnCooldown": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.SectorRespawnCooldown": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.ShelterRespawnCooldown": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.RandomCooldownResetMultiplier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.SectorCooldownResetMultiplier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.ShelterCooldownResetMultiplier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.RandomPricePerSquadmateModifier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.SectorPricePerSquadmateModifier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.ShelterPricePerSquadmateModifier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.CommitSuicideInitialTime": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.CommitSuicideCooldown": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.CommitSuicideCooldownResetMultiplier": {
+   "group": "Respawn and death",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.PermadeathThreshold": {
+   "group": "Respawn and death",
+   "type": "int",
+   "section": "Respawn"
+  },
+  "scum.CloningSicknessEnabled": {
+   "group": "Respawn and death",
+   "type": "bool",
+   "section": "Respawn"
+  },
+  "scum.KingletDusterMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.KingletDusterMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "bool",
+   "section": "Vehicles"
+  },
+  "scum.DirtbikeMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.DirtbikeMaxFunctionalAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.DirtbikeMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.LaikaMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.LaikaMaxFunctionalAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.LaikaMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.MotorboatMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.MotorboatMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.WheelbarrowMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.WheelbarrowMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.BicycleMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.BicycleMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.RagerMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.RagerMaxFunctionalAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.RagerMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.CruiserMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.CruiserMaxFunctionalAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.CruiserMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.RisMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.RisMaxFunctionalAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.RisMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.DinghyMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.DinghyMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.SUPMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.SUPMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.KingletMarinerMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "bool",
+   "section": "Vehicles"
+  },
+  "scum.KingletMarinerMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "bool",
+   "section": "Vehicles"
+  },
+  "scum.TractorMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.TractorMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.SidecarBikeMaxAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.SidecarBikeMaxFunctionalAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.SidecarBikeMinPurchasedAmount": {
+   "group": "Vehicle limits",
+   "type": "int",
+   "section": "Vehicles"
+  },
+  "scum.MaximumTimeOfVehicleInactivity": {
+   "group": "Vehicle limits",
+   "type": "time",
+   "section": "Vehicles"
+  },
+  "scum.MaximumTimeForVehiclesInForbiddenZones": {
+   "group": "Vehicle limits",
+   "type": "time",
+   "section": "Vehicles"
+  },
+  "scum.LogVehicleDestroyed": {
+   "group": "Vehicle limits",
+   "type": "bool",
+   "section": "Vehicles"
+  },
+  "scum.FuelDrainFromEngineMultiplier": {
+   "group": "Fuel and battery",
+   "type": "float",
+   "section": "Vehicles"
+  },
+  "scum.BatteryDrainFromEngineMultiplier": {
+   "group": "Fuel and battery",
+   "type": "float",
+   "section": "Vehicles"
+  },
+  "scum.BatteryDrainFromDevicesMultiplier": {
+   "group": "Fuel and battery",
+   "type": "float",
+   "section": "Vehicles"
+  },
+  "scum.BatteryDrainFromInactivityMultiplier": {
+   "group": "Fuel and battery",
+   "type": "float",
+   "section": "Vehicles"
+  },
+  "scum.BatteryChargeWithAlternatorMultiplier": {
+   "group": "Fuel and battery",
+   "type": "float",
+   "section": "Vehicles"
+  },
+  "scum.BatteryChargeWithDynamoMultiplier": {
+   "group": "Fuel and battery",
+   "type": "float",
+   "section": "Vehicles"
+  },
+  "scum.HumanToHumanDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.HumanToHumanArmedMeleeDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.HumanToHumanUnarmedMeleeDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.HumanToHumanThrowingDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.ZombieDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.ItemDecayDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.FoodDecayDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.WeaponDecayDamageOnFiring": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.LockProtectionDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.VehicleDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.VehicleShootingDamageMultiplier": {
+   "group": "Damage (multipliers)",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.UseMapBaseBuildingRestriction": {
+   "group": "Bases and flags",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.UseBuildingProximityRestrictions": {
+   "group": "Bases and flags",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.DisableBaseBuilding": {
+   "group": "Bases and flags",
+   "type": "bool",
+   "section": "General"
+  },
+  "scum.MaximumTimeForChestsInForbiddenZones": {
+   "group": "Bases and flags",
+   "type": "time",
+   "section": "General"
+  },
+  "scum.BaseBuildingAttackerSentryHealthMultiplier": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterTriggerChance": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterTriggerTimeMultiplier": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterMinNumElementsToStart": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterMinNumElementsToEnd": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterDamagePercentageIncreasePerSquadMember": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterTimeToFullMinNumToEnd": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "World"
+  },
+  "scum.BaseBuildingEncounterMaximumMinToEndReduction": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "World"
+  },
+  "scum.MaximumBaseProximityWhenSpawning": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "Respawn"
+  },
+  "scum.BaseBuildingAttackerSentryDamageMultiplier": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.BaseBuildingAttackerSentryRailgunDamageMultiplier": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.BaseBuildingAttackerSentryGrenadeDamageMultiplier": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "Damage"
+  },
+  "scum.MaximumAmountOfElementsPerFlag": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.ExtraElementsPerFlagForAdditionalSquadMember": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.WeaponRackMaxAmountPerFlagArea": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.WeaponRackStartDecayingIfFlagAreaHasMoreThan": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.WallWeaponRackMaxAmountPerFlagArea": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.WallWeaponRackStartDecayingIfFlagAreaHasMoreThan": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.WellMaxAmountPerFlagArea": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.WellStartDecayingIfFlagAreaHasMoreThan": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.OvenMaxAmountPerFlagArea": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.OvenStartDecayingIfFlagAreaHasMoreThan": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.GardenMaxAmountPerFlagArea": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SmokerMaxAmountPerFlagArea": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.SmokerStartDecayingIfFlagAreaHasMoreThan": {
+   "group": "Bases and flags",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.AllowFloorPlacementOnHalfAndLowWalls": {
+   "group": "Bases and flags",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.AllowWallPlacementOnHalfAndLowWalls": {
+   "group": "Bases and flags",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.BaseElementsDecayRateMultiplier": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.BaseBuildingDestructionLogDamageThreshold": {
+   "group": "Bases and flags",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.FlagOvertakeDuration": {
+   "group": "Raid protection",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.ChestAcquisitionDuration": {
+   "group": "Raid protection",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.RaidProtectionType": {
+   "group": "Raid protection",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.RaidProtectionEnableLog": {
+   "group": "Raid protection",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.RaidProtectionFlagSpecificChangeSettingCooldown": {
+   "group": "Raid protection",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.RaidProtectionFlagSpecificChangeSettingPrice": {
+   "group": "Raid protection",
+   "type": "price(gold)",
+   "section": "Features"
+  },
+  "scum.RaidProtectionFlagSpecificMaxProtectionTime": {
+   "group": "Raid protection",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.RaidProtectionOfflineProtectionStartDelay": {
+   "group": "Raid protection",
+   "type": "time",
+   "section": "Features"
+  },
+  "scum.RaidProtectionOfflineMaxProtectionTime": {
+   "group": "Raid protection",
+   "type": "off/empty",
+   "section": "Features"
+  },
+  "scum.RaidProtectionGlobalShouldShowRaidTimesMessage": {
+   "group": "Raid protection",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.RaidProtectionGlobalShouldShowRaidAnnouncementMessage": {
+   "group": "Raid protection",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.RaidProtectionGlobalShouldShowRaidStartEndMessages": {
+   "group": "Raid protection",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TurretMaxAmountPerFlagArea": {
+   "group": "Turrets",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.TurretStartDecayingIfFlagAreaHasMoreThan": {
+   "group": "Turrets",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.TurretsAttackPrisoners": {
+   "group": "Turrets",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TurretsAttackPuppets": {
+   "group": "Turrets",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TurretsAttackVehicles": {
+   "group": "Turrets",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TurretsAttackSentries": {
+   "group": "Turrets",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TurretsAttackAnimals": {
+   "group": "Turrets",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.TurretsAttackArmedNPCs": {
+   "group": "Turrets",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.WaterPricePerUnitMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterPeriodicInitialAmountMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterPeriodicMaxAmountMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterPeriodicReplenishAmountMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterPeriodicReplenishIntervalMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterProximityReplenishAmountMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterProximityReplenishChanceMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.WaterProximityReplenishTimeoutMultiplier": {
+   "group": "Water (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolinePricePerUnitMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolinePeriodicInitialAmountMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolinePeriodicMaxAmountMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolinePeriodicReplenishAmountMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolinePeriodicReplenishIntervalMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolineProximityReplenishAmountMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolineProximityReplenishChanceMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.GasolineProximityReplenishTimeoutMultiplier": {
+   "group": "Gasoline (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropanePricePerUnitMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropanePeriodicInitialAmountMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropanePeriodicMaxAmountMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropanePeriodicReplenishAmountMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropanePeriodicReplenishIntervalMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropaneProximityReplenishAmountMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropaneProximityReplenishChanceMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.PropaneProximityReplenishTimeoutMultiplier": {
+   "group": "Propane (pumps)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.MaximumNumberOfExpandedElementsPerFlag": {
+   "group": "Features (misc.)",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.NumberOfAllowedFlagsPerPlayer": {
+   "group": "Features (misc.)",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.EnableSquadMemberNameWidget": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.PlantHarvestExamineTimeMultiplier": {
+   "group": "Features (misc.)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.FirstPlantHarvestAdditionalChance": {
+   "group": "Features (misc.)",
+   "type": "float",
+   "section": "Features"
+  },
+  "scum.MaxQuestsPerCyclePerTrader": {
+   "group": "Features (misc.)",
+   "type": "int",
+   "section": "Features"
+  },
+  "scum.MaxSimultaneousQuestsPerTrader": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableBCULocking": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableNewPlayerProtection": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableDigitalDeluxeStarterPack": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableDigitalDeluxeFreeGoldCard": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableNetWatchdog": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  },
+  "scum.EnableNetworkObjectLogging": {
+   "group": "Features (misc.)",
+   "type": "bool",
+   "section": "Features"
+  }
+ }
+}
