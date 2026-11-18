@@ -566,3 +566,21 @@ body:not(.mod-us) .us-only{display:none!important}
 .us-card-warn{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
 .us-card-warn:empty{display:none}
 .us-warn-tag{background:#4a3a17;color:#ffd98a;border-radius:3px;padding:1px 6px;font-family:var(--mono);font-size:10px}
+
+/* ===== MARKET analytics (module M, 0.8.54) ===== */
+.market-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-bottom:14px}
+.market-card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+.market-card .k{font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.market-card .v{font-size:18px;font-family:var(--mono);color:var(--amber)}
+.market-card .s{font-size:11px;color:var(--muted);margin-top:2px}
+.market-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1100px){.market-cols{grid-template-columns:1fr}}
+#market table{width:100%;border-collapse:collapse}
+#market th,#market td{padding:6px 10px;font-size:12px;border-bottom:1px solid var(--line2);text-align:left;white-space:nowrap}
+#market th{font-size:10px;letter-spacing:1.2px;color:var(--muted);background:var(--panel2);position:sticky;top:0;z-index:2}
+#market td.num,#market th.num{text-align:right;font-family:var(--mono)}
+#market .mk-sold{color:#8fd49b}
+#market .mk-bought{color:#7fb7ff}
+#market .mk-service{color:#c9a6ff}
+.mk-filters{grid-template-columns:repeat(7,minmax(90px,1fr));margin-bottom:10px}
+@media(max-width:1100px){.mk-filters{grid-template-columns:repeat(2,1fr)}}

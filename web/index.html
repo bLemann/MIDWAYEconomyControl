@@ -71,6 +71,7 @@
   </div>
   <div class="tabs-side">
     <button class="tab side tc-only" data-view="catalog">КАТАЛОГ</button>
+    <button class="tab side tc-only" data-view="market">МАРКЕТ</button>
     <button class="tab side" data-view="ftp">FTP / ФАЙЛЫ</button>
     <button class="tab side tc-only" data-view="rcon">RCON</button>
     <button class="tab side tc-only" data-view="history">ИСТОРИЯ</button>
@@ -322,6 +323,43 @@
 <section class="view tc-only" id="history">
   <div class="toolbar"><div><h2>История изменений</h2><p>Журнал действий текущей сессии.</p></div><button class="btn-dark" id="clear-history">ОЧИСТИТЬ ЖУРНАЛ</button></div>
   <article class="panel" id="history-list"><p class="empty">Изменений пока нет.</p></article>
+</section>
+
+<section class="view tc-only" id="market">
+  <div class="toolbar">
+    <div><h2>Маркет-аналитика</h2><p id="market-meta">Логи economy_*.log с сервера — нажмите «ОБНОВИТЬ С СЕРВЕРА» (FTP-профиль во вкладке FTP / ФАЙЛЫ).</p></div>
+    <div>
+      <button class="btn-dark" id="market-reload">ПЕРЕЧИТАТЬ КЭШ</button>
+      <button class="btn-green" id="market-refresh">ОБНОВИТЬ С СЕРВЕРА</button>
+    </div>
+  </div>
+  <div class="market-cards" id="market-cards"><p class="empty">Данных нет.</p></div>
+  <div class="market-cols">
+    <article class="panel"><h3>ТОП ПРОДАННОГО ТОРГОВЦАМ · игроки → торговцы</h3><div class="table-wrap" style="max-height:330px"><table id="market-topsold"></table></div></article>
+    <article class="panel"><h3>ТОП КУПЛЕННОГО У ТОРГОВЦЕВ · торговцы → игроки</h3><div class="table-wrap" style="max-height:330px"><table id="market-topbought"></table></div></article>
+  </div>
+  <div class="market-cols">
+    <article class="panel"><h3>ТОРГОВЦЫ · оборот и фонды</h3><div class="table-wrap" style="max-height:330px"><table id="market-traders"></table></div></article>
+    <article class="panel"><h3>ПО ДНЯМ · ЗОЛОТО · БАНК</h3><div class="table-wrap" style="max-height:330px"><table id="market-days"></table></div><p class="note" id="market-extra"></p></article>
+  </div>
+  <article class="panel">
+    <h3>ИСТОРИЯ СДЕЛОК · фильтры</h3>
+    <div class="form-grid mk-filters">
+      <label>ПОИСК<input id="mk-q" placeholder="предмет / ник / торговец" spellcheck="false"></label>
+      <label>ВИД<select id="mk-kind"><option value="">все</option><option value="sold">продажи игрокам←торговцы</option><option value="bought">покупки игроков</option><option value="service">услуги механика</option></select></label>
+      <label>ИГРОК<input id="mk-player" spellcheck="false"></label>
+      <label>ПРЕДМЕТ<input id="mk-item" spellcheck="false"></label>
+      <label>ТОРГОВЕЦ<input id="mk-trader" spellcheck="false"></label>
+      <label>ОТ (день)<input id="mk-from" type="date"></label>
+      <label>ДО (день)<input id="mk-to" type="date"></label>
+    </div>
+    <div class="table-wrap" style="max-height:420px"><table id="market-history"></table></div>
+    <div class="toolbar" style="margin:8px 0 0">
+      <button class="btn-dark" id="mk-prev">← НОВЕЕ</button>
+      <span id="mk-range" style="color:var(--muted);font-size:12px"></span>
+      <button class="btn-dark" id="mk-next">СТАРШЕ →</button>
+    </div>
+  </article>
 </section>
 
 <section class="view q-only" id="q-editor">

@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.53"
+VERSION = "0.8.54"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -976,6 +976,331 @@ def connect_ftp(data, attempt_start=0):
         raise ValueError(" | ".join(errors))
 
 
+# ============================================================ Market analytics (module M) — economy_*.log
+
+MARKET_FILE_RE = re.compile(r"^economy_(\d{14})\.log$", re.IGNORECASE)
+MARKET_MAX_FILE = 8 * 1024 * 1024
+MARKET_MAX_TOTAL = 96 * 1024 * 1024
+MARKET_MAX_FILES = 500
+MARKET_DT_RE = r"(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2})"
+MARKET_RE_SOLD = re.compile(
+    MARKET_DT_RE + r": \[(?:Trade|Purchase)[^]]*\] Tradeable \((.+?) \(health: [\d.]+"
+    r"(?:, (?:uses|stack count): \d+)?(?:, filled percentage: [\d.]+%)?\)\) "
+    r"(?:sold|bought) by (.+?)\((\d+)\) for (\d+) \((\d+) \+ (\d+) worth of contained items\) "
+    r"to trader (.+?), old amount in store is (-?\d+), new amount is (-?\d+)"
+    r"(?:, and effective users online: (\d+))?\s*$")
+MARKET_RE_BOUGHT = re.compile(
+    MARKET_DT_RE + r": \[(?:Trade|Purchase)[^]]*\] Tradeable \((.+?) \(x(\d+)\)\) "
+    r"purchased by (.+?)\((\d+)\) for (\d+) money from trader (.+?), "
+    r"old amount in store was (-?\d+), new amount is (-?\d+)"
+    r"(?:, and effective users online: (\d+))?\s*$")
+MARKET_RE_SERVICE = re.compile(
+    MARKET_DT_RE + r": \[Trade-Mechanic\] Service \(([A-Za-z]+) attachment (.+?) \(x(\d+)\)\) "
+    r"purchased by (.+?)\((\d+)\) for (\d+) money from trader (.+?)"
+    r"(?:, old amount in store was (-?\d+), new amount is (-?\d+))?"
+    r"(?:, and effective users online: (\d+))?\s*$")
+MARKET_RE_BEFORE = re.compile(
+    MARKET_DT_RE + r": \[Trade\] Before (?:purchasing tradeales|selling tradeables) (?:from|to) trader (.+?), "
+    r"player (.+?)\((\d+)\) had (-?\d+) cash, (-?\d+) account balance and (-?\d+) gold "
+    r"and trader had (-?\d+) funds\.?\s*$")
+MARKET_RE_AFTER = re.compile(
+    MARKET_DT_RE + r": \[Trade\] After tradeable (?:purchase from|sale to) trader (.+?), "
+    r"player (.+?)\((\d+)\) has (-?\d+) cash, (-?\d+) (?:bank )?account balance and (-?\d+) gold "
+    r"and trader has (-?\d+) funds\.?\s*$")
+MARKET_RE_BANK_MOVE = re.compile(
+    MARKET_DT_RE + r": \[Bank\] (.+?)\(ID:(\d+)\)\(Account Number: ?\d+\) "
+    r"(deposited|withdrew) (\d+)\((\d+) was (?:added|removed)\) "
+    r"(?:to|from) Account Number: ?(\d+).*$")
+MARKET_RE_BANK_TRANSFER = re.compile(
+    MARKET_DT_RE + r": \[Bank\] (.+?)\(ID:(\d+)\)\(Account Number: ?\d+\) "
+    r"transferred (\d+)\((\d+) was removed\) from Account Number: ?(\d+)(?:\(.+?\)\(\d+\))? "
+    r"to Account Number: ?(\d+)(?:\((.+?)\)\((\d+)\))?(?: belonging to (.+?)\(ID:(\d+)\))?.*$")
+MARKET_RE_BANK_CARD = re.compile(
+    MARKET_DT_RE + r": \[Bank\] (.+?)\(ID:(\d+)\)\(Account Number: ?\d+\) "
+    r"purchased (Gold|Classic) card \(free renewal: (yes|no)\).*$")
+MARKET_RE_BANK_CARDX = re.compile(
+    MARKET_DT_RE + r": \[Bank\] (.+?)\(ID:(\d+)\)\(Account Number: ?\d+\) "
+    r"manually destroyed (Starter|Gold|Classic) card belonging to (.+?)(?:,\s*)?(?:at X=.*)?\.?\s*$")
+MARKET_RE_GOLD = re.compile(
+    MARKET_DT_RE + r": \[Currency Conversion\] (.+?)\(ID:(\d+)\)\(Account Number: ?\d+\) "
+    r"(purchased|sold) (\d+) gold for (\d+) credits.*$")
+MARKET_RE_RENAME = re.compile(MARKET_DT_RE + r": Player (.+?) \((\d+), (\d+)\) changed their name to (.+?)\s*$")
+MARKET_RE_GAMEVER = re.compile(MARKET_DT_RE + r": Game version: ([\d.]+)\s*$")
+
+
+def market_dt(m):
+    return "%s-%s-%s %s:%s:%s" % m
+
+
+def market_decode(raw):
+    if raw[:2] in (b"\xff\xfe", b"\xfe\xff"):
+        return raw.decode("utf-16", errors="replace"), "utf-16-bom"
+    if raw[:3] == b"\xef\xbb\xbf":
+        return raw.decode("utf-8-sig", errors="replace"), "utf-8-bom"
+    zeros = raw[:8192].count(0)
+    if raw and zeros > len(raw[:8192]) // 4:
+        return raw.decode("utf-16-le", errors="replace"), "utf-16-le"
+    return raw.decode("utf-8", errors="replace"), "utf-8"
+
+
+def market_parse_text(text):
+    trades, funds, bank, renames = [], [], [], []
+    meta = {"gameVersion": None, "lines": 0, "unparsed": 0, "onlineTotal": 0}
+    unparsed = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        meta["lines"] += 1
+        m = MARKET_RE_SOLD.match(line)
+        if m:
+            trades.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "k": "sold", "it": m.group(7).strip(),
+                           "q": 1, "p": int(m.group(10)), "b": int(m.group(11)), "c": int(m.group(12)),
+                           "pl": m.group(8).strip(), "sid": m.group(9), "tr": m.group(13).strip(),
+                           "o": int(m.group(14)), "n": int(m.group(15)),
+                           "u": int(m.group(16)) if m.group(16) else None})
+            if m.group(16):
+                meta["onlineTotal"] += int(m.group(16))
+            continue
+        m = MARKET_RE_BOUGHT.match(line)
+        if m:
+            trades.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "k": "bought", "it": m.group(7).strip(),
+                           "q": int(m.group(8)), "p": int(m.group(11)), "b": None, "c": None,
+                           "pl": m.group(9).strip(), "sid": m.group(10), "tr": m.group(12).strip(),
+                           "o": int(m.group(13)), "n": int(m.group(14)),
+                           "u": int(m.group(15)) if m.group(15) else None})
+            if m.group(15):
+                meta["onlineTotal"] += int(m.group(15))
+            continue
+        m = MARKET_RE_SERVICE.match(line)
+        if m:
+            trades.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "k": "service",
+                           "it": ("%s attachment %s" % (m.group(7), m.group(8))).strip(),
+                           "q": int(m.group(9)), "p": int(m.group(12)), "b": None, "c": None,
+                           "pl": m.group(10).strip(), "sid": m.group(11), "tr": m.group(13).strip(),
+                           "o": int(m.group(14)) if m.group(14) else None,
+                           "n": int(m.group(15)) if m.group(15) else None,
+                           "u": int(m.group(16)) if m.group(16) else None})
+            continue
+        m = MARKET_RE_AFTER.match(line)
+        if m:
+            funds.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "tr": m.group(7).strip(),
+                          "f": int(m.group(13)), "pl": m.group(8).strip(), "sid": m.group(9),
+                          "cash": int(m.group(10)), "bal": int(m.group(11)), "gold": int(m.group(12))})
+            continue
+        m = MARKET_RE_BEFORE.match(line)
+        if m:
+            funds.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "tr": m.group(7).strip(),
+                          "f": int(m.group(13)), "pl": m.group(8).strip(), "sid": m.group(9),
+                          "cash": int(m.group(10)), "bal": int(m.group(11)), "gold": int(m.group(12)),
+                          "pre": True})
+            continue
+        m = MARKET_RE_GOLD.match(line)
+        if m:
+            bank.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "kind": "gold_" + ("buy" if m.group(9) == "purchased" else "sell"),
+                         "pl": m.group(7).strip(), "sid": m.group(8), "qty": int(m.group(10)),
+                         "money": int(m.group(11))})
+            continue
+        m = MARKET_RE_BANK_MOVE.match(line)
+        if m:
+            bank.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "kind": "deposit" if m.group(9) == "deposited" else "withdraw",
+                         "pl": m.group(7).strip(), "sid": m.group(8), "qty": int(m.group(10)),
+                         "money": int(m.group(11)), "acc": m.group(12)})
+            continue
+        m = MARKET_RE_BANK_TRANSFER.match(line)
+        if m:
+            bank.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "kind": "transfer",
+                         "pl": m.group(7).strip(), "sid": m.group(8), "qty": int(m.group(9)),
+                         "money": int(m.group(10)),
+                         "toPl": (m.group(13) or m.group(15) or "").strip(),
+                         "toSid": m.group(14) or m.group(16) or ""})
+            continue
+        m = MARKET_RE_BANK_CARD.match(line)
+        if m:
+            bank.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "kind": "card_buy",
+                         "pl": m.group(7).strip(), "sid": m.group(8), "card": m.group(9),
+                         "renewal": m.group(10), "money": None})
+            continue
+        m = MARKET_RE_BANK_CARDX.match(line)
+        if m:
+            bank.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "kind": "card_destroy",
+                         "pl": m.group(7).strip(), "sid": m.group(8), "card": m.group(9),
+                         "ofPl": m.group(10).strip(), "money": None})
+            continue
+        m = MARKET_RE_RENAME.match(line)
+        if m:
+            renames.append({"dt": market_dt(m.group(1, 2, 3, 4, 5, 6)), "old": m.group(7).strip(), "new": m.group(10).strip()})
+            continue
+        m = MARKET_RE_GAMEVER.match(line)
+        if m:
+            meta["gameVersion"] = m.group(7)
+            continue
+        meta["unparsed"] += 1
+        if len(unparsed) < 8:
+            unparsed.append(line[:300])
+    meta["unparsedSamples"] = unparsed
+    return {"trades": trades, "funds": funds, "bank": bank, "renames": renames, "meta": meta}
+
+
+def market_cache_file():
+    return data_dir() / "market_cache.json"
+
+
+def market_load_cache():
+    try:
+        raw = json.loads(market_cache_file().read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) and isinstance(raw.get("files"), dict) else {"version": 1, "fetchedAt": None, "files": {}}
+    except (OSError, json.JSONDecodeError):
+        return {"version": 1, "fetchedAt": None, "files": {}}
+
+
+def market_save_cache(cache):
+    tmp = market_cache_file().with_suffix(".tmp")
+    tmp.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    tmp.replace(market_cache_file())
+
+
+def market_flat_trades(cache):
+    out = []
+    for name in sorted(cache["files"]):
+        out.extend(cache["files"][name].get("trades") or [])
+    out.sort(key=lambda t: (t["dt"], t.get("tr", "")))
+    return out
+
+
+def market_aggregate(cache, params):
+    params = params or {}
+    trades = market_flat_trades(cache)
+    funds = []
+    bank = []
+    renames = []
+    enc = {}
+    for name in sorted(cache["files"]):
+        f = cache["files"][name]
+        funds.extend(f.get("funds") or [])
+        bank.extend(f.get("bank") or [])
+        renames.extend(f.get("renames") or [])
+        meta = f.get("meta") or {}
+        if meta.get("gameVersion"):
+            enc[meta["gameVersion"]] = enc.get(meta["gameVersion"], 0) + 1
+        for k in ("lines", "unparsed", "onlineTotal"):
+            enc[k + "__sum"] = enc.get(k + "__sum", 0) + int(meta.get(k) or 0)
+    players, traders = set(), set()
+    tot = {"sold": {"cnt": 0, "qty": 0, "money": 0}, "bought": {"cnt": 0, "qty": 0, "money": 0},
+           "service": {"cnt": 0, "qty": 0, "money": 0}}
+    item_sold, item_bought, item_service = {}, {}, {}
+    by_trader, by_day = {}, {}
+    dmin = dmax = None
+    for t in trades:
+        k = t["k"]
+        players.add(t["pl"])
+        traders.add(t["tr"])
+        tot[k]["cnt"] += 1
+        tot[k]["qty"] += int(t["q"])
+        tot[k]["money"] += int(t["p"])
+        bucket = {"sold": item_sold, "bought": item_bought, "service": item_service}[k]
+        row = bucket.setdefault(t["it"], {"item": t["it"], "cnt": 0, "qty": 0, "money": 0})
+        row["cnt"] += 1
+        row["qty"] += int(t["q"])
+        row["money"] += int(t["p"])
+        tr = by_trader.setdefault(t["tr"], {"trader": t["tr"], "soldCnt": 0, "soldMoney": 0,
+                                            "boughtCnt": 0, "boughtMoney": 0, "svcCnt": 0, "funds": None, "fundsDt": None})
+        if k == "sold":
+            tr["soldCnt"] += 1; tr["soldMoney"] += int(t["p"])
+        elif k == "bought":
+            tr["boughtCnt"] += 1; tr["boughtMoney"] += int(t["p"])
+        else:
+            tr["svcCnt"] += 1
+        day = t["dt"][:10]
+        dr = by_day.setdefault(day, {"day": day, "soldCnt": 0, "soldMoney": 0, "boughtCnt": 0, "boughtMoney": 0})
+        if k == "sold":
+            dr["soldCnt"] += 1; dr["soldMoney"] += int(t["p"])
+        elif k == "bought":
+            dr["boughtCnt"] += 1; dr["boughtMoney"] += int(t["p"])
+        if dmin is None or t["dt"] < dmin:
+            dmin = t["dt"]
+        if dmax is None or t["dt"] > dmax:
+            dmax = t["dt"]
+    for fr in funds:
+        if fr.get("pre"):
+            continue
+        tr = by_trader.get(fr["tr"])
+        if tr is not None and (tr["fundsDt"] is None or fr["dt"] >= tr["fundsDt"]):
+            tr["funds"] = fr["f"]
+            tr["fundsDt"] = fr["dt"]
+    gold = {"buy": {"cnt": 0, "qty": 0, "money": 0}, "sell": {"cnt": 0, "qty": 0, "money": 0}}
+    bank_kinds = {}
+    for b in bank:
+        bank_kinds[b["kind"]] = bank_kinds.get(b["kind"], 0) + 1
+        if b["kind"] in ("gold_buy", "gold_sell"):
+            g = gold["buy" if b["kind"] == "gold_buy" else "sell"]
+            g["cnt"] += 1
+            g["qty"] += int(b.get("qty") or 0)
+            g["money"] += int(b.get("money") or 0)
+
+    def top(bucket, n):
+        return sorted(bucket.values(), key=lambda r: (-r["qty"], -r["money"]))[:n]
+
+    topn = max(1, min(int(params.get("topN") or 20), 50))
+    for tr in by_trader.values():
+        sec = tr["trader"].split("_")
+        tr["sector"] = sec[0] if sec else ""
+        tr["role"] = sec[2] if len(sec) > 2 else (sec[1] if len(sec) > 1 else "")
+    traders_list = sorted(by_trader.values(), key=lambda r: (r["soldMoney"] + r["boughtMoney"]) * -1)
+    days_list = sorted(by_day.values(), key=lambda r: r["day"])
+
+    q = str(params.get("q") or "").strip().lower()
+    f_kind = str(params.get("kind") or "").strip()
+    f_player = str(params.get("player") or "").strip().lower()
+    f_item = str(params.get("item") or "").strip().lower()
+    f_trader = str(params.get("trader") or "").strip().lower()
+    f_from = str(params.get("from") or "").strip()
+    f_to = str(params.get("to") or "").strip()
+    hist = []
+    for t in reversed(trades):
+        if f_kind and t["k"] != f_kind:
+            continue
+        if f_player and t["pl"].lower().find(f_player) < 0:
+            continue
+        if f_item and t["it"].lower().find(f_item) < 0:
+            continue
+        if f_trader and t["tr"].lower().find(f_trader) < 0:
+            continue
+        if q and q not in (t["it"] + " " + t["pl"] + " " + t["tr"]).lower():
+            continue
+        day = t["dt"][:10]
+        if f_from and day < f_from:
+            continue
+        if f_to and day > f_to:
+            continue
+        hist.append(t)
+    limit = max(1, min(int(params.get("limit") or 50), 200))
+    offset = max(0, int(params.get("offset") or 0))
+    files_meta = [{"name": n, "size": cache["files"][n].get("size"), "trades": len(cache["files"][n].get("trades") or [])}
+                  for n in sorted(cache["files"])]
+    return {
+        "ok": True,
+        "fetchedAt": cache.get("fetchedAt"),
+        "period": {"min": dmin, "max": dmax},
+        "files": files_meta,
+        "gameVersions": sorted(enc),
+        "totals": tot,
+        "players": len(players),
+        "traders": len(traders),
+        "lines": enc.get("lines__sum", 0),
+        "unparsed": enc.get("unparsed__sum", 0),
+        "topSold": top(item_sold, topn),
+        "topBought": top(item_bought, topn),
+        "topServices": top(item_service, topn) if item_service else [],
+        "traderRows": traders_list,
+        "days": days_list,
+        "gold": gold,
+        "bankKinds": bank_kinds,
+        "renames": renames[-20:],
+        "history": {"total": len(hist), "offset": offset, "limit": limit, "items": hist[offset:offset + limit]},
+    }
+
+
 # ============================================================ SCUM Loot DB (module L)
 
 LOOT_RARITIES = ("Abundant", "Common", "Uncommon", "Rare", "VeryRare", "ExtremelyRare")
@@ -1850,7 +2175,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/users/parse", "/api/users/serialize", "/api/notifications/parse", "/api/notifications/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/users/parse", "/api/users/serialize", "/api/notifications/parse", "/api/notifications/serialize", "/api/market/parse", "/api/market/stats", "/api/market/fetch", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -1883,6 +2208,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_notifications_parse(doc)
         if self.path == "/api/notifications/serialize":
             return self.handle_notifications_serialize(doc)
+        if self.path.startswith("/api/market/"):
+            return self.handle_market(self.path, doc)
         if self.path == "/api/loot/snapshot":
             return self.handle_loot_snapshot(doc)
         if self.path == "/api/loot/root":
@@ -4092,6 +4419,158 @@ class Handler(SimpleHTTPRequestHandler):
         return self.send_json(200, {"ok": True, "summary": summary, "issues": issues,
                                     "issueCount": summary["errors"] + summary["warnings"] + summary["infos"],
                                     "truncated": len(issues) >= 400})
+
+    def handle_market(self, route, data):
+        data = data or {}
+        if route == "/api/market/parse":
+            try:
+                raw = base64.b64decode(str(data.get("content") or ""), validate=True)
+            except (ValueError, TypeError):
+                return self.send_json(400, {"ok": False, "error": "content (base64) is required"})
+            if not raw:
+                return self.send_json(400, {"ok": False, "error": "content is empty"})
+            if len(raw) > MARKET_MAX_FILE:
+                return self.send_json(413, {"ok": False, "error": "File too large (max 8 MB)"})
+            text, enc = market_decode(raw)
+            parsed = market_parse_text(text)
+            return self.send_json(200, {
+                "ok": True, "encoding": enc,
+                "meta": parsed["meta"],
+                "counts": {"trades": len(parsed["trades"]), "funds": len(parsed["funds"]),
+                           "bank": len(parsed["bank"]), "renames": len(parsed["renames"]),
+                           "byKind": {k: sum(1 for t in parsed["trades"] if t["k"] == k) for k in ("sold", "bought", "service")}},
+                "sampleTrades": parsed["trades"][:3],
+                "sampleBank": parsed["bank"][:3],
+            })
+        if route == "/api/market/stats":
+            params = data if isinstance(data, dict) else {}
+            return self.send_json(200, market_aggregate(market_load_cache(), params))
+        if route != "/api/market/fetch":
+            return self.send_json(404, {"ok": False, "error": "Unknown market route"})
+        for k in ("host", "username", "password"):
+            if not str(data.get(k) or "").strip():
+                return self.send_json(400, {"ok": False, "error": "FTP profile is required (host, username, password)"})
+        rp = str(data.get("remotePath") or "").strip()
+        if any(c in rp for c in "\r\n"):
+            return self.send_json(400, {"ok": False, "error": "Invalid remote path"})
+        cands = []
+        idx = rp.lower().find("/config/windowsserver")
+        if idx >= 0:
+            cands.append(rp[:idx] + "/Logs")
+        cands += ["/Server/SCUM/Saved/Logs", (rp.rstrip("/") + "/Logs") if rp else "/Logs"]
+        seen = set()
+        cands = [c for c in cands if not (c in seen or seen.add(c))]
+        ftp, tls = None, False
+        state = {"tries": 0}
+
+        def reconnect():
+            nonlocal ftp, tls
+            state["tries"] += 1
+            if state["tries"] > 4:
+                raise ftplib.error_temp("421 FTP reconnect limit reached")
+            try:
+                ftp.quit()
+            except Exception:
+                try:
+                    ftp.close()
+                except Exception:
+                    pass
+            time.sleep(2.0)
+            ftp, tls = connect_ftp(data, attempt_start=state["tries"])
+
+        try:
+            ftp, tls = connect_ftp(data)
+            logs_dir, names = None, None
+            for cand in cands:
+                for _ in range(2):
+                    try:
+                        names = ftp.nlst(cand)
+                        break
+                    except RETRYABLE_FTP_EXC:
+                        reconnect()
+                        continue
+                    except (ftplib.error_perm, ftplib.error_proto, OSError):
+                        names = None
+                        break
+                if names is not None:
+                    logs_dir = cand
+                    break
+            if logs_dir is None:
+                return self.send_json(502, {"ok": False, "error": "Не нашёл папку логов; пробовал: " + ", ".join(cands)})
+            files = []
+            for raw in names:
+                base = raw.rstrip("/").rsplit("/", 1)[-1]
+                m = MARKET_FILE_RE.match(base)
+                if m:
+                    files.append((base, m.group(1)))
+            files.sort(key=lambda x: x[1])
+            if len(files) > MARKET_MAX_FILES:
+                files = files[-MARKET_MAX_FILES:]
+            cache = market_load_cache()
+            downloaded, skipped, total, failed = 0, 0, 0, []
+            truncated = False
+            for name, ts in files:
+                path = logs_dir + "/" + name
+                size = None
+                try:
+                    size = ftp.size(path)
+                except Exception:
+                    pass
+                cur = cache["files"].get(name)
+                if cur is not None and size is not None and int(cur.get("size") or -1) == size:
+                    skipped += 1
+                    continue
+                if total >= MARKET_MAX_TOTAL:
+                    truncated = True
+                    break
+                buf = io.BytesIO()
+                ok = False
+                for _ in range(2):
+                    try:
+                        ftp.retrbinary("RETR " + path, buf.write)
+                        ok = True
+                        break
+                    except RETRYABLE_FTP_EXC:
+                        try:
+                            reconnect()
+                        except Exception:
+                            break
+                        continue
+                    except (ftplib.error_perm, ftplib.error_proto, OSError):
+                        break
+                if not ok:
+                    failed.append(name)
+                    continue
+                rawd = buf.getvalue()
+                if len(rawd) > MARKET_MAX_FILE:
+                    rawd = rawd[-MARKET_MAX_FILE:]
+                total += len(rawd)
+                downloaded += 1
+                text, enc = market_decode(rawd)
+                parsed = market_parse_text(text)
+                parsed["meta"]["encoding"] = enc
+                entry = {"ts": ts, "size": size if size is not None else len(rawd)}
+                entry.update(parsed)
+                cache["files"][name] = entry
+            cache["fetchedAt"] = datetime.now().isoformat(timespec="seconds")
+            market_save_cache(cache)
+            agg = market_aggregate(cache, {"topN": 20})
+            agg["fetch"] = {"logsDir": logs_dir, "filesTotal": len(files), "filesKnown": len(cache["files"]),
+                            "downloaded": downloaded, "skipped": skipped, "bytes": total,
+                            "truncated": truncated, "failed": failed[:10]}
+            return self.send_json(200, agg)
+        except (FTP_CONNECT_EXC,) + (OSError, ValueError) + ftplib.all_errors as exc:
+            if isinstance(exc, FTP_CONNECT_EXC):
+                err = "Подключение не удалось после нескольких попыток: " + str(exc)
+            else:
+                err = ftp_err_text(exc) if isinstance(exc, (ssl.SSLError, ConnectionError, TimeoutError, EOFError)) else str(exc)[:300]
+            return self.send_json(502, {"ok": False, "error": err[:400]})
+        finally:
+            if ftp is not None:
+                try:
+                    ftp.quit()
+                except Exception:
+                    ftp.close()
 
     def handle_ftp(self, route, data):
         required = ("host", "username", "password", "remotePath")

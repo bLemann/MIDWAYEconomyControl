@@ -2145,3 +2145,87 @@ $('#us-upload').onclick=async()=>{
   showUploadReport(r,(c.remotePath||'/')+'/'+kd.f)
  }catch(e){usStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}
  finally{btn.disabled=false}};
+
+
+// ===== MARKET analytics (module M, 0.8.54) =====
+const MK_PAGE=50;
+let mkOffset=0,mkLoaded=false,mkBusy=false;
+function mkFmt(n){return (n||0).toLocaleString('ru-RU')}
+function mkTable(t,head,rows){
+ t.innerHTML='';
+ const thead=document.createElement('thead'),hr=document.createElement('tr');
+ head.forEach(h=>{const th=document.createElement('th');if(h.n)th.className='num';th.textContent=h.t;hr.append(th)});
+ thead.append(hr);t.append(thead);
+ const tb=document.createElement('tbody');t.append(tb);
+ if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=head.length;td.className='empty';td.style.whiteSpace='normal';td.textContent='нет данных';tr.append(td);tb.append(tr);return}
+ rows.forEach(cells=>{
+  const tr=document.createElement('tr');
+  cells.forEach(cell=>{
+   const td=document.createElement('td');
+   if(cell&&typeof cell==='object'){if(cell.n)td.className='num';if(cell.c)td.classList.add(cell.c);td.textContent=cell.t}
+   else td.textContent=cell;
+   tr.append(td)});
+  tb.append(tr)})
+}
+const MK_KIND={sold:{t:'продажа',c:'mk-sold'},bought:{t:'покупка',c:'mk-bought'},service:{t:'услуга',c:'mk-service'}};
+function mkCards(d){
+ const box=$('#market-cards');box.innerHTML='';
+ const cards=[
+  {k:'ПРОДАНО ТОРГОВЦАМ',v:mkFmt(d.totals.sold.qty),s:mkFmt(d.totals.sold.cnt)+' сделок · '+mkFmt(d.totals.sold.money)+' денег'},
+  {k:'КУПЛЕНО У ТОРГОВЦЕВ',v:mkFmt(d.totals.bought.qty),s:mkFmt(d.totals.bought.cnt)+' сделок · '+mkFmt(d.totals.bought.money)+' денег'},
+  {k:'УСЛУГИ МЕХАНИКА',v:mkFmt(d.totals.service.cnt),s:mkFmt(d.totals.service.money)+' денег'},
+  {k:'ИГРОКИ / ТОРГОВЦЫ',v:d.players+' / '+d.traders,s:d.gameVersions.length?('игра '+d.gameVersions.join(', ')):''},
+  {k:'ЗОЛОТО: КУПЛЕНО',v:mkFmt(d.gold.buy.qty),s:mkFmt(d.gold.buy.cnt)+' сделок · '+mkFmt(d.gold.buy.money)+' кредитов'},
+  {k:'ЗОЛОТО: ПРОДАНО',v:mkFmt(d.gold.sell.qty),s:mkFmt(d.gold.sell.cnt)+' сделок · '+mkFmt(d.gold.sell.money)+' кредитов'}];
+ cards.forEach(c=>{const el=document.createElement('div');el.className='market-card';const k=document.createElement('div'),v=document.createElement('div'),s=document.createElement('div');k.className='k';v.className='v';s.className='s';k.textContent=c.k;v.textContent=c.v;s.textContent=c.s;el.append(k,v,s);box.append(el)})
+}
+function mkTopRows(list){return list.map(r=>[r.item,{t:mkFmt(r.qty),n:1},{t:mkFmt(r.cnt),n:1},{t:mkFmt(r.money),n:1}])}
+function mkRender(d){
+ mkCards(d);
+ mkTable($('#market-topsold'),[{t:'ПРЕДМЕТ'},{t:'ШТ',n:1},{t:'СДЕЛОК',n:1},{t:'ДЕНЕГ',n:1}],mkTopRows(d.topSold));
+ mkTable($('#market-topbought'),[{t:'ПРЕДМЕТ'},{t:'ШТ',n:1},{t:'СДЕЛОК',n:1},{t:'ДЕНЕГ',n:1}],mkTopRows(d.topBought));
+ mkTable($('#market-traders'),[{t:'ТОРГОВЕЦ'},{t:'СЕКТОР'},{t:'РОЛЬ'},{t:'ПРОДАЖ',n:1},{t:'ОБОРОТ ПРОДАЖ',n:1},{t:'ПОКУПОК',n:1},{t:'ОБОРОТ ПОКУПОК',n:1},{t:'ФОНД',n:1}],
+  d.traderRows.map(r=>[r.trader,r.sector,r.role,{t:mkFmt(r.soldCnt),n:1},{t:mkFmt(r.soldMoney),n:1},{t:mkFmt(r.boughtCnt),n:1},{t:mkFmt(r.boughtMoney),n:1},(r.funds===null||r.funds===undefined)?'—':{t:mkFmt(r.funds),n:1}]));
+ mkTable($('#market-days'),[{t:'ДЕНЬ'},{t:'ПРОДАЖ',n:1},{t:'ОБОРОТ ПРОДАЖ',n:1},{t:'ПОКУПОК',n:1},{t:'ОБОРОТ ПОКУПОК',n:1}],
+  d.days.map(r=>[r.day,{t:mkFmt(r.soldCnt),n:1},{t:mkFmt(r.soldMoney),n:1},{t:mkFmt(r.boughtCnt),n:1},{t:mkFmt(r.boughtMoney),n:1}]));
+ const bk=d.bankKinds||{};
+ $('#market-extra').textContent='Банк: депозитов '+mkFmt(bk.deposit||0)+' · снятий '+mkFmt(bk.withdraw||0)+' · переводов '+mkFmt(bk.transfer||0)+' · карт куплено '+mkFmt(bk.card_buy||0)+' · карт уничтожено '+mkFmt(bk.card_destroy||0)+((d.renames&&d.renames.length)?' · переименований '+d.renames.length:'');
+ mkTable($('#market-history'),[{t:'ВРЕМЯ'},{t:'ВИД'},{t:'ПРЕДМЕТ'},{t:'ШТ',n:1},{t:'ДЕНЕГ',n:1},{t:'ИГРОК'},{t:'ТОРГОВЕЦ'},{t:'ОНЛАЙН',n:1}],
+  (d.history.items||[]).map(t=>[t.dt,{t:MK_KIND[t.k]?MK_KIND[t.k].t:t.k,c:MK_KIND[t.k]?MK_KIND[t.k].c:''},t.it,{t:mkFmt(t.q),n:1},{t:mkFmt(t.p),n:1},t.pl+' ('+t.sid+')',t.tr,(t.u===null||t.u===undefined)?'—':{t:t.u,n:1}]));
+ const h=d.history;
+ $('#mk-range').textContent='показаны '+(h.total?mkFmt(h.offset+1):'0')+'–'+mkFmt(Math.min(h.offset+h.limit,h.total))+' из '+mkFmt(h.total);
+ const p=d.period||{};
+ $('#market-meta').textContent='Период: '+(p.min||'—')+' → '+(p.max||'—')+' · файлов: '+((d.files||[]).length)+' · строк: '+mkFmt(d.lines)+(d.unparsed?(' · нераспознано: '+mkFmt(d.unparsed)):'')+(d.fetchedAt?(' · кэш от '+d.fetchedAt):'');
+}
+async function mkLoad(){
+ if(mkBusy)return;mkBusy=true;
+ try{
+  const body={q:$('#mk-q').value.trim(),kind:$('#mk-kind').value,player:$('#mk-player').value.trim(),item:$('#mk-item').value.trim(),trader:$('#mk-trader').value.trim(),from:$('#mk-from').value,to:$('#mk-to').value,limit:MK_PAGE,offset:mkOffset};
+  const r=await fetch('/api/market/stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();
+  if(!r.ok||!d.ok)throw new Error(d.error||'stats failed');
+  mkRender(d);mkLoaded=true
+ }catch(e){toast('Маркет: '+e.message)}finally{mkBusy=false}
+}
+$('#market-reload').onclick=()=>mkLoad();
+$('#market-refresh').onclick=async()=>{
+ const c=ftpCredentials();
+ if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
+ const btn=$('#market-refresh');btn.disabled=true;btn.textContent='КАЧАЮ…';
+ $('#market-meta').textContent='Ищу economy_*.log в папке логов сервера (одна FTP-сессия, до минуты)…';
+ try{
+  const r=await fetch('/api/market/fetch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});
+  const d=await r.json();
+  if(!r.ok||!d.ok)throw new Error(d.error||'fetch failed');
+  const f=d.fetch||{};
+  log('Маркет: файлов '+f.filesTotal+' · докачано '+f.downloaded+' · без изменений '+f.skipped+' · '+mkFmt(f.bytes)+' байт из '+f.logsDir);
+  toast('Маркет обновлён: файлов '+f.filesTotal+' · новых '+f.downloaded+(f.failed&&f.failed.length?(' · ошибок '+f.failed.length):''));
+  mkOffset=0;await mkLoad()
+ }catch(e){$('#market-meta').textContent='Ошибка обновления: '+e.message;toast('Маркет: '+e.message)}
+ finally{btn.disabled=false;btn.textContent='ОБНОВИТЬ С СЕРВЕРА'}
+};
+['mk-q','mk-player','mk-item','mk-trader'].forEach(id=>{$('#'+id).addEventListener('keydown',e=>{if(e.key==='Enter'){mkOffset=0;mkLoad()}})});
+['mk-kind','mk-from','mk-to'].forEach(id=>{$('#'+id).addEventListener('change',()=>{mkOffset=0;mkLoad()})});
+$('#mk-prev').onclick=()=>{if(mkOffset>0){mkOffset=Math.max(0,mkOffset-MK_PAGE);mkLoad()}};
+$('#mk-next').onclick=()=>{mkOffset+=MK_PAGE;mkLoad()};
+document.querySelectorAll('.tab').forEach(b=>{if(b.dataset.view==='market'){const orig=b.onclick;b.onclick=()=>{if(orig)orig();if(!mkLoaded)mkLoad()}}});
