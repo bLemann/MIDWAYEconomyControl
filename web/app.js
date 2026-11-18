@@ -1792,10 +1792,41 @@ const US_KINDS=[
  {k:'banned',f:'BannedUsers.ini',label:'БАНЫ',perm:false,hint:'Заблокированные игроки — сервер читает список при старте'},
  {k:'whitelist',f:'WhitelistedUsers.ini',label:'ВАЙТЛИСТ',perm:false,hint:'Разрешённые к входу при включённом фильтре в ServerSettings'},
  {k:'silenced',f:'SilencedUsers.ini',label:'МУТЫ',perm:false,hint:'Заглушённые в чате игроки'},
- {k:'exclusive',f:'ExclusiveUsers.ini',label:'ЭКСКЛЮЗИВ',perm:false,hint:'⚠ ОПАСНО: непустой список пускает ТОЛЬКО перечисленных'}];
+ {k:'exclusive',f:'ExclusiveUsers.ini',label:'ЭКСКЛЮЗИВ',perm:false,hint:'⚠ ОПАСНО: непустой список пускает ТОЛЬКО перечисленных'},
+ {k:'notifications',f:'Notifications.json',notif:true,label:'УВЕДОМЛЕНИЯ',hint:'Сообщения на экране по расписанию: текст, день, время, длительность, цвет'}];
 const US_ID_RE=/^7656119\d{10}$/;
 const US_PERM_RE=/^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 const US_PERM_HINT={SetGodMode:'может включить режим бога',GodMode:'заходит сразу в режиме бога'};
+const US_NOTIF_TIME_RE=/^(?:[01]?\d|2[0-3])(?::[0-5]\d)?$/;
+const US_NOTIF_RANGE_RE=/^(?:[01]?\d|2[0-3])(?::[0-5]\d)?-(?:[01]?\d|2[0-3])(?::[0-5]\d)?$/;
+const US_NOTIF_COLOR_RE=/^(\d{1,3})-(\d{1,3})-(\d{1,3})$/;
+const US_NOTIF_DAYS=['Everyday','Weekdays','Weekend','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const US_NOTIF_WARN_TXT={unknownField:'неизвестное поле (сохранено как есть)',badType:'поле не того типа',emptyMessage:'пустой текст',missingMessage:'нет message',unknownDay:'неизвестный день',timeString:'time был строкой — станет списком',range:'диапазон времени (ванильный формат)',badTime:'некорректное время',badDuration:'некорректная длительность',badColor:'некорректный цвет',badMessage:'текст: одна строка, до 2000 симв.'};
+const US_NOTIF_PH_TXT={RestartIn:'минут до рестарта',RestartAt:'время рестарта',NumPlayers:'игроков онлайн',Date:'дата',Time:'время'};
+function usNotifTimeOk(t){return typeof t==='string'&&US_NOTIF_TIME_RE.test(t)}
+function usNotifTimeRange(t){return typeof t==='string'&&US_NOTIF_RANGE_RE.test(t)}
+function usNotifColorOk(c){if(typeof c!=='string')return false;let m=US_NOTIF_COLOR_RE.exec(c);return !!m&&m.slice(1).every(x=>+x>=0&&+x<=255)}
+function usNotifColorCss(c){let m=typeof c==='string'?US_NOTIF_COLOR_RE.exec(c):null;return m?'rgb('+m[1]+','+m[2]+','+m[3]+')':null}
+function usNotifPhIn(text){return Object.keys(US_NOTIF_PH_TXT).filter(p=>(text||'').indexOf('#'+p)>=0).map(p=>'#'+p)}
+function usNotifDayUnknown(v){for(let t of String(v).split(',')){t=t.trim();if(US_NOTIF_DAYS.includes(t))continue;let m=/^([A-Za-z]+)-([A-Za-z]+)$/.exec(t);if(m&&US_NOTIF_DAYS.slice(3).includes(m[1])&&US_NOTIF_DAYS.slice(3).includes(m[2]))continue;return true}return false}
+function usNotifWarns(e){
+ let w=[];
+ let msg=e.message;
+ if(typeof msg!=='string'||!msg)w.push('message: нет текста');
+ else if(!msg.trim())w.push('message: пустой текст');
+ else if(msg.length>2000||/[\r\n]/.test(msg))w.push('message: '+US_NOTIF_WARN_TXT.badMessage);
+ if(e.extra&&Object.keys(e.extra).length)w.push(US_NOTIF_WARN_TXT.unknownField);
+ let day=e.day;
+ if(day!=null){let s=String(day);if(!s.trim()||s.length>100)w.push('day: '+US_NOTIF_WARN_TXT.badType);else if(usNotifDayUnknown(day))w.push('day: '+US_NOTIF_WARN_TXT.unknownDay)}
+ let time=e.time;
+ if(time!=null){
+  if(!Array.isArray(time)||!time.length||time.length>24)w.push('time: нужен список 1–24 значений');
+  else time.forEach(t=>{if(usNotifTimeRange(t))w.push('time: диапазон «'+t+'»');else if(!usNotifTimeOk(t))w.push('time: «'+t+'» не похоже на H:MM')})}
+ let dur=e.duration;
+ if(dur!=null&&(!Number.isInteger(dur)||dur<1||dur>1440))w.push('duration: '+US_NOTIF_WARN_TXT.badDuration);
+ let col=e.color;
+ if(col!=null&&!usNotifColorOk(col))w.push('color: '+US_NOTIF_WARN_TXT.badColor);
+ return w}
 let usDocs={},usCur='admin',usSearchT=null,usAddChecks={};
 function usKind(){return US_KINDS.find(x=>x.k===usCur)}
 function usDoc(){return usDocs[usCur]||null}
@@ -1814,9 +1845,13 @@ function usRenderFiles(){
   let b=document.createElement('button');b.className='ss-gbtn'+(usCur===x.k?' active':'');b.title=x.hint+' · '+x.f;
   let nm=document.createElement('span');nm.textContent=x.label;
   let c=document.createElement('span');c.className='cnt';c.textContent=cnt==null?'не загружен':cnt+(ch?' · Δ'+ch:'');
-  b.append(nm,c);b.onclick=()=>{usCur=x.k;usRender()};box.append(b)})}
+   b.append(nm,c);b.onclick=()=>{usCur=x.k;if(x.notif)usNotifAddDefaults();usRender()};box.append(b)})}
 function usRenderAddRow(){
- let kd=usKind(),box=$('#us-add-perms');box.innerHTML='';usAddChecks={};
+ let kd=usKind(),nf=kd&&kd.notif;
+ let naf=$('#notif-add-form');if(naf)naf.style.display=nf?'':'none';
+ $('#us-add-form').style.display=nf?'none':'';
+ $('#us-search').placeholder=nf?'Поиск по тексту сообщения':'Поиск по SteamID64';
+ let box=$('#us-add-perms');box.innerHTML='';usAddChecks={};
  if(kd&&kd.perm){
   (usDoc()&&usDoc().data.permsCatalog||['SetGodMode','GodMode']).forEach(p=>{
    let l=document.createElement('label');l.className='us-perm';l.title=US_PERM_HINT[p]||'право администратора';
@@ -1841,9 +1876,16 @@ function usPermCell(e,kd){
  if(!cur.length){let s=document.createElement('span');s.className='us-fulladmin';s.textContent='полный доступ';td.append(s)}
  return td}
 function usRenderRows(){
- let tb=$('#us-tbody');let wrap=document.querySelector('#us-edit .ss-wrap');let st=wrap?wrap.scrollTop:0;tb.innerHTML='';
  let kd=usKind(),d=usDoc();
  if(!kd)return;
+ let nf=!!kd.notif;
+ let wrap=document.querySelector('#us-edit .ss-wrap');
+ let naf=$('#notif-add-form');if(naf)naf.style.display=nf?'':'none';
+ $('#us-add-form').style.display=nf?'none':'';
+ let nlst=$('#notif-list');if(nlst)nlst.style.display=nf?'':'none';
+ if(wrap)wrap.style.display=nf?'none':'';
+ if(nf){usRenderNotif(d);return}
+ let tb=$('#us-tbody');let st=wrap?wrap.scrollTop:0;tb.innerHTML='';
  if(!d){tb.innerHTML='<tr><td colspan="3" class="empty">Файл не загружен — «СКАЧАТЬ С СЕРВЕРА» или «НОВЫЙ (ПУСТОЙ)»</td></tr>';return}
  let q=$('#us-search').value.trim().toLowerCase();
  let orig=d.orig,vals=d.vals,shown=0;
@@ -1862,15 +1904,111 @@ function usRenderRows(){
   del.onclick=()=>{d.vals.splice(i,1);usRender()};
   td3.append(rb,del);tr.append(td3);tb.append(tr)});
  if(!shown)tb.innerHTML='<tr><td colspan="3" class="empty">'+(d.vals.length?'Ничего не найдено':'Список пуст')+'</td></tr>';
- if(wrap)wrap.scrollTop=st}
+  if(wrap)wrap.scrollTop=st}
+function usNotifAddDefaults(){
+ let kd=usKind(),d=usDoc();if(!kd||!kd.notif||!d)return;
+ let def=(d.data&&d.data.defaults)||{day:'Everyday',time:['12:00'],duration:20,color:'255-180-50'};
+ let set=(id,v)=>{let x=$('#'+id);if(x!=null&&v!=null)x.value=v};
+ set('us-add-day',def.day||'Everyday');set('us-add-time',(def.time||['12:00']).join(', '));
+ set('us-add-dur',def.duration||20);set('us-add-durtype','int');set('us-add-color',def.color||'255-180-50')}
+function usRenderNotif(d){
+ let box=$('#notif-list');if(!box)return;
+ let st=box.scrollTop;box.innerHTML='';
+ if(!d){box.innerHTML='<p class="empty">Файл не загружен — «СКАЧАТЬ С СЕРВЕРА» или «НОВЫЙ (ПУСТОЙ)»</p>';return}
+ let q=$('#us-search').value.trim().toLowerCase();
+ let orig=d.orig,vals=d.vals,shown=0;
+ vals.forEach((e,i)=>{
+  let msg=e.message==null?'':String(e.message);
+  if(q&&!msg.toLowerCase().includes(q))return;
+  shown++;
+  let changed=JSON.stringify(e)!==JSON.stringify(orig[i]);
+  let card=document.createElement('div');card.className='us-card'+(changed?' ss-changed':'');
+  let head=document.createElement('div');head.className='us-card-head';
+  let num=document.createElement('span');num.className='us-card-num';num.textContent='#'+(i+1)+(e.extra&&Object.keys(e.extra).length?' · доп.поля: '+Object.keys(e.extra).join(', '):'');
+  let btns=document.createElement('span');btns.className='us-card-btns';
+  let mk=(t,ti,dis,fn,extra)=>{let b=document.createElement('button');b.type='button';b.className='btn-dark'+(extra?' '+extra:'');b.textContent=t;b.title=ti;if(dis)b.disabled=true;b.onclick=fn;return b};
+  let rb=mk('↩','Вернуть исходное уведомление',!changed,()=>{if(orig[i])d.vals[i]=usClone(orig[i]);else d.vals.splice(i,1);usRender()});
+  btns.append(
+   mk('↑','Сдвинуть выше',i===0,()=>{let a=d.vals[i];d.vals[i]=d.vals[i-1];d.vals[i-1]=a;usRender()}),
+   mk('↓','Сдвинуть ниже',i===vals.length-1,()=>{let a=d.vals[i];d.vals[i]=d.vals[i+1];d.vals[i+1]=a;usRender()}),
+   rb,
+   mk('✕','Удалить уведомление',false,()=>{d.vals.splice(i,1);usRender()},'us-del'));
+  head.append(num,btns);card.append(head);
+  let wspan=document.createElement('div');wspan.className='us-card-warn';
+  let wUpd=()=>{
+   wspan.innerHTML='';
+   usNotifWarns(e).forEach(tx=>{let s=document.createElement('span');s.className='us-warn-tag';s.textContent='⚠ '+tx;wspan.append(s)});
+   let ch=JSON.stringify(e)!==JSON.stringify(orig[i]);
+   card.classList.toggle('ss-changed',ch);rb.disabled=!ch;
+   usRenderTop();usRenderFiles()};
+  let mrow=document.createElement('div');mrow.className='us-card-row us-card-msgrow';
+  let ml=document.createElement('label');ml.textContent='ТЕКСТ';
+  let mi=document.createElement('input');mi.type='text';mi.value=msg;mi.maxLength=2000;mi.spellcheck=false;mi.placeholder='Текст сообщения (одна строка)';
+  let ph=document.createElement('span');ph.className='us-ph';
+  let phUpd=()=>{ph.innerHTML='';usNotifPhIn(e.message).forEach(p=>{let s=document.createElement('span');s.className='us-ph-chip';s.textContent=p;s.title=US_NOTIF_PH_TXT[p.slice(1)]||'';ph.append(s)})};
+  mi.oninput=()=>{e.message=mi.value;phUpd();wUpd()};
+  mrow.append(ml,mi,ph);card.append(mrow);
+  let frow=(label,input,extraCls)=>{let r=document.createElement('div');r.className='us-card-row'+(extraCls?' '+extraCls:'');let l=document.createElement('label');l.textContent=label;r.append(l,input);card.append(r);return input};
+  let di=document.createElement('input');di.value=e.day==null?'':String(e.day);di.spellcheck=false;di.maxLength=100;di.setAttribute('list','us-notif-days');di.placeholder='Everyday';
+  di.title='Everyday / Weekdays / Weekend / Monday…Sunday, списки через запятую, диапазоны через дефис';
+  di.onchange=()=>{e.day=di.value.trim()||null;wUpd()};
+  frow('ДЕНЬ',di);
+  let ti=document.createElement('input');ti.value=(e.time||[]).join(', ');ti.spellcheck=false;ti.placeholder='18:00, 21:30';
+  ti.title='H:MM или H, через запятую, до 24 значений';
+  ti.onchange=()=>{e.time=ti.value.split(',').map(x=>x.trim()).filter(Boolean);wUpd()};
+  frow('ВРЕМЯ',ti);
+  let drow=document.createElement('div');drow.className='us-card-row';
+  let dl=document.createElement('label');dl.textContent='ДЛИТ.';
+  let dn=document.createElement('input');dn.type='number';dn.min=1;dn.max=1440;dn.value=e.duration==null?'':e.duration;
+  dn.title='Длительность показа, минут (1–1440)';
+  let dt=document.createElement('select');dt.title='Как записать duration в файл';
+  [['int','20'],['str','"20"']].forEach(p=>{let o=document.createElement('option');o.value=p[0];o.textContent=p[1];dt.append(o)});
+  dt.value=e.durationType==='str'?'str':'int';
+  dn.onchange=()=>{let v=parseInt(dn.value,10);e.duration=isNaN(v)?null:v;wUpd()};
+  dt.onchange=()=>{e.durationType=dt.value;wUpd()};
+  drow.append(dl,dn,dt);card.append(drow);
+  let crow=document.createElement('div');crow.className='us-card-row';
+  let cl=document.createElement('label');cl.textContent='ЦВЕТ';
+  let ci=document.createElement('input');ci.value=e.color==null?'':String(e.color);ci.spellcheck=false;ci.placeholder='255-180-50';
+  ci.title='Цвет текста R-G-B, каждый 0–255';
+  let sw=document.createElement('span');sw.className='us-colorsw';
+  let swUpd=()=>{let c=usNotifColorCss(e.color);sw.style.background=c||'transparent';sw.title=c||'невалидный цвет'};
+  ci.onchange=()=>{e.color=ci.value.trim()||null;swUpd();wUpd()};
+  swUpd();
+  crow.append(cl,ci,sw);card.append(crow);
+  phUpd();wUpd();
+  card.append(wspan);
+  box.append(card)});
+ if(!shown)box.innerHTML='<p class="empty">'+(vals.length?'Ничего не найдено':'Список пуст — уведомлений нет')+'</p>';
+ box.scrollTop=st}
 function usRender(){usRenderFiles();usRenderAddRow();usRenderRows();usRenderWarn();usRenderTop()}
 function usRenderWarn(){
  let w=$('#us-warn'),kd=usKind();
- if(kd&&kd.k==='exclusive'){let d=usDoc();w.hidden=false;
-  w.textContent='⚠ ExclusiveUsers.ini: если список НЕПУСТОЙ, на сервер пускают ТОЛЬКО этих игроков — все остальные, включая админов, получат отказ. Убедитесь, что понимаете последствия.'+(d&&d.vals.length?' В списке сейчас: '+d.vals.length+'.':' Файл сейчас пуст/не загружен.')}
- else w.hidden=true}
+ if(kd&&kd.notif){let d=usDoc();w.hidden=false;w.classList.add('us-info');
+  let t='ℹ Плейсхолдеры в тексте: #RestartIn (минут до рестарта), #RestartAt (время рестарта), #NumPlayers (игроков онлайн), #Date, #Time. Время — H:MM (например 18:00) или H; дни: Everyday / Weekdays / Weekend / Monday…Sunday, списки через запятую, диапазоны через дефис; цвет — R-G-B (0–255).';
+  if(d&&d.data&&d.data.counts&&d.data.counts.warnings)t+=' При загрузке сервер вернул предупреждений: '+d.data.counts.warnings+'.';
+  w.textContent=t}
+ else{w.classList.remove('us-info');
+  if(kd&&kd.k==='exclusive'){let d=usDoc();w.hidden=false;
+   w.textContent='⚠ ExclusiveUsers.ini: если список НЕПУСТОЙ, на сервер пускают ТОЛЬКО этих игроков — все остальные, включая админов, получат отказ. Убедитесь, что понимаете последствия.'+(d&&d.vals.length?' В списке сейчас: '+d.vals.length+'.':' Файл сейчас пуст/не загружен.')}
+  else w.hidden=true}}
 function usValidate(){
  let errs=[];let kd=usKind(),d=usDoc();if(!kd||!d)return errs;
+ if(kd.notif){
+  if(d.vals.length>500)errs.push('уведомлений больше 500');
+  d.vals.forEach((e,i)=>{
+   let n='#'+(i+1);
+   let msg=e.message;
+   if(typeof msg!=='string'||!msg.trim())errs.push(n+': пустой текст сообщения');
+   else{if(msg.length>2000)errs.push(n+': текст длиннее 2000 символов');if(/[\r\n]/.test(msg))errs.push(n+': текст должен быть одной строкой')}
+   if(e.day!=null&&String(e.day).trim()&&String(e.day).length>100)errs.push(n+': день длиннее 100 символов');
+   let t=e.time;
+   if(t!=null){
+    if(!Array.isArray(t)||!t.length||t.length>24)errs.push(n+': время — от 1 до 24 значений');
+    else t.forEach(x=>{if(!(usNotifTimeOk(x)||usNotifTimeRange(x)))errs.push(n+': время «'+x+'» — формат H:MM или H')})}
+   if(e.duration!=null&&(!Number.isInteger(e.duration)||e.duration<1||e.duration>1440))errs.push(n+': длительность 1–1440 (минут)');
+   if(e.color!=null&&!usNotifColorOk(e.color))errs.push(n+': цвет R-G-B, каждый 0–255')});
+  return errs}
  let seen=new Set();
  d.vals.forEach((e,i)=>{
   if(!US_ID_RE.test(e.steamId))errs.push('строка '+(i+1)+': SteamID64 из 17 цифр (7656119…)');
@@ -1893,11 +2031,35 @@ $('#us-add-form').onsubmit=e=>{
  d.vals.push({steamId:id,permissions:perms,allPermsKnown:perms?perms.every(p=>(d.data.permsCatalog||[]).includes(p)):true});
  $('#us-add-id').value='';if($('#us-add-perm-custom'))$('#us-add-perm-custom').value='';
  usRender();toast('Добавлено: '+id)};
+$('#notif-add-form').onsubmit=e=>{
+ e.preventDefault();
+ let kd=usKind(),d=usDoc();
+ if(!kd||!kd.notif)return;
+ if(!d)return toast('Сначала скачайте Notifications.json или создайте «НОВЫЙ (ПУСТОЙ)»');
+ let msg=$('#us-add-msg').value.trim();
+ if(!msg||/[\r\n]/.test(msg)||msg.length>2000)return toast('Текст: непустой, одна строка, до 2000 символов');
+ if(d.vals.length>=500)return toast('Максимум 500 уведомлений');
+ let day=$('#us-add-day').value.trim();
+ let time=$('#us-add-time').value.split(',').map(x=>x.trim()).filter(Boolean);
+ let bad=time.filter(t=>!(usNotifTimeOk(t)||usNotifTimeRange(t)));
+ if(!time.length||bad.length)return toast('Время: H:MM или H через запятую'+(bad.length?' — «'+bad[0]+'» не подходит':''));
+ let dur=parseInt($('#us-add-dur').value,10);
+ if(!(dur>=1&&dur<=1440))return toast('Длительность: целое число 1–1440 (минут)');
+ let col=$('#us-add-color').value.trim();
+ if(!usNotifColorOk(col))return toast('Цвет: R-G-B, каждый канал 0–255 (например 255-180-50)');
+ d.vals.push({message:msg,day:day||null,time:time,duration:dur,durationType:$('#us-add-durtype').value||'int',color:col,order:['message','day','time','duration','color'],extra:{},warnings:[]});
+ $('#us-add-msg').value='';
+ usRender();toast('Добавлено уведомление #'+d.vals.length)};
 $('#us-search').oninput=()=>{clearTimeout(usSearchT);usSearchT=setTimeout(usRenderRows,200)};
 $('#us-new').onclick=async()=>{
  let kd=usKind();if(!kd)return;
  let old=usDocs[kd.k];
  if(old&&usDocChanged(old)&&!(await askConfirm('Незахваченные изменения','В «'+kd.f+'» есть изменения ('+usDocChanged(old)+'), они будут заменены пустым списком. Продолжить?')))return;
+ if(kd.notif){
+  usDocs[kd.k]={data:{ok:true,kind:kd.k,file:kd.f,notif:true,eol:'crlf',indent:'2',trailingN:1,emptyFile:true,entries:[],rootOrder:['Notifications'],rootExtra:{},counts:{entries:0,warnings:0},placeholders:Object.keys(US_NOTIF_PH_TXT).map(p=>'#'+p),defaults:{day:'Everyday',time:['12:00'],duration:20,color:'255-180-50'}},vals:[],orig:[]};
+  usNotifAddDefaults();
+  usStatus(kd.f+': создан локально пустой файл — выгрузите на сервер, чтобы создать файл');
+  usRender();toast(kd.f+': пустой файл создан');return}
  usDocs[kd.k]={data:{ok:true,kind:kd.k,file:kd.f,perms:kd.perm,eol:'crlf',trailingN:0,emptyFile:true,entries:[],counts:{entries:0,withPerms:0,unknownPerms:0},permsCatalog:['SetGodMode','GodMode']},vals:[],orig:[]};
  usStatus(kd.f+': создан локально пустой список — выгрузите на сервер, чтобы создать файл');
  usRender();toast(kd.f+': пустой список создан')};
@@ -1910,12 +2072,17 @@ $('#us-download').onclick=async()=>{
  try{
   let d=await ftpRequest('/api/ftp/download',{fileName:kd.f,remotePath:c.remotePath||'/'});
   try{await fetch('/api/snapshots/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileName:kd.f,content:d.content})})}catch(e){}
-  let pr=await fetch('/api/users/parse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:d.content,kind:kd.k})}).then(r=>r.json());
-  if(!pr.ok)throw new Error(pr.error||'Файл не распознан');
-  usDocs[kd.k]={data:pr,vals:usClone(pr.entries),orig:usClone(pr.entries)};
-  $('#us-search').value='';
-  usStatus(kd.f+': загружено записей '+(pr.counts.entries)+(pr.counts.unknownPerms?' · неизвестных прав: '+pr.counts.unknownPerms:'')+' · локальный снапшот сохранён');
-  usRender();toast(kd.f+' загружен ('+pr.counts.entries+' записей)')
+   let pr;
+   if(kd.notif)pr=await fetch('/api/notifications/parse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:d.content})}).then(r=>r.json());
+   else pr=await fetch('/api/users/parse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:d.content,kind:kd.k})}).then(r=>r.json());
+   if(!pr.ok)throw new Error(pr.error||'Файл не распознан');
+   usDocs[kd.k]={data:pr,vals:usClone(pr.entries),orig:usClone(pr.entries)};
+   if(kd.notif)usNotifAddDefaults();
+   $('#us-search').value='';
+   usStatus(kd.f+': '+(kd.notif
+    ?'загружено уведомлений '+pr.counts.entries+(pr.counts.warnings?' · предупреждений: '+pr.counts.warnings:'')
+    :'загружено записей '+pr.counts.entries+(pr.counts.unknownPerms?' · неизвестных прав: '+pr.counts.unknownPerms:''))+' · локальный снапшот сохранён');
+   usRender();toast(kd.f+' загружен ('+pr.counts.entries+(kd.notif?' уведомлений)':' записей)'))
  }catch(e){usStatus('Ошибка скачивания '+kd.f);toast(kd.f+': '+e.message+(String(e.message).includes('не найден')||String(e.message).toLowerCase().includes('not found')?' — файла ещё нет на сервере? Создайте «НОВЫЙ (ПУСТОЙ)»':''))}
  finally{btn.disabled=false}};
 $('#us-reset').onclick=async()=>{
@@ -1927,18 +2094,20 @@ $('#us-diff').onclick=()=>{
  US_KINDS.forEach(x=>{
   let d=usDocs[x.k];if(!d||!usDocChanged(d))return;
   let cap=document.createElement('p');cap.className='us-diffcap';cap.textContent=x.f;box.append(cap);
-  let rows=document.createElement('table');rows.className='ss-t ss-dt';
-  let thead=document.createElement('thead');let hr=document.createElement('tr');
-  ['STEAMID64','БЫЛО','СТАНЕТ'].forEach(h=>{let th=document.createElement('th');th.textContent=h;hr.append(th)});
-  thead.append(hr);rows.append(thead);
-  let tb=document.createElement('tbody');
-  const fmt=e=>!e?'(нет строки)':e.steamId+(e.permissions&&e.permissions.length?'['+e.permissions.join(',')+']':'');
-  const L=Math.max(d.vals.length,d.orig.length);
-  for(let i=0;i<L;i++){
-   let a=d.orig[i],b=d.vals[i];
-   if(JSON.stringify(a)===JSON.stringify(b))continue;total++;
-   let tr=document.createElement('tr');
-   let k=document.createElement('td');k.className='ss-key';k.textContent=(a||b).steamId;
+   let rows=document.createElement('table');rows.className='ss-t ss-dt';
+   let thead=document.createElement('thead');let hr=document.createElement('tr');
+   (x.notif?['#','БЫЛО','СТАНЕТ']:['STEAMID64','БЫЛО','СТАНЕТ']).forEach(h=>{let th=document.createElement('th');th.textContent=h;hr.append(th)});
+   thead.append(hr);rows.append(thead);
+   let tb=document.createElement('tbody');
+   const fmt=x.notif
+    ?(e=>!e?'(нет уведомления)':'«'+((e.message!=null?String(e.message):'')||'(без текста)').slice(0,70)+'»'+(e.day?' · '+e.day:'')+(e.time&&e.time.length?' · '+e.time.join(','):'')+(e.duration!=null?' · '+e.duration+' мин':'')+(e.color?' · '+e.color:''))
+    :(e=>!e?'(нет строки)':e.steamId+(e.permissions&&e.permissions.length?'['+e.permissions.join(',')+']':''));
+   const L=Math.max(d.vals.length,d.orig.length);
+   for(let i=0;i<L;i++){
+    let a=d.orig[i],b=d.vals[i];
+    if(JSON.stringify(a)===JSON.stringify(b))continue;total++;
+    let tr=document.createElement('tr');
+    let k=document.createElement('td');k.className='ss-key';k.textContent=x.notif?('#'+(i+1)):(a||b).steamId;
    let o=document.createElement('td');o.className='ss-old';o.textContent=fmt(a);
    let n=document.createElement('td');n.className='ss-new';n.textContent=fmt(b);
    tr.append(k,o,n);tb.append(tr)}
@@ -1954,16 +2123,24 @@ $('#us-upload').onclick=async()=>{
  let errs=usValidate();if(errs.length)return toast('Проверка: '+errs.slice(0,3).join('; ')+(errs.length>3?' … (всего '+errs.length+')':''));
  let c=ftpCredentials();if(!c.host)return toast('Заполните FTP-профиль во вкладке «FTP / ФАЙЛЫ»');
  let btn=$('#us-upload');btn.disabled=true;
- try{
-  let payload={kind:kd.k,eol:d.data.eol,trailingN:d.data.trailingN,
-   entries:d.vals.map(e=>({steamId:e.steamId,permissions:e.permissions||null}))};
-  let sz=await fetch('/api/users/serialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json());
-  if(!sz.ok)throw new Error(sz.error||'Сериализация не удалась');
-  let warn=kd.k==='exclusive'?'\n\n⚠ ExclusiveUsers: непустой список заблокирует вход всем, кроме перечисленных!':'';
-  if(!(await askConfirm('Выгрузка '+kd.f,'Изменено строк: '+n+'. Файл будет записан в '+(c.remotePath||'/')+'/'+kd.f+', существующий сохранится как .backup-метка на сервере.'+warn+'\n\nСписки применяются при следующем запуске сервера. Выгрузить?')))return;
-  let r=await ftpRequest('/api/ftp/upload',{fileName:kd.f,content:sz.content,confirm:true});
-  d.orig=usClone(d.vals);usRender();
-  usStatus('Выгружено на '+c.host+' · изменённых строк: '+n);
+  try{
+   let sz;
+   if(kd.notif){
+    let payload={eol:d.data.eol||'crlf',indent:d.data.indent||'2',trailingN:(d.data.trailingN==null?1:d.data.trailingN),
+     rootOrder:d.data.rootOrder||['Notifications'],rootExtra:d.data.rootExtra||{},
+     entries:d.vals.map(e=>({message:e.message,day:e.day||undefined,time:e.time&&e.time.length?e.time:undefined,duration:e.duration==null?undefined:e.duration,durationType:e.durationType||'int',color:e.color||undefined,extra:e.extra||{},order:e.order&&e.order.length?e.order:undefined}))};
+    sz=await fetch('/api/notifications/serialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json())}
+   else{
+    let payload={kind:kd.k,eol:d.data.eol,trailingN:d.data.trailingN,
+     entries:d.vals.map(e=>({steamId:e.steamId,permissions:e.permissions||null}))};
+    sz=await fetch('/api/users/serialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json())}
+   if(!sz.ok)throw new Error(sz.error||'Сериализация не удалась');
+   let warn=kd.k==='exclusive'?'\n\n⚠ ExclusiveUsers: непустой список заблокирует вход всем, кроме перечисленных!':'';
+   let applyNote=kd.notif?'Сервер читает Notifications.json при запуске — изменения вступят после перезапуска сервера.':'Списки применяются при следующем запуске сервера.';
+   if(!(await askConfirm('Выгрузка '+kd.f,'Изменено '+(kd.notif?'уведомлений':'строк')+': '+n+'. Файл будет записан в '+(c.remotePath||'/')+'/'+kd.f+', существующий сохранится как .backup-метка на сервере.'+warn+'\n\n'+applyNote+' Выгрузить?')))return;
+   let r=await ftpRequest('/api/ftp/upload',{fileName:kd.f,content:sz.content,confirm:true});
+   d.orig=usClone(d.vals);usRender();
+   usStatus('Выгружено на '+c.host+' · изменённых '+(kd.notif?'уведомлений':'строк')+': '+n);
   toast(kd.f+' выгружен ('+n+' изменений)');
   showUploadReport(r,(c.remotePath||'/')+'/'+kd.f)
  }catch(e){usStatus('Ошибка выгрузки');toast('Выгрузка: '+e.message)}

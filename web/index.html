@@ -677,7 +677,7 @@
 
 <section class="view us-only" id="us-edit">
   <div class="toolbar">
-    <div><h2>Списки игроков · Steam-ID файлы</h2><p>Шесть списков сервера: администраторы (с правами в [скобках]), баны, вайтлист, муты, эксклюзив. Формат: один SteamID64 на строку.</p></div>
+    <div><h2>Списки игроков и уведомления</h2><p>Шесть списков Steam-ID (администраторы с правами в [скобках], баны, вайтлист, муты, эксклюзив — один SteamID64 на строку) и расписание сообщений на экран (Notifications.json): текст, день, время, длительность, цвет.</p></div>
     <input id="us-search" placeholder="Поиск по SteamID64" spellcheck="false">
     <button class="btn-dark" id="us-diff" disabled>ИЗМЕНЕНИЯ (0)</button>
     <button class="btn-dark" id="us-reset" disabled>СБРОСИТЬ ВСЁ</button>
@@ -688,7 +688,7 @@
   <article class="panel srv-panel"><h3>СЕРВЕР · СПИСКИ STEAM-ID</h3>
     <div class="srv-row"><span id="us-status" class="hint">Файл ещё не загружен — нажмите «СКАЧАТЬ С СЕРВЕРА» (используется FTP-профиль из вкладки «FTP / ФАЙЛЫ»)</span></div>
     <div id="us-warn" class="us-warn" hidden></div>
-    <p class="note"><b>⚠ Списки применяются при запуске сервера.</b> Баны сервер читает из BannedUsers.ini при старте; состав администраторов тоже вступает в силу после перезапуска. Правки в AdminUsers.ini: строка «76561198…» = полный админ-доступ; «76561198…[SetGodMode]» = только указанные права (SetGodMode — может включать режим бога, GodMode — сразу в нём). Неизвестные игре права просто игнорируются. Перед выгрузкой создаётся .backup-копия и локальный снапшот.</p>
+    <p class="note"><b>⚠ Списки применяются при запуске сервера.</b> Баны сервер читает из BannedUsers.ini при старте; состав администраторов тоже вступает в силу после перезапуска. Правки в AdminUsers.ini: строка «76561198…» = полный админ-доступ; «76561198…[SetGodMode]» = только указанные права (SetGodMode — может включать режим бога, GodMode — сразу в нём). Неизвестные игре права просто игнорируются. Перед выгрузкой создаётся .backup-копия и локальный снапшот. Уведомления (Notifications.json): поля message (одна строка), day, time (список H:MM), duration (минуты), color (R-G-B); плейсхолдеры в тексте — #RestartIn (минут до рестарта), #RestartAt, #NumPlayers, #Date, #Time; сервер читает файл при запуске.</p>
   </article>
   <div class="ss-layout">
     <aside class="ss-groups" id="us-files"></aside>
@@ -698,6 +698,17 @@
         <span id="us-add-perms" class="us-perms"></span>
         <button class="btn-green" type="submit">ДОБАВИТЬ</button>
       </form>
+      <form class="notif-addrow" id="notif-add-form" style="display:none">
+        <input id="us-add-msg" placeholder="Текст уведомления — одна строка, до 2000 символов (#RestartIn, #NumPlayers…)" maxlength="2000" spellcheck="false">
+        <input id="us-add-day" list="us-notif-days" value="Everyday" maxlength="100" spellcheck="false" title="Everyday / Weekdays / Weekend / Monday…Sunday, списки через запятую, диапазоны через дефис">
+        <datalist id="us-notif-days"><option value="Everyday"></option><option value="Weekdays"></option><option value="Weekend"></option><option value="Monday"></option><option value="Tuesday"></option><option value="Wednesday"></option><option value="Thursday"></option><option value="Friday"></option><option value="Saturday"></option><option value="Sunday"></option></datalist>
+        <input id="us-add-time" placeholder="18:00, 21:30" spellcheck="false" title="Время показа: H:MM или H, через запятую, до 24 значений">
+        <input id="us-add-dur" type="number" min="1" max="1440" value="20" title="Длительность показа, минут (1–1440)">
+        <select id="us-add-durtype" title="Как записать duration в файл: числом 20 или строкой &quot;20&quot;"><option value="int">20</option><option value="str">"20"</option></select>
+        <input id="us-add-color" value="255-180-50" spellcheck="false" title="Цвет текста R-G-B, каждый канал 0–255">
+        <button class="btn-green" type="submit">ДОБАВИТЬ</button>
+      </form>
+      <div class="notif-list" id="notif-list" style="display:none"></div>
       <div class="ss-wrap"><table class="ss-t"><thead><tr><th>STEAMID64</th><th id="us-perm-col">ПРАВА</th><th></th></tr></thead><tbody id="us-tbody"></tbody></table></div>
     </article>
   </div>
@@ -985,7 +996,7 @@
 </dialog>
 
 <dialog id="us-diff-dialog">
-  <div class="dlg-head"><h3>ИЗМЕНЕНИЯ СПИСКОВ ИГРОКОВ</h3><span class="hint-inline" id="us-diff-count"></span></div>
+  <div class="dlg-head"><h3>ИЗМЕНЕНИЯ СПИСКОВ И УВЕДОМЛЕНИЙ</h3><span class="hint-inline" id="us-diff-count"></span></div>
   <div id="us-diff-body" class="ss-diff-body"></div>
   <div class="dlg-foot"><span class="hint-inline">Сбросить отдельную строку можно кнопкой ↩ в таблице</span><button type="button" class="btn-dark" id="us-diff-close">ЗАКРЫТЬ</button></div>
 </dialog>

@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.52"
+VERSION = "0.8.53"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -86,6 +86,56 @@ USERS_KINDS = {
 
 USERS_ID_RE = re.compile(r"^7656119\d{10}$")
 USERS_PERM_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+
+NOTIF_FILE = "Notifications.json"
+NOTIF_FIELDS = ["message", "day", "time", "duration", "color"]
+NOTIF_PLACEHOLDERS = ["#RestartIn", "#RestartAt", "#NumPlayers", "#Date", "#Time"]
+NOTIF_TIME_RE = re.compile(r"^(?:[01]?\d|2[0-3])(?::[0-5]\d)?$")
+NOTIF_TIME_RANGE_RE = re.compile(r"^(?:[01]?\d|2[0-3])(?::[0-5]\d)?-(?:[01]?\d|2[0-3])(?::[0-5]\d)?$")
+NOTIF_COLOR_RE = re.compile(r"^(\d{1,3})-(\d{1,3})-(\d{1,3})$")
+NOTIF_DAYS = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+NOTIF_DAY_TOKENS = {"Everyday", "Weekdays", "Weekend"} | NOTIF_DAYS
+
+def notif_time_ok(value):
+    return isinstance(value, str) and bool(NOTIF_TIME_RE.match(value))
+
+def notif_time_range(value):
+    return isinstance(value, str) and bool(NOTIF_TIME_RANGE_RE.match(value))
+
+def notif_color_ok(value):
+    if not isinstance(value, str):
+        return False
+    m = NOTIF_COLOR_RE.match(value)
+    return bool(m) and all(0 <= int(g) <= 255 for g in m.groups())
+
+def notif_day_unknown(value):
+    for token in str(value).split(","):
+        token = token.strip()
+        if token in NOTIF_DAY_TOKENS:
+            continue
+        m = re.match(r"^([A-Za-z]+)-([A-Za-z]+)$", token)
+        if m and m.group(1) in NOTIF_DAYS and m.group(2) in NOTIF_DAYS:
+            continue
+        return True
+    return False
+
+def notif_render(value, ind, level):
+    if isinstance(value, dict):
+        if not value:
+            return "{}"
+        parts = [ind * (level + 1) + json.dumps(str(k), ensure_ascii=False) + ": " + notif_render(v, ind, level + 1)
+                 for k, v in value.items()]
+        return "{\n" + ",\n".join(parts) + "\n" + ind * level + "}"
+    if isinstance(value, list):
+        if not value:
+            return "[]"
+        if all(x is None or isinstance(x, (str, int, float, bool)) for x in value):
+            inline = "[ " + ", ".join(json.dumps(x, ensure_ascii=False) for x in value) + " ]"
+            if len(inline) <= 80:
+                return inline
+        parts = [ind * (level + 1) + notif_render(x, ind, level + 1) for x in value]
+        return "[\n" + ",\n".join(parts) + "\n" + ind * level + "]"
+    return json.dumps(value, ensure_ascii=False)
 
 def ftp_ensure_dir(ftp, path):
     parts = [p for p in path.replace("\\", "/").split("/") if p not in ("", ".")]
@@ -1800,7 +1850,7 @@ class Handler(SimpleHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if origin and origin not in (f"http://{HOST}:{SERVER_PORT}", f"http://localhost:{SERVER_PORT}"):
             return self.send_json(403, {"ok": False, "error": "Cross-origin requests are not allowed"})
-        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/users/parse", "/api/users/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
+        if self.path not in ("/api/economy/validate", "/api/economy/catalog", "/api/serversettings/parse", "/api/serversettings/serialize", "/api/users/parse", "/api/users/serialize", "/api/notifications/parse", "/api/notifications/serialize", "/api/quests/save", "/api/quests/delete", "/api/quests/diff", "/api/ftp/list", "/api/ftp/find", "/api/ftp/download", "/api/ftp/stat", "/api/ftp/upload", "/api/ftp/upload-batch", "/api/ftp/snapshots/restore", "/api/ftp/test", "/api/ftp/inspect", "/api/presets/save", "/api/presets/load", "/api/presets/delete", "/api/connections/save", "/api/connections/delete", "/api/icons/scan_ftp", "/api/icons/missing", "/api/custom-items/save", "/api/icons/upload", "/api/icons/delete", "/api/icons/fetch_url", "/api/snapshots/save", "/api/loot/snapshot", "/api/loot/root", "/api/loot/working-save", "/api/loot/working-reset", "/api/loot/working-bulk", "/api/loot/publish", "/api/loot/export-zip", "/api/loot/zone-window", "/api/loot/zone-window-close", "/api/client-log", "/api/update/check", "/api/update/download", "/api/update/launch", "/api/export/save", "/api/export/open"):
             return self.send_json(404, {"ok": False, "error": "Unknown API route"})
         size = int(self.headers.get("Content-Length", "0"))
         if size > 8 * 1024 * 1024:
@@ -1829,6 +1879,10 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_users_parse(doc)
         if self.path == "/api/users/serialize":
             return self.handle_users_serialize(doc)
+        if self.path == "/api/notifications/parse":
+            return self.handle_notifications_parse(doc)
+        if self.path == "/api/notifications/serialize":
+            return self.handle_notifications_serialize(doc)
         if self.path == "/api/loot/snapshot":
             return self.handle_loot_snapshot(doc)
         if self.path == "/api/loot/root":
@@ -3579,6 +3633,265 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json(400, {"ok": False, "error": "Duplicate permissions for %s" % steam_id})
             lines.append("%s[%s]" % (steam_id, ",".join(perms)))
         text = nl.join(lines + [""] * trailing_n)
+        raw = text.encode("utf-8")
+        return self.send_json(200, {
+            "ok": True, "content": base64.b64encode(raw).decode("ascii"),
+            "size": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+        })
+
+    def handle_notifications_parse(self, data):
+        data = data or {}
+        content = str(data.get("content") or "")
+        try:
+            raw = base64.b64decode(content, validate=True)
+        except (ValueError, TypeError):
+            return self.send_json(400, {"ok": False, "error": "content (base64) is required"})
+        if len(raw) > 256 * 1024:
+            return self.send_json(413, {"ok": False, "error": "File too large (max 256 KB)"})
+        if not raw:
+            return self.send_json(200, {
+                "ok": True, "file": NOTIF_FILE, "emptyFile": True,
+                "eol": "lf", "indent": "2", "trailingN": 1,
+                "entries": [], "rootOrder": ["Notifications"], "rootExtra": {},
+                "counts": {"entries": 0, "warnings": 0},
+                "placeholders": NOTIF_PLACEHOLDERS,
+                "defaults": {"day": "Everyday", "time": ["12:00"], "duration": 20, "color": "255-180-50"},
+            })
+        if raw.startswith(b"\xef\xbb\xbf"):
+            return self.send_json(400, {"ok": False, "error": "Unsupported layout: UTF-8 BOM is not expected"})
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return self.send_json(400, {"ok": False, "error": "Unsupported encoding: expected UTF-8 JSON"})
+        if "\r\n" in text:
+            eol, nl = "crlf", "\r\n"
+        elif "\n" in text:
+            eol, nl = "lf", "\n"
+        else:
+            eol, nl = "crlf", "\r\n"
+        stripped = text.rstrip(" \t\r\n")
+        trailing_n = (len(text) - len(stripped)) // len(nl)
+        if trailing_n > 4:
+            return self.send_json(400, {"ok": False, "error": "Unsupported layout (too many trailing empty lines)"})
+        if "\n" not in text:
+            indent = "none"
+        else:
+            indent = None
+            for line in stripped.split(nl)[1:]:
+                if not line.strip():
+                    continue
+                lead = line[:len(line) - len(line.lstrip(" \t"))]
+                if lead.startswith("\t") and " " not in lead:
+                    indent = "tab"
+                elif lead and " " * len(lead) == lead and len(lead) in (2, 4):
+                    indent = str(len(lead))
+                if indent:
+                    break
+            if indent is None:
+                return self.send_json(400, {"ok": False, "error": "Unsupported layout (expected 2-space, 4-space or tab indent)"})
+        try:
+            doc = json.loads(text)
+        except json.JSONDecodeError as exc:
+            return self.send_json(400, {"ok": False, "error": "Invalid JSON: %s" % str(exc)[:120]})
+        if not isinstance(doc, dict):
+            return self.send_json(400, {"ok": False, "error": "Root must be an object: { \"Notifications\": [...] }"})
+        if "Notifications" not in doc:
+            return self.send_json(400, {"ok": False, "error": "Missing \"Notifications\" list in root object"})
+        notif = doc["Notifications"]
+        if not isinstance(notif, list):
+            return self.send_json(400, {"ok": False, "error": "\"Notifications\" must be a list"})
+        entries = []
+        total_warnings = 0
+        for idx, item in enumerate(notif):
+            if not isinstance(item, dict):
+                return self.send_json(400, {"ok": False, "error": "Notification #%d must be an object" % (idx + 1)})
+            warnings = []
+            extra = {k: v for k, v in item.items() if k not in NOTIF_FIELDS}
+            if extra:
+                warnings.append({"field": "", "code": "unknownField"})
+            if "message" in item:
+                message = item["message"]
+                if not isinstance(message, str):
+                    warnings.append({"field": "message", "code": "badType"})
+                    message = None
+                elif not message.strip():
+                    warnings.append({"field": "message", "code": "emptyMessage"})
+            else:
+                message = None
+                warnings.append({"field": "message", "code": "missingMessage"})
+            day = None
+            if "day" in item:
+                day = item["day"]
+                if not isinstance(day, str) or not day.strip():
+                    warnings.append({"field": "day", "code": "badType"})
+                    day = None
+                elif notif_day_unknown(day):
+                    warnings.append({"field": "day", "code": "unknownDay"})
+            time = None
+            if "time" in item:
+                tval = item["time"]
+                if isinstance(tval, str):
+                    time = [tval]
+                    warnings.append({"field": "time", "code": "timeString"})
+                elif isinstance(tval, list):
+                    time = [str(t) for t in tval]
+                else:
+                    warnings.append({"field": "time", "code": "badType"})
+                    time = None
+                if time is not None:
+                    for t in time:
+                        if notif_time_range(t):
+                            warnings.append({"field": "time", "code": "range"})
+                        elif not notif_time_ok(t):
+                            warnings.append({"field": "time", "code": "badTime"})
+                    if not time:
+                        warnings.append({"field": "time", "code": "badTime"})
+            duration = None
+            duration_type = None
+            if "duration" in item:
+                dval = item["duration"]
+                if isinstance(dval, bool):
+                    warnings.append({"field": "duration", "code": "badDuration"})
+                elif isinstance(dval, int):
+                    duration, duration_type = dval, "int"
+                    if not 1 <= duration <= 1440:
+                        warnings.append({"field": "duration", "code": "badDuration"})
+                elif isinstance(dval, str) and dval.strip().isdigit():
+                    duration, duration_type = int(dval), "str"
+                    if not 1 <= duration <= 1440:
+                        warnings.append({"field": "duration", "code": "badDuration"})
+                else:
+                    warnings.append({"field": "duration", "code": "badDuration"})
+            color = None
+            if "color" in item:
+                color = item["color"]
+                if not notif_color_ok(color):
+                    warnings.append({"field": "color", "code": "badColor"})
+                    color = color if isinstance(color, str) else None
+            total_warnings += len(warnings)
+            entries.append({
+                "message": message, "day": day, "time": time,
+                "duration": duration, "durationType": duration_type, "color": color,
+                "order": [str(k) for k in item.keys()],
+                "extra": extra, "warnings": warnings,
+            })
+        return self.send_json(200, {
+            "ok": True, "file": NOTIF_FILE, "emptyFile": False,
+            "eol": eol, "indent": indent, "trailingN": trailing_n,
+            "entries": entries,
+            "rootOrder": [str(k) for k in doc.keys()],
+            "rootExtra": {k: v for k, v in doc.items() if k != "Notifications"},
+            "counts": {"entries": len(entries), "warnings": total_warnings},
+            "placeholders": NOTIF_PLACEHOLDERS,
+            "defaults": {"day": "Everyday", "time": ["12:00"], "duration": 20, "color": "255-180-50"},
+        })
+
+    def handle_notifications_serialize(self, data):
+        data = data or {}
+        eol = data.get("eol")
+        if eol not in ("crlf", "lf"):
+            return self.send_json(400, {"ok": False, "error": "eol must be 'crlf' or 'lf'"})
+        indent = data.get("indent")
+        if indent not in ("none", "2", "4", "tab"):
+            return self.send_json(400, {"ok": False, "error": "indent must be 'none', '2', '4' or 'tab'"})
+        try:
+            trailing_n = int(data.get("trailingN"))
+        except (TypeError, ValueError):
+            return self.send_json(400, {"ok": False, "error": "trailingN (int) is required"})
+        if not 0 <= trailing_n <= 4:
+            return self.send_json(400, {"ok": False, "error": "trailingN out of range"})
+        entries = data.get("entries")
+        if not isinstance(entries, list) or len(entries) > 500:
+            return self.send_json(400, {"ok": False, "error": "entries (list, max 500) is required"})
+        root_extra = data.get("rootExtra")
+        if root_extra is None:
+            root_extra = {}
+        if not isinstance(root_extra, dict) or len(root_extra) > 16:
+            return self.send_json(400, {"ok": False, "error": "rootExtra must be an object (max 16 keys)"})
+        for k, v in root_extra.items():
+            if not isinstance(k, str) or not k or len(k) > 64 or k == "Notifications" or "\x00" in k:
+                return self.send_json(400, {"ok": False, "error": "Bad rootExtra key: %s" % str(k)[:60]})
+        root_order = data.get("rootOrder")
+        if root_order is None:
+            root_order = ["Notifications"]
+        if not isinstance(root_order, list) or len(root_order) > 32 or len(set(root_order)) != len(root_order):
+            return self.send_json(400, {"ok": False, "error": "rootOrder must be a list of unique keys"})
+        for k in root_order:
+            if not isinstance(k, str) or len(k) > 64:
+                return self.send_json(400, {"ok": False, "error": "Bad rootOrder key"})
+        items = []
+        for idx, entry in enumerate(entries):
+            if not isinstance(entry, dict):
+                return self.send_json(400, {"ok": False, "error": "Notification #%d must be an object" % (idx + 1)})
+            message = entry.get("message")
+            if not isinstance(message, str) or not message.strip() or len(message) > 2000 or "\n" in message or "\r" in message or "\x00" in message:
+                return self.send_json(400, {"ok": False, "error": "Notification #%d: message is required (non-empty, single line, max 2000 chars)" % (idx + 1)})
+            fields = {"message": message}
+            day = entry.get("day")
+            if day is not None:
+                if not isinstance(day, str) or not day.strip() or len(day) > 100 or "\n" in day or "\r" in day:
+                    return self.send_json(400, {"ok": False, "error": "Notification #%d: bad day (non-empty, single line, max 100 chars)" % (idx + 1)})
+                fields["day"] = day
+            time = entry.get("time")
+            if time is not None:
+                if not isinstance(time, list) or not time or len(time) > 24:
+                    return self.send_json(400, {"ok": False, "error": "Notification #%d: time must be a non-empty list (max 24)" % (idx + 1)})
+                for t in time:
+                    if not (notif_time_ok(t) or notif_time_range(t)):
+                        return self.send_json(400, {"ok": False, "error": "Notification #%d: bad time value: %s (expected H:MM, H or H:MM-H:MM)" % (idx + 1, str(t)[:40])})
+                fields["time"] = [str(t) for t in time]
+            duration = entry.get("duration")
+            if duration is not None:
+                if isinstance(duration, bool) or not isinstance(duration, int) or not 1 <= duration <= 1440:
+                    return self.send_json(400, {"ok": False, "error": "Notification #%d: duration must be an integer 1-1440" % (idx + 1)})
+                fields["duration"] = str(duration) if entry.get("durationType") == "str" else duration
+            color = entry.get("color")
+            if color is not None:
+                if not notif_color_ok(color):
+                    return self.send_json(400, {"ok": False, "error": "Notification #%d: bad color (expected R-G-B, 0-255): %s" % (idx + 1, str(color)[:40])})
+                fields["color"] = color
+            extra = entry.get("extra")
+            if extra is None:
+                extra = {}
+            if not isinstance(extra, dict) or len(extra) > 16:
+                return self.send_json(400, {"ok": False, "error": "Notification #%d: extra must be an object (max 16 keys)" % (idx + 1)})
+            for k in extra:
+                if not isinstance(k, str) or not k or len(k) > 64 or k in NOTIF_FIELDS or "\x00" in k:
+                    return self.send_json(400, {"ok": False, "error": "Notification #%d: bad extra key: %s" % (idx + 1, str(k)[:60])})
+            order = entry.get("order") or NOTIF_FIELDS
+            if not isinstance(order, list):
+                return self.send_json(400, {"ok": False, "error": "Notification #%d: order must be a list" % (idx + 1)})
+            ordered = {}
+            for k in order:
+                if k in fields and k not in ordered:
+                    ordered[k] = fields[k]
+            for k in NOTIF_FIELDS:
+                if k in fields and k not in ordered:
+                    ordered[k] = fields[k]
+            for k, v in extra.items():
+                if k not in ordered:
+                    ordered[k] = v
+            items.append(ordered)
+        root = {}
+        for k in root_order:
+            if k == "Notifications":
+                root["Notifications"] = items
+            elif k in root_extra and k not in root:
+                root[k] = root_extra[k]
+        if "Notifications" not in root:
+            root["Notifications"] = items
+        for k, v in root_extra.items():
+            if k not in root:
+                root[k] = v
+        if indent == "none":
+            text = json.dumps(root, ensure_ascii=False, separators=(",", ":"))
+        else:
+            ind = "\t" if indent == "tab" else " " * int(indent)
+            text = notif_render(root, ind, 0)
+        nl = "\r\n" if eol == "crlf" else "\n"
+        if "\n" in text:
+            text = text.replace("\n", nl)
+        text += nl * trailing_n
         raw = text.encode("utf-8")
         return self.send_json(200, {
             "ok": True, "content": base64.b64encode(raw).decode("ascii"),
