@@ -26,7 +26,7 @@ _BASE = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) els
 WEB = _BASE / "web" if (_BASE / "web").is_dir() else ROOT / "web"
 HOST, PORT = "127.0.0.1", 8765
 SERVER_PORT = PORT
-VERSION = "0.8.54"
+VERSION = "0.8.55"
 REPO = "bLemann/MIDWAYEconomyControl"
 
 def presets_dir():
@@ -779,7 +779,7 @@ class FTP_E(_EPSVMixin, ftplib.FTP):
 
 def ftp_err_text(exc):
     if isinstance(exc, EOFError):
-        return "Сервер закрыл соединение до FTP-приветствия — у хостинга сработало ограничение числа подключений (антифлуд): подождите 1–2 минуты; также проверьте доступность сервера и VPN"
+        return "Сервер закрыл соединение до FTP-приветствия — антифлуд хостинга (серия подключений); бан держится от пары минут до получаса. Приложение поставило локальный кулдаун и не повторяет попытки автоматически"
     s = str(exc)
     if "SHUTDOWN_WHILE_IN_INIT" in s:
         return "Сервер отклонил TLS-сессию канала данных: FileZilla Server 1.x требует возобновления TLS-сессии на data-канале — проверьте настройки TLS вашего FTP-сервера (должен быть разрешён TLS 1.2)"
@@ -803,61 +803,129 @@ class FTP_CONNECT_EXC(Exception):
     pass
 
 _FTP_CONNECT_LOCK = threading.Lock()
+_FTP_RATE_LOCK = threading.Lock()
 _FTP_LAST_CONNECT = [0.0]
+_FTP_BAN_BASE_SEC = 360
+_FTP_BAN_MAX_SEC = 3600
 
 def _ftp_rate_limit():
-    with _FTP_CONNECT_LOCK:
+    with _FTP_RATE_LOCK:
         wait = 2.0 - (time.monotonic() - _FTP_LAST_CONNECT[0])
         if wait > 0:
             time.sleep(wait)
         _FTP_LAST_CONNECT[0] = time.monotonic()
 
+def _ftp_pacing_file():
+    return data_dir() / "ftp_pacing.json"
+
+def _ftp_pacing_load():
+    try:
+        raw = json.loads(_ftp_pacing_file().read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+def _ftp_pacing_save(store):
+    tmp = _ftp_pacing_file().with_suffix(".tmp")
+    tmp.write_text(json.dumps(store, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(_ftp_pacing_file())
+
+def _ftp_ban_seconds(consecutive):
+    return min(_FTP_BAN_BASE_SEC * (2 ** max(0, consecutive - 1)), _FTP_BAN_MAX_SEC)
+
+def _ftp_pacing_banned(host):
+    rec = _ftp_pacing_load().get(host) or {}
+    return float(rec.get("bannedUntil") or 0)
+
+def _ftp_pacing_ban(host, rec):
+    cons = int(rec.get("consecutive") or 0) + 1
+    secs = _ftp_ban_seconds(cons)
+    store = _ftp_pacing_load()
+    cur = store.get(host) or {}
+    store[host] = {"mode": cur.get("mode"), "lastBan": time.time(), "consecutive": cons, "bannedUntil": time.time() + secs}
+    _ftp_pacing_save(store)
+    return secs
+
+def _ftp_pacing_success(host, mode):
+    store = _ftp_pacing_load()
+    store[host] = {"mode": mode, "lastOk": time.time(), "consecutive": 0, "bannedUntil": 0}
+    _ftp_pacing_save(store)
+
+def _ftp_ban_signature(exc):
+    return isinstance(exc, EOFError) or (isinstance(exc, ssl.SSLError) and "UNEXPECTED_EOF" in str(exc))
+
 def connect_ftp(data, attempt_start=0):
+    with _FTP_CONNECT_LOCK:
+        return _connect_ftp_impl(data, attempt_start)
+
+def _connect_ftp_impl(data, attempt_start=0):
     errors = []
-    host, port = data["host"], int(data.get("port", 21))
-    banner_dead = False
-    for attempt in range(2):
+    host = str(data["host"]).strip().lower()
+    port = int(data.get("port", 21))
+    banned_until = _ftp_pacing_banned(host)
+    if time.time() < banned_until:
+        raise FTP_CONNECT_EXC("Локальный антифлуд-кулдаун: новая попытка не раньше, чем через %d с — предыдущая получила бан-сигнал от хостинга, и каждая лишняя попытка продлевает бан" % int(banned_until - time.time()))
+    rec = _ftp_pacing_load().get(host) or {}
+    mode = rec.get("mode")
+    plans = []
+    if mode == "plain":
+        plans.append(("plain", None))
+    elif mode == "tls12":
+        plans.append(("tls", SSL_CTX_TLS12))
+    elif mode == "default":
+        plans.append(("tls", SSL_CTX))
+    else:
+        first, second = (SSL_CTX_TLS12, SSL_CTX) if (attempt_start % 2 == 0) else (SSL_CTX, SSL_CTX_TLS12)
+        plans.append(("tls", first))
+        plans.append(("tls", second))
+    auth_tls_rejected = False
+    for idx, (kind, ctx) in enumerate(plans):
         _ftp_rate_limit()
         ftp = None
         try:
-            ftp = FTP_TLS_E(timeout=12, context=SSL_CTX_TLS12 if (attempt_start + attempt) % 2 == 0 else SSL_CTX)
-            ftp.connect(host, port)
+            if kind == "plain":
+                ftp = FTP_E(timeout=12)
+                ftp.connect(data["host"], port)
+                ftp.login(data["username"], data["password"])
+                _ftp_pacing_success(host, "plain")
+                return ftp, False
+            ftp = FTP_TLS_E(timeout=12, context=ctx)
+            ftp.connect(data["host"], port)
             ftp.login(data["username"], data["password"])
             ftp.prot_p()
+            _ftp_pacing_success(host, "tls12" if ctx is SSL_CTX_TLS12 else "default")
             return ftp, True
         except ftplib.error_perm as exc:
             msg = str(exc).lower()
             if any(k in msg for k in ("auth", "tls", "ssl")):
                 errors.append("TLS отклонён сервером: " + str(exc)[:160])
+                auth_tls_rejected = True
                 break
             raise
         except (ssl.SSLError, ConnectionError, TimeoutError, OSError, EOFError) as exc:
-            if ftp is not None and ftp.sock is None:
-                banner_dead = True
             errors.append(ftp_err_text(exc))
             try:
                 if ftp is not None:
                     ftp.close()
             except Exception:
                 pass
-            if attempt == 0:
-                time.sleep(3.0)
+            if _ftp_ban_signature(exc):
+                secs = _ftp_pacing_ban(host, rec)
+                raise FTP_CONNECT_EXC(ftp_err_text(exc) + " Установлен локальный кулдаун %d мин — попытки раньше срока только продлевают бан" % max(1, secs // 60))
+            if idx + 1 < len(plans):
                 continue
             break
-    unique = list(dict.fromkeys(errors))
-    if banner_dead or any("до FTP-приветствия" in e for e in unique):
-        raise FTP_CONNECT_EXC(" | ".join(unique))
-    if unique and not any("TLS отклонён сервером" in e for e in unique):
-        raise FTP_CONNECT_EXC(" | ".join(unique))
-    _ftp_rate_limit()
-    try:
-        ftp = FTP_E(timeout=12)
-        ftp.connect(host, port)
-        ftp.login(data["username"], data["password"])
-        return ftp, False
-    except Exception as exc:
-        errors.append("Plain FTP: " + ftp_err_text(exc))
-        raise ValueError(" | ".join(dict.fromkeys(errors)))
+    if auth_tls_rejected:
+        _ftp_rate_limit()
+        try:
+            ftp = FTP_E(timeout=12)
+            ftp.connect(data["host"], port)
+            ftp.login(data["username"], data["password"])
+            _ftp_pacing_success(host, "plain")
+            return ftp, False
+        except Exception as exc:
+            errors.append("Plain FTP: " + ftp_err_text(exc))
+    raise FTP_CONNECT_EXC(" | ".join(dict.fromkeys(errors)))
 
 ECON_ROLES = ("Armory", "Barber", "Saloon", "BoatShop", "Hospital", "Mechanic", "Trader", "Hunter", "Master_Hunter")
 ECON_SECTORS = ("A_0", "B_4", "C_2", "Z_3")
@@ -943,38 +1011,6 @@ s.style.display=tvis?'':'none';
 })();
 </script>
 """
-
-def connect_ftp(data, attempt_start=0):
-    errors = []
-    host, port = data["host"], int(data.get("port", 21))
-    for attempt in range(2):
-        try:
-            ftp = FTP_TLS_E(timeout=12, context=SSL_CTX_TLS12 if (attempt_start + attempt) % 2 == 0 else SSL_CTX)
-            ftp.connect(host, port)
-            ftp.login(data["username"], data["password"])
-            ftp.prot_p()
-            return ftp, True
-        except ftplib.error_perm as exc:
-            msg = str(exc).lower()
-            if any(k in msg for k in ("auth", "tls", "ssl")):
-                errors.append("TLS отклонён сервером: " + str(exc)[:160])
-                break
-            raise
-        except (ssl.SSLError, ConnectionError, TimeoutError, OSError, EOFError) as exc:
-            errors.append(ftp_err_text(exc))
-            if attempt == 0:
-                time.sleep(1.2)
-                continue
-            break
-    try:
-        ftp = FTP_E(timeout=12)
-        ftp.connect(host, port)
-        ftp.login(data["username"], data["password"])
-        return ftp, False
-    except Exception as exc:
-        errors.append("Plain FTP: " + ftp_err_text(exc))
-        raise ValueError(" | ".join(errors))
-
 
 # ============================================================ Market analytics (module M) — economy_*.log
 
@@ -3455,13 +3491,11 @@ class Handler(SimpleHTTPRequestHandler):
             port = 21
         steps = []
         ok_all = True
-        try:
-            sock = socket.create_connection((host, port), timeout=10)
-            sock.close()
-            steps.append({"step": "TCP " + host + ":" + str(port), "ok": True, "detail": "соединение установлено"})
-        except Exception as exc:
-            steps.append({"step": "TCP " + host + ":" + str(port), "ok": False, "detail": ftp_err_text(exc)})
-            return self.send_json(200, {"ok": False, "steps": steps})
+        host_low = host.lower()
+        banned_until = _ftp_pacing_banned(host_low)
+        if time.time() < banned_until:
+            return self.send_json(200, {"ok": False, "steps": [{"step": "Антифлуд-кулдаун", "ok": False, "detail": "пропускаю подключение: предыдущая попытка получила бан-сигнал от хостинга; новая возможна через %d с (каждая лишняя попытка продлевает бан)" % int(banned_until - time.time())}]})
+        rec = _ftp_pacing_load().get(host_low) or {}
         ftp = None
         try:
             ftp = FTP_TLS_E(timeout=12)
@@ -3487,6 +3521,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json(200, {"ok": False, "steps": steps})
             try:
                 ftp.prot_p()
+                _ftp_pacing_success(host_low, "default")
                 steps.append({"step": "PROT P", "ok": True, "detail": "канал данных шифруется"})
                 steps.append({"step": "PWD", "ok": True, "detail": ftp.pwd()})
                 remote_path = str(data.get("remotePath") or "").strip()
@@ -3503,7 +3538,11 @@ class Handler(SimpleHTTPRequestHandler):
             steps.append({"step": "AUTH/Логин", "ok": False, "detail": str(exc)[:160]})
             ok_all = False
         except Exception as exc:
-            steps.append({"step": "Контрольное соединение (TLS)", "ok": False, "detail": ftp_err_text(exc)})
+            detail = ftp_err_text(exc)
+            if _ftp_ban_signature(exc):
+                secs = _ftp_pacing_ban(host_low, rec)
+                detail += " Установлен локальный кулдаун %d мин — попытки раньше срока только продлевают бан" % max(1, secs // 60)
+            steps.append({"step": "Контрольное соединение (TLS)", "ok": False, "detail": detail})
             ok_all = False
         finally:
             if ftp:
